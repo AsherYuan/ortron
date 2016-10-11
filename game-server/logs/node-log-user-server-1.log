@@ -1,0 +1,199 @@
+[2016-10-10 17:34:49.150] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39mapplication inited: "user-server-1"
+[2016-10-10 17:35:12.316] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39mapplication inited: "user-server-1"
+[2016-10-10 17:35:37.533] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39mapplication inited: "user-server-1"
+[2016-10-10 17:36:32.177] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39mapplication inited: "user-server-1"
+[2016-10-10 17:36:34.333] [INFO] pomelo-admin - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-admin/lib/consoleService.js] [39mtry to connect master: "user", "127.0.0.1", 3005
+[2016-10-10 17:36:34.531] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" enter after start...
+[2016-10-10 17:36:34.555] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" finish start
+[2016-10-10 17:36:34.560] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" startup in 2354 ms
+[2016-10-10 17:37:05.089] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39mapplication inited: "user-server-1"
+[2016-10-10 17:37:07.010] [INFO] pomelo-admin - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-admin/lib/consoleService.js] [39mtry to connect master: "user", "127.0.0.1", 3005
+[2016-10-10 17:37:07.260] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" enter after start...
+[2016-10-10 17:37:07.269] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" finish start
+[2016-10-10 17:37:07.272] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" startup in 2144 ms
+[2016-10-10 17:40:52.522] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39mapplication inited: "user-server-1"
+[2016-10-10 17:40:54.506] [INFO] pomelo-admin - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-admin/lib/consoleService.js] [39mtry to connect master: "user", "127.0.0.1", 3005
+[2016-10-10 17:40:54.706] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" enter after start...
+[2016-10-10 17:40:54.723] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" finish start
+[2016-10-10 17:40:54.733] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" startup in 1917 ms
+[2016-10-10 17:41:32.546] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39mapplication inited: "user-server-1"
+[2016-10-10 17:41:34.390] [INFO] pomelo-admin - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-admin/lib/consoleService.js] [39mtry to connect master: "user", "127.0.0.1", 3005
+[2016-10-10 17:41:34.660] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" enter after start...
+[2016-10-10 17:41:34.667] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" finish start
+[2016-10-10 17:41:34.672] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" startup in 1856 ms
+[2016-10-10 17:42:29.696] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39mapplication inited: "user-server-1"
+[2016-10-10 17:42:31.840] [INFO] pomelo-admin - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-admin/lib/consoleService.js] [39mtry to connect master: "user", "127.0.0.1", 3005
+[2016-10-10 17:42:32.077] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" enter after start...
+[2016-10-10 17:42:32.082] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" finish start
+[2016-10-10 17:42:32.094] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" startup in 2094 ms
+[2016-10-10 17:43:24.780] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39mapplication inited: "user-server-1"
+[2016-10-10 17:43:26.792] [INFO] pomelo-admin - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-admin/lib/consoleService.js] [39mtry to connect master: "user", "127.0.0.1", 3005
+[2016-10-10 17:43:27.087] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" enter after start...
+[2016-10-10 17:43:27.111] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" finish start
+[2016-10-10 17:43:27.121] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" startup in 2006 ms
+[2016-10-11 08:44:31.552] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39mapplication inited: "user-server-1"
+[2016-10-11 08:44:35.946] [INFO] pomelo-admin - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-admin/lib/consoleService.js] [39mtry to connect master: "user", "127.0.0.1", 3005
+[2016-10-11 08:44:36.650] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" enter after start...
+[2016-10-11 08:44:36.715] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" finish start
+[2016-10-11 08:44:36.733] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" startup in 4798 ms
+[2016-10-11 08:48:29.644] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39mapplication inited: "user-server-1"
+[2016-10-11 08:48:31.658] [INFO] pomelo-admin - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-admin/lib/consoleService.js] [39mtry to connect master: "user", "127.0.0.1", 3005
+[2016-10-11 08:48:31.863] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" enter after start...
+[2016-10-11 08:48:31.879] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" finish start
+[2016-10-11 08:48:31.887] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" startup in 1934 ms
+[2016-10-11 08:54:33.201] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39mapplication inited: "user-server-1"
+[2016-10-11 08:54:35.366] [INFO] pomelo-admin - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-admin/lib/consoleService.js] [39mtry to connect master: "user", "127.0.0.1", 3005
+[2016-10-11 08:54:35.681] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" enter after start...
+[2016-10-11 08:54:35.711] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" finish start
+[2016-10-11 08:54:35.717] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" startup in 2221 ms
+[2016-10-11 08:55:17.917] [WARN] pomelo-rpc - [33m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-rpc/lib/rpc-client/mailboxes/ws-mailbox.js] [39mrpc request is timeout, id: 0, host: 127.0.0.1, port: 7051
+[2016-10-11 08:55:17.920] [ERROR] pomelo-rpc - [31m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-rpc/lib/rpc-client/mailboxes/ws-mailbox.js] [39mrpc callback timeout, remote server host: 127.0.0.1, port: 7051
+[2016-10-11 08:55:17.924] [ERROR] pomelo-rpc - [31m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-rpc/lib/rpc-client/mailstation.js] [39m[pomelo-rpc] fail to send message
+[2016-10-11 08:55:17.927] [ERROR] pomelo-rpc - [31m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-rpc/lib/rpc-client/failureProcess.js] [39mrpc failed with error, remote server: user-server-remote-1, msg: {"namespace":"user","serverType":"user","service":"userRemote","method":"register","args":[false]}, error code: 5
+[2016-10-11 08:56:01.969] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39mapplication inited: "user-server-1"
+[2016-10-11 08:56:04.674] [INFO] pomelo-admin - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-admin/lib/consoleService.js] [39mtry to connect master: "user", "127.0.0.1", 3005
+[2016-10-11 08:56:04.898] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" enter after start...
+[2016-10-11 08:56:04.922] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" finish start
+[2016-10-11 08:56:04.926] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" startup in 2571 ms
+[2016-10-11 08:56:40.561] [WARN] pomelo-rpc - [33m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-rpc/lib/rpc-client/mailboxes/ws-mailbox.js] [39mrpc request is timeout, id: 0, host: 127.0.0.1, port: 7051
+[2016-10-11 08:56:40.582] [ERROR] pomelo-rpc - [31m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-rpc/lib/rpc-client/mailboxes/ws-mailbox.js] [39mrpc callback timeout, remote server host: 127.0.0.1, port: 7051
+[2016-10-11 08:56:40.615] [ERROR] pomelo-rpc - [31m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-rpc/lib/rpc-client/mailstation.js] [39m[pomelo-rpc] fail to send message
+[2016-10-11 08:56:40.616] [ERROR] pomelo-rpc - [31m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-rpc/lib/rpc-client/failureProcess.js] [39mrpc failed with error, remote server: user-server-remote-1, msg: {"namespace":"user","serverType":"user","service":"userRemote","method":"getCenterBoxList","args":[false]}, error code: 5
+[2016-10-11 08:57:25.032] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39mapplication inited: "user-server-1"
+[2016-10-11 08:57:26.828] [INFO] pomelo-admin - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-admin/lib/consoleService.js] [39mtry to connect master: "user", "127.0.0.1", 3005
+[2016-10-11 08:57:27.063] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" enter after start...
+[2016-10-11 08:57:27.086] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" finish start
+[2016-10-11 08:57:27.096] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" startup in 1761 ms
+[2016-10-11 08:57:56.517] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39mapplication inited: "user-server-1"
+[2016-10-11 08:57:58.663] [INFO] pomelo-admin - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-admin/lib/consoleService.js] [39mtry to connect master: "user", "127.0.0.1", 3005
+[2016-10-11 08:57:58.938] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" enter after start...
+[2016-10-11 08:57:58.950] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" finish start
+[2016-10-11 08:57:58.966] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" startup in 2150 ms
+[2016-10-11 09:04:45.570] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39mapplication inited: "user-server-1"
+[2016-10-11 09:04:49.155] [INFO] pomelo-admin - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-admin/lib/consoleService.js] [39mtry to connect master: "user", "127.0.0.1", 3005
+[2016-10-11 09:04:49.559] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" enter after start...
+[2016-10-11 09:04:49.623] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" finish start
+[2016-10-11 09:04:49.625] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" startup in 3740 ms
+[2016-10-11 09:05:57.228] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39mapplication inited: "user-server-1"
+[2016-10-11 09:05:59.264] [INFO] pomelo-admin - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-admin/lib/consoleService.js] [39mtry to connect master: "user", "127.0.0.1", 3005
+[2016-10-11 09:05:59.502] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" enter after start...
+[2016-10-11 09:05:59.521] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" finish start
+[2016-10-11 09:05:59.526] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" startup in 2000 ms
+[2016-10-11 10:02:26.302] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39mapplication inited: "user-server-1"
+[2016-10-11 10:02:29.724] [INFO] pomelo-admin - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-admin/lib/consoleService.js] [39mtry to connect master: "user", "127.0.0.1", 3005
+[2016-10-11 10:02:30.084] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" enter after start...
+[2016-10-11 10:02:30.100] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" finish start
+[2016-10-11 10:02:30.108] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" startup in 3291 ms
+[2016-10-11 10:05:08.130] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39mapplication inited: "user-server-1"
+[2016-10-11 10:05:13.870] [INFO] pomelo-admin - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-admin/lib/consoleService.js] [39mtry to connect master: "user", "127.0.0.1", 3005
+[2016-10-11 10:05:14.563] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" enter after start...
+[2016-10-11 10:05:14.573] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" finish start
+[2016-10-11 10:05:14.586] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" startup in 5700 ms
+[2016-10-11 10:07:11.634] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39mapplication inited: "user-server-1"
+[2016-10-11 10:07:15.160] [INFO] pomelo-admin - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-admin/lib/consoleService.js] [39mtry to connect master: "user", "127.0.0.1", 3005
+[2016-10-11 10:07:15.639] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" enter after start...
+[2016-10-11 10:07:15.650] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" finish start
+[2016-10-11 10:07:15.659] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" startup in 3548 ms
+[2016-10-11 10:07:55.984] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39mapplication inited: "user-server-1"
+[2016-10-11 10:08:00.527] [INFO] pomelo-admin - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-admin/lib/consoleService.js] [39mtry to connect master: "user", "127.0.0.1", 3005
+[2016-10-11 10:08:01.083] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" enter after start...
+[2016-10-11 10:08:01.110] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" finish start
+[2016-10-11 10:08:01.131] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" startup in 4522 ms
+[2016-10-11 10:08:55.057] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39mapplication inited: "user-server-1"
+[2016-10-11 10:08:57.712] [INFO] pomelo-admin - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-admin/lib/consoleService.js] [39mtry to connect master: "user", "127.0.0.1", 3005
+[2016-10-11 10:08:58.114] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" enter after start...
+[2016-10-11 10:08:58.131] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" finish start
+[2016-10-11 10:08:58.140] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" startup in 2689 ms
+[2016-10-11 10:14:13.205] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39mapplication inited: "user-server-1"
+[2016-10-11 10:14:16.823] [INFO] pomelo-admin - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-admin/lib/consoleService.js] [39mtry to connect master: "user", "127.0.0.1", 3005
+[2016-10-11 10:14:18.117] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" enter after start...
+[2016-10-11 10:14:18.145] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" finish start
+[2016-10-11 10:14:18.189] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" startup in 4337 ms
+[2016-10-11 10:14:39.120] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39mapplication inited: "user-server-1"
+[2016-10-11 10:14:42.243] [INFO] pomelo-admin - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-admin/lib/consoleService.js] [39mtry to connect master: "user", "127.0.0.1", 3005
+[2016-10-11 10:14:42.648] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" enter after start...
+[2016-10-11 10:14:42.693] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" finish start
+[2016-10-11 10:14:42.728] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" startup in 3084 ms
+[2016-10-11 10:15:40.700] [ERROR] pomelo-rpc - [31m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-rpc/lib/rpc-client/mailboxes/ws-mailbox.js] [39mrpc socket is disconnect, reason: undefined
+[2016-10-11 10:15:43.125] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39mapplication inited: "user-server-1"
+[2016-10-11 10:15:46.222] [INFO] pomelo-admin - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-admin/lib/consoleService.js] [39mtry to connect master: "user", "127.0.0.1", 3005
+[2016-10-11 10:15:46.629] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" enter after start...
+[2016-10-11 10:15:46.676] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" finish start
+[2016-10-11 10:15:46.699] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" startup in 3194 ms
+[2016-10-11 10:16:45.295] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39mapplication inited: "user-server-1"
+[2016-10-11 10:16:48.324] [INFO] pomelo-admin - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-admin/lib/consoleService.js] [39mtry to connect master: "user", "127.0.0.1", 3005
+[2016-10-11 10:16:48.749] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" enter after start...
+[2016-10-11 10:16:48.764] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" finish start
+[2016-10-11 10:16:48.779] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" startup in 3129 ms
+[2016-10-11 10:17:40.569] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39mapplication inited: "user-server-1"
+[2016-10-11 10:17:43.455] [INFO] pomelo-admin - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-admin/lib/consoleService.js] [39mtry to connect master: "user", "127.0.0.1", 3005
+[2016-10-11 10:17:43.902] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" enter after start...
+[2016-10-11 10:17:43.914] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" finish start
+[2016-10-11 10:17:43.927] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" startup in 2997 ms
+[2016-10-11 10:19:22.263] [ERROR] pomelo-rpc - [31m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-rpc/lib/rpc-client/mailboxes/ws-mailbox.js] [39mrpc socket is disconnect, reason: undefined
+[2016-10-11 10:19:24.399] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39mapplication inited: "user-server-1"
+[2016-10-11 10:19:28.733] [INFO] pomelo-admin - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-admin/lib/consoleService.js] [39mtry to connect master: "user", "127.0.0.1", 3005
+[2016-10-11 10:19:29.489] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" enter after start...
+[2016-10-11 10:19:29.507] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" finish start
+[2016-10-11 10:19:29.513] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" startup in 4559 ms
+[2016-10-11 10:24:00.965] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39mapplication inited: "user-server-1"
+[2016-10-11 10:24:05.677] [INFO] pomelo-admin - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-admin/lib/consoleService.js] [39mtry to connect master: "user", "127.0.0.1", 3005
+[2016-10-11 10:24:06.338] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" enter after start...
+[2016-10-11 10:24:06.386] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" finish start
+[2016-10-11 10:24:06.405] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" startup in 4934 ms
+[2016-10-11 10:26:25.913] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39mapplication inited: "user-server-1"
+[2016-10-11 10:26:30.233] [INFO] pomelo-admin - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-admin/lib/consoleService.js] [39mtry to connect master: "user", "127.0.0.1", 3005
+[2016-10-11 10:26:30.816] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" enter after start...
+[2016-10-11 10:26:30.845] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" finish start
+[2016-10-11 10:26:30.850] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" startup in 3913 ms
+[2016-10-11 10:27:04.221] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39mapplication inited: "user-server-1"
+[2016-10-11 10:27:08.213] [INFO] pomelo-admin - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-admin/lib/consoleService.js] [39mtry to connect master: "user", "127.0.0.1", 3005
+[2016-10-11 10:27:08.714] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" enter after start...
+[2016-10-11 10:27:08.790] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" finish start
+[2016-10-11 10:27:08.795] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" startup in 4095 ms
+[2016-10-11 10:27:40.677] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39mapplication inited: "user-server-1"
+[2016-10-11 10:27:44.577] [INFO] pomelo-admin - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-admin/lib/consoleService.js] [39mtry to connect master: "user", "127.0.0.1", 3005
+[2016-10-11 10:27:45.053] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" enter after start...
+[2016-10-11 10:27:45.070] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" finish start
+[2016-10-11 10:27:45.109] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" startup in 3909 ms
+[2016-10-11 10:52:43.545] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39mapplication inited: "user-server-1"
+[2016-10-11 10:52:45.915] [INFO] pomelo-admin - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-admin/lib/consoleService.js] [39mtry to connect master: "user", "127.0.0.1", 3005
+[2016-10-11 10:52:46.343] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" enter after start...
+[2016-10-11 10:52:46.355] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" finish start
+[2016-10-11 10:52:46.364] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" startup in 2521 ms
+[2016-10-11 10:53:16.826] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39mapplication inited: "user-server-1"
+[2016-10-11 10:53:20.023] [INFO] pomelo-admin - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-admin/lib/consoleService.js] [39mtry to connect master: "user", "127.0.0.1", 3005
+[2016-10-11 10:53:20.479] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" enter after start...
+[2016-10-11 10:53:20.495] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" finish start
+[2016-10-11 10:53:20.531] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" startup in 3357 ms
+[2016-10-11 10:54:04.181] [WARN] pomelo-rpc - [33m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-rpc/lib/rpc-client/mailboxes/ws-mailbox.js] [39mrpc request is timeout, id: 0, host: 127.0.0.1, port: 7051
+[2016-10-11 10:54:04.188] [ERROR] pomelo-rpc - [31m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-rpc/lib/rpc-client/mailboxes/ws-mailbox.js] [39mrpc callback timeout, remote server host: 127.0.0.1, port: 7051
+[2016-10-11 10:54:04.205] [ERROR] pomelo-rpc - [31m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-rpc/lib/rpc-client/mailstation.js] [39m[pomelo-rpc] fail to send message
+[2016-10-11 10:54:04.206] [ERROR] pomelo-rpc - [31m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-rpc/lib/rpc-client/failureProcess.js] [39mrpc failed with error, remote server: user-server-remote-1, msg: {"namespace":"user","serverType":"user","service":"userRemote","method":"getCenterBoxList","args":[null,false]}, error code: 5
+[2016-10-11 10:54:04.923] [WARN] pomelo-rpc - [33m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-rpc/lib/rpc-client/mailboxes/ws-mailbox.js] [39mrpc request is timeout, id: 1, host: 127.0.0.1, port: 7051
+[2016-10-11 10:54:04.927] [ERROR] pomelo-rpc - [31m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-rpc/lib/rpc-client/mailboxes/ws-mailbox.js] [39mrpc callback timeout, remote server host: 127.0.0.1, port: 7051
+[2016-10-11 10:54:04.928] [ERROR] pomelo-rpc - [31m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-rpc/lib/rpc-client/mailstation.js] [39m[pomelo-rpc] fail to send message
+[2016-10-11 10:54:04.930] [ERROR] pomelo-rpc - [31m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-rpc/lib/rpc-client/failureProcess.js] [39mrpc failed with error, remote server: user-server-remote-1, msg: {"namespace":"user","serverType":"user","service":"userRemote","method":"getCenterBoxList","args":[null,false]}, error code: 5
+[2016-10-11 10:54:05.115] [WARN] pomelo-rpc - [33m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-rpc/lib/rpc-client/mailboxes/ws-mailbox.js] [39mrpc request is timeout, id: 2, host: 127.0.0.1, port: 7051
+[2016-10-11 10:54:05.117] [ERROR] pomelo-rpc - [31m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-rpc/lib/rpc-client/mailboxes/ws-mailbox.js] [39mrpc callback timeout, remote server host: 127.0.0.1, port: 7051
+[2016-10-11 10:54:05.118] [ERROR] pomelo-rpc - [31m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-rpc/lib/rpc-client/mailstation.js] [39m[pomelo-rpc] fail to send message
+[2016-10-11 10:54:05.119] [ERROR] pomelo-rpc - [31m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-rpc/lib/rpc-client/failureProcess.js] [39mrpc failed with error, remote server: user-server-remote-1, msg: {"namespace":"user","serverType":"user","service":"userRemote","method":"getCenterBoxList","args":[null,false]}, error code: 5
+[2016-10-11 11:00:23.106] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39mapplication inited: "user-server-1"
+[2016-10-11 11:00:26.585] [INFO] pomelo-admin - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-admin/lib/consoleService.js] [39mtry to connect master: "user", "127.0.0.1", 3005
+[2016-10-11 11:00:27.577] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" enter after start...
+[2016-10-11 11:00:27.586] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" finish start
+[2016-10-11 11:00:27.591] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" startup in 4068 ms
+[2016-10-11 11:02:56.406] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39mapplication inited: "user-server-1"
+[2016-10-11 11:02:59.344] [INFO] pomelo-admin - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-admin/lib/consoleService.js] [39mtry to connect master: "user", "127.0.0.1", 3005
+[2016-10-11 11:02:59.748] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" enter after start...
+[2016-10-11 11:02:59.755] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" finish start
+[2016-10-11 11:02:59.765] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" startup in 2934 ms
+[2016-10-11 11:09:43.505] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39mapplication inited: "user-server-1"
+[2016-10-11 11:09:47.100] [INFO] pomelo-admin - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-admin/lib/consoleService.js] [39mtry to connect master: "user", "127.0.0.1", 3005
+[2016-10-11 11:09:47.714] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" enter after start...
+[2016-10-11 11:09:47.719] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" finish start
+[2016-10-11 11:09:47.744] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39m"user-server-1" startup in 3902 ms
+[2016-10-11 11:10:26.652] [WARN] pomelo-rpc - [33m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-rpc/lib/rpc-client/mailboxes/ws-mailbox.js] [39mrpc request is timeout, id: 0, host: 127.0.0.1, port: 7050
+[2016-10-11 11:10:26.654] [ERROR] pomelo-rpc - [31m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-rpc/lib/rpc-client/mailboxes/ws-mailbox.js] [39mrpc callback timeout, remote server host: 127.0.0.1, port: 7050
+[2016-10-11 11:10:26.656] [ERROR] pomelo-rpc - [31m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-rpc/lib/rpc-client/mailstation.js] [39m[pomelo-rpc] fail to send message
+[2016-10-11 11:10:26.658] [ERROR] pomelo-rpc - [31m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-rpc/lib/rpc-client/failureProcess.js] [39mrpc failed with error, remote server: user-server-1, msg: {"namespace":"user","serverType":"user","service":"userRemote","method":"getCenterBoxList","args":["13600000001",false]}, error code: 5

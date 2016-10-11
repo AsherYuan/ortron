@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>
+        Pomelo
+    </title>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+    <meta http-equiv="content-style-type" content="text/css" />
+    <meta http-equiv="content-scripte-type" content="text/javascript" />
+    <meta name="author" content="netease" />
+    <meta name="version" content="1.0" />
+    <meta name="keywords" content="pomelo" />
+    <link type="text/css" rel="stylesheet" href="../css/base.css" />
+    <link type="text/css" rel="stylesheet" href="../layer/skin/layer.css" />
+    <script src="../js/lib/build/build.js" type="text/javascript"></script>
+    <script src="../jquery.js" type="text/javascript"></script>
+    <script src="../jquery.cookie.js" type="text/javascript"></script>
+    <script src="../layer/layer.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        require('boot');
+    </script>
+    <script type="text/javascript">
+        var pomelo = window.pomelo;
+        //  var host = "121.40.53.201";
+       var host = '127.0.0.1';
+        var port = "3015";
+        var uid = '';
+
+        function login() {
+            var mobile = $("#mobile").val();
+            var password = $("#password").val();
+
+            pomelo.init({host:host, port:port, log:true}, function() {
+                var route = 'user.entryHandler.login';
+                pomelo.request(route, {mobile: mobile, password: password}, function (data) {
+                    alert(JSON.stringify(data));
+                    if (data.errcode) {
+                        layer.msg(data.errmsg);
+                    } else {
+                        layer.msg('验证成功');
+                        $.cookie('token', data.token, {expires: 7});
+                        goToIndex();
+                    }
+                });
+            });
+        }
+
+        function goToIndex() {
+            window.location.href = '/test/main.html';
+        }
+
+        function registerx() {
+            window.location.href = '/test/register.html';
+        }
+
+        $(document).ready(function() {
+            pomelo.on('onMsg', function (data) {
+                if(data.flag == -1) {
+                    layer.msg(data.msg);
+                } else {
+                    layer.msg(data.msg);
+                    uid = data.uid;
+                    if(data.flag === -2) {
+                        $(".itemPage").fadeOut();
+                        $("#editUserInfoDiv").fadeIn();
+                    } else if(data.flag === -3) {
+                        $(".itemPage").fadeOut();
+                        $("#bindUserInfoDiv").fadeIn();
+                    } else if(data.flag === 1) {
+                        $(".itemPage").fadeOut();
+                        $("#mainDIv").fadeIn();
+                    }
+                }
+            });
+
+
+//            var cookieToken = $.cookie('token');
+//            if(cookieToken == null || cookieToken == undefined) {
+//
+//            } else {
+//                pomelo.init({host:host, port:port, log:true}, function() {
+//                    var route = 'user.entryHandler.auth';
+//                    pomelo.request(route, {token:cookieToken}, function(data) {
+//                        if(data === 1001) {
+//                            layer.msg('验证失败');
+//                        } else {
+//                            layer.msg('验证成功');
+//                            goToIndex();
+//                        }
+//                    });
+//                });
+//            }
+        });
+    </script>
+</head>
+<body>
+<div id="loginDiv" class="itemPage">
+    用户登录:
+    <hr/>
+    手机号:<input type='text' id='mobile'/>
+    <hr/>
+    密码:<input type='password' id='password' />
+    <hr/>
+    <input type='button' value='登录' onclick='login();' /><br/>
+    <input type='button' value='注册' onclick='registerx();' />
+</div>
+</body>
+</html>

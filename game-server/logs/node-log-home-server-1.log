@@ -1,0 +1,3 @@
+[2016-10-11 10:07:55.927] [INFO] pomelo - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo/lib/application.js] [39mapplication inited: "home-server-1"
+[2016-10-11 10:08:00.217] [INFO] pomelo-admin - [32m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-admin/lib/consoleService.js] [39mtry to connect master: "home", "127.0.0.1", 3005
+[2016-10-11 10:08:00.759] [ERROR] pomelo-admin - [31m[/home/asheryuan/git-repo/ortron/game-server/node_modules/pomelo-admin/lib/monitorAgent.js] [39mserver "home-server-1" "home" register master failed
