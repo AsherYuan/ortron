@@ -1,7 +1,8 @@
 var UserModel = require('../../../mongodb/models/UserModel');
 var CenterBoxModel = require('../../../mongodb/models/CenterBoxModel');
 var StringUtil = require('../../../util/StringUtil.js');
-var logger = require('../../../util/logger');
+var logger = require('pomelo-logger').getLogger('pomelo',  __filename);
+var Promise = require('bluebird');
 
 module.exports = function(app) {
     return new UserRemote(app);
@@ -13,36 +14,19 @@ var UserRemote = function(app) {
 };
 
 /**
- * 根据用户手机号码，查询用户信息
+ * 根据用户手机号码，查询单个用户的基本信息
  * @param  {[type]}   userMobile [description]
  * @param  {Function} cb         [description]
  * @return {[type]}              [description]
  */
-UserRemote.prototype.getUserInfo = function(userMobile, cb) {
-    UserModel.findOne({userMobile:userMobile}, function(err, user) {
+UserRemote.prototype.getUserInfoByMobile = function(userMobile, cb) {
+    console.log("查找用户信息: " + userMobile);
+    UserModel.findOne({mobile:userMobile}, function(err, user) {
         if(err) {
-            logger(err);
+            logger.error(err);
         } else {
+            console.log("查找到用户的信息: " + JSON.stringify(user));
             cb(user);
-        }
-    });
-}
-
-/**
- * 根据用户的手机号码，获取相关的主控信息
- * @param  {[type]}   userMobile [description]
- * @param  {[type]}   withFamily [description]
- * @param  {Function} cb         [description]
- * @return {[type]}              [description]
- */
-UserRemote.prototype.getCenterBoxList = function(userMobile, withFamily, cb) {
-    CenterBoxModel.find({userMobile:userMobile}, function(err, centerBoxs) {
-        logger(centerBoxs);
-        if(err) {
-            // TODO make logger happen
-            console.log(err);
-        } else {
-            cb(centerBoxs);
         }
     });
 };

@@ -31,7 +31,8 @@ var PayModel = require('../../../mongodb/estateModels/payModel');
 var RepairModel = require('../../../mongodb/estateModels/repairModel');
 
 var ResponseUtil = require('../../../util/ResponseUtil');
-
+var logger = require('pomelo-logger').getLogger('pomelo',  __filename);
+var async = require('async');
 
 module.exports = function (app) {
 	return new Handler(app);
@@ -42,6 +43,7 @@ var Handler = function (app) {
 	this.channelService = app.get('channelService');
 };
 
+/********************************************** 常规信息 begin ***************************************************/
 /**
  * 获取主控列表, 根据session中的userMobile,获取相关的主控列表
  */
@@ -49,11 +51,7 @@ Handler.prototype.getCenterBoxList = function (msg, session, next) {
 	var self = this;
 	var userMobile = session.uid;
 	self.app.rpc.user.userRemote.getCenterBoxList(session, userMobile, false, function (centerBoxs) {
-		if(!!centerBoxs) {
-			next(null, Code.OK);
-		} else {
-			next(null, centerBoxs);
-		}
+		next(null, ResponseUtil.resp(Code.OK, centerBoxs));
 	});
 };
 
@@ -66,135 +64,56 @@ Handler.prototype.getCenterBoxList = function (msg, session, next) {
  */
 Handler.prototype.getUserInfo = function (msg, session, next) {
 	var self = this;
-	var uid = session.uid;
-	UserModel.findOne({mobile: uid}, function (err, userDoc) {
-		if (err) {
-			console.log(err);
-			next(null, Code.DATABASE);
-		} else {
-			if (!!userDoc) {
-				var ids = [];
-				ids.push(uid);
-				if (!!userDoc.parentUser) {
-					ids.push(userDoc.parentUser);
+	var userMobile = session.uid;
+
+	async.waterfall([
+		/* 获取用户基本数据 */
+		function(cb) {
+			self.app.rpc.user.userRemote.getUserInfoByMobile(session, userMobile, function(user) {
+				if(!!user) {
+					cb(null, user);
+				} else {
+					next(null, next(null, ResponseUtil.resp(Code.ACCOUNT.USER_NOT_EXIST)));
 				}
-
-				HomeModel.find({userMobile: {$in: ids}}, function (err, homeDocs) {
-					if (err) {
-						console.log(err);
-						next(null, Code.DATABASE);
-					} else {
-						HomeWifiModel.find({usermobile: {$in: ids}}, function (err, homeWifiDocs) {
-							if (err) {
-								console.log(err);
-								next(null, Code.DATABASE);
-							} else {
-								CenterBoxModel.find({userMobile: {$in: ids}}, function (err, centerBoxDocs) {
-									if (err) {
-										console.log(err);
-										next(null, Code.DATABASE);
-									} else {
-										userDoc.homeInfo = homeDocs;
-										userDoc.centerBox = centerBoxDocs;
-										userDoc.homeWifi = homeWifiDocs;
-
-										var ret = Code.OK;
-										ret.data = userDoc;
-										next(null, ret);
-									}
-								});
-							}
-						});
-					}
-				});
-			} else {
-				next(null, Code.ACCOUNT.USER_NOT_EXIST);
-			}
+			});
+		},
+		/* 关联用户的家庭信息 */
+		function(user, cb) {
+			self.app.rpc.home.homeRemote.getHomeInfoByMobile(session, userMobile, function(homes) {
+				user.homeInfo = homes;
+				next(null, ResponseUtil.resp(Code.OK, user));
+			});
 		}
-	});
-};
-
-// /**
-//  * 获取家庭列表
-//  */
-// Handler.prototype.getHomeList = function (msg, session, next) {
-// 	var self = this;
-// 	var userMobile = session.uid;
-// 	console.log("userMobile:" + userMobile);
-// 	self.app.rpc.home.homeRemote.getHomeList(session, userMobile, function (homes) {
-// 		console.log("获得所有的homes:" + JSON.stringify(homes));
-// 		if(!!homes) {
-// 			next(null, ResponseUtil.resp({}, homes));
-// 		} else {
-// 			next(null, Code.OK);
-// 		}
-// 	});
-// };
-
-/**
- * 用户更新
- * @param msg
- * @param session
- * @param next
- */
-Handler.prototype.updateUserInfo = function (msg, session, next) {
-	var self = this;
-	var name = msg.name;
-	var mobile = session.uid;
-	if (StringUtil.isBlank(name)) {
-		next(null, Code.ACCOUNT.NAME_IS_BLANK);
-	} else {
-		self.app.rpc.user.userRemote.updateUserInfo(session, mobile, name, function (msg) {
-			if (msg === 0) {
-				next(null, Code.OK);
-			} else {
-				next(null, Code.DATABASE);
-			}
-		});
-	}
+	]);
 };
 
 /**
- * 获取用户的家庭和楼层列表
+ * 获取用户家庭的标题
+ * @param  {[type]}   msg     [description]
+ * @param  {[type]}   session [description]
+ * @param  {Function} next    [description]
+ * @return {[type]}           [description]
  */
 Handler.prototype.getUserHomeTitle = function (msg, session, next) {
-	var uid = session.uid;
-	UserModel.findOne({mobile: uid}, function (err, userDoc) {
-		if (err) {
-			console.log(err);
-			next(null, Code.DATABASE);
-		} else {
-			if (!!userDoc) {
-				var ids = [];
-				ids.push(uid);
-				if (!!userDoc.parentUser) {
-					ids.push(userDoc.parentUser);
+	var self = this;
+	var userMobile = session.uid;
+	async.waterfall([
+		function(cb) {
+			self.app.rpc.home.homeRemote.getHomeListByMobile(session, userMobile, function(homes) {
+				cb(null, homes);
+			});
+		}, function(homes, cb) {
+			var homeArray = [];
+			for(var i=0;i<homes.length;i++) {
+				var home = homes[i];
+				var newArray = getHomeTitle(home);
+				for (var z = 0; z < newArray.length; z++) {
+					homeArray.push(newArray[z]);
 				}
-				HomeModel.find({userMobile: {$in: ids}}, function (err, homeDocs) {
-					if (err) {
-						console.log(err);
-						next(null, Code.DATABASE);
-					} else {
-						if (!!homeDocs && homeDocs.length > 0) {
-							var homeArray = [];
-							for (var x = 0; x < homeDocs.length; x++) {
-								var home = homeDocs[x];
-								var newArray = getHomeTitle(home);
-								for (var z = 0; z < newArray.length; z++) {
-									homeArray.push(newArray[z]);
-								}
-							}
-							var ret = Code.OK;
-							ret.data = homeArray;
-							next(null, ret);
-						}
-					}
-				});
-			} else {
-				next(null, Code.ACCOUNT.USER_NOT_EXIST);
 			}
+			next(null, ResponseUtil.resp(Code.OK, homeArray));
 		}
-	});
+	]);
 };
 
 var getHomeTitle = function (home) {
@@ -229,7 +148,6 @@ var getHomeTitle = function (home) {
 
 var renderLayersTitle = function (title, layer) {
 	title += " " + layer.name;
-	console.log(title + "___" + layer.name);
 	return title;
 };
 
@@ -242,31 +160,29 @@ var renderLayersTitle = function (title, layer) {
 Handler.prototype.queryTerminal = function (msg, session, next) {
 	var centerBoxSerialno = msg.centerBoxSerialno;
 	var params = {centerBoxSerialno: centerBoxSerialno};
-	console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>params:" + JSON.stringify(params));
-	console.log(centerBoxSerialno);
 	var code = msg.code;
-	console.log("code>>>" + code);
-	console.log(!!code);
 	if (!!code) {
 		params = {
 			centerBoxSerialno: centerBoxSerialno,
 			code: code
 		};
 		TerminalModel.find(params, function (err, docs) {
-			var ret = Code.OK;
-			ret.data = docs;
-			next(null, ret);
+			next(null, ResponseUtil.resp(Code.OK, docs));
 		});
 	} else {
-		console.log("---------------------------------xxxxxxx-------------------" + JSON.stringify(params));
 		TerminalModel.find(params, function (err, docs) {
-			var ret = Code.OK;
-			ret.data = docs;
-			next(null, ret);
+			next(null, ResponseUtil.resp(Code.OK, docs));
 		});
 	}
 };
 
+/**
+ * 获取某楼层下的所有设备列表
+ * @param  {[type]}   msg     [description]
+ * @param  {[type]}   session [description]
+ * @param  {Function} next    [description]
+ * @return {[type]}           [description]
+ */
 Handler.prototype.queryDevices = function (msg, session, next) {
 	var homeId = msg.homeId;
 	var layerName = msg.layerName;
@@ -391,6 +307,32 @@ Handler.prototype.getDeviceListByGridId = function (msg, session, next) {
 			next(null, ret);
 		}
 	});
+};
+
+
+/********************************************** 常规信息 end ***************************************************/
+
+/**
+ * 用户更新
+ * @param msg
+ * @param session
+ * @param next
+ */
+Handler.prototype.updateUserInfo = function (msg, session, next) {
+	var self = this;
+	var name = msg.name;
+	var mobile = session.uid;
+	if (StringUtil.isBlank(name)) {
+		next(null, Code.ACCOUNT.NAME_IS_BLANK);
+	} else {
+		self.app.rpc.user.userRemote.updateUserInfo(session, mobile, name, function (msg) {
+			if (msg === 0) {
+				next(null, Code.OK);
+			} else {
+				next(null, Code.DATABASE);
+			}
+		});
+	}
 };
 
 

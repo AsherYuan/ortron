@@ -1,7 +1,6 @@
 var ResponseUtil = module.exports;
 
 ResponseUtil.resp = function(code, data) {
-    console.log(!!code.code);
     if(!!code.code) {
         var ret_code = code.code;
         var ret_codetxt = code.codetxt;
