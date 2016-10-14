@@ -12,7 +12,13 @@ var Error_cn = {
         MOBILE_FORMAT_ERROR : '手机号码格式不正确'
     },
     STRUCTURE : {
-        USER_NO_HOME : '用户尚未设置家庭信息'
+        USER_NO_HOME : '用户尚未设置家庭信息',
+        HOME_EXIST : '该家庭已经存在',
+        HOME_NOT_EXIST : '该家庭不存在',
+        CENTERBOX_SERIAL_NO_EXIST : '该主控已经存在',
+        CENTERBOX_OCCUPIED : '该主控已经被其他楼层占用了',
+        CENTERBOX_INITED : '该主控已经初始化过了',
+        CENTERBOX_NOT_EXIST : '该主控不存在'
     },
     REMOTECONTROLL : {
         USEREQUIPMENT_NOT_EXIST : '用户设备不存在'

@@ -7,7 +7,7 @@ var CenterBoxSchema = new mongoose.Schema({
     code : String,
     hasConnected:{type:Boolean, default:false},
     regTime : { type:Date, default:Date.now },
-    lastLoginTime : { type:Date, default:Date.now },
+    lastLoginTime : Date,// 为空认为是没有初始化过
     temperatureSwitch : String,
     humiditySwitch : String,
     qualitySwitch : String,

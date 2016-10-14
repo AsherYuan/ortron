@@ -12,6 +12,7 @@ var HomeLayerSchema = new mongoose.Schema({
 var HomeSchema = new mongoose.Schema({
   floorId : String,
   floorName : String,
+  homeNumber : String,
   addTime : {type:Date, default:Date.now },
   userMobile : String,
   layers:[HomeLayerSchema]

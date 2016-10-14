@@ -33,7 +33,13 @@ module.exports = {
     },
 
     STRUCTURE: {
-        USER_NO_HOME: {'code': 3001, 'codetxt': Lang.error.STRUCTURE.USER_NO_HOME}
+        USER_NO_HOME: {'code': 3001, 'codetxt': Lang.error.STRUCTURE.USER_NO_HOME},
+        HOME_EXIST: {'code':3002, 'codetxt': Lang.error.STRUCTURE.HOME_EXIST},
+        HOME_NOT_EXIST: {'code':3003, 'codetxt': Lang.error.STRUCTURE.HOME_NOT_EXIST},
+        CENTERBOX_SERIAL_NO_EXIST : {'code':3004, 'codetxt':Lang.error.STRUCTURE.CENTERBOX_SERIAL_NO_EXIST},
+        CENTERBOX_OCCUPIED : {'code':3005, 'codetxt':Lang.error.STRUCTURE.CENTERBOX_OCCUPIED},
+        CENTERBOX_INITED : {'code':3006, 'codetxt':Lang.error.STRUCTURE.CENTERBOX_INITED},
+        CENTERBOX_NOT_EXIST : {'code':3007, 'codetxt':Lang.error.STRUCTURE.CENTERBOX_NOT_EXIST}
     },
 
     REMOTECONTROLL : {

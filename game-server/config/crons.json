@@ -1,8 +1,10 @@
 {
   "development": {
-
+    "connector": [
+    ]
   },
   "production": {
-    
+    "connector": [
+    ]
   }
 }

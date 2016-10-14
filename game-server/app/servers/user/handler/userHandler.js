@@ -158,20 +158,16 @@ var renderLayersTitle = function (title, layer) {
  * @param next
  */
 Handler.prototype.queryTerminal = function (msg, session, next) {
+	var self = this;
 	var centerBoxSerialno = msg.centerBoxSerialno;
-	var params = {centerBoxSerialno: centerBoxSerialno};
 	var code = msg.code;
 	if (!!code) {
-		params = {
-			centerBoxSerialno: centerBoxSerialno,
-			code: code
-		};
-		TerminalModel.find(params, function (err, docs) {
-			next(null, ResponseUtil.resp(Code.OK, docs));
+		self.app.rpc.home.homeRemote.getTerminaListByCenterBoxAndCode(session, centerBoxSerialno, code, function(terminals) {
+			next(null, ResponseUtil.resp(Code.OK, terminals));
 		});
 	} else {
-		TerminalModel.find(params, function (err, docs) {
-			next(null, ResponseUtil.resp(Code.OK, docs));
+		self.app.rpc.home.homeRemote.getTerminaListByCenterBox(session, centerBoxSerialno, function(terminals) {
+			next(null, ResponseUtil.resp(Code.OK, terminals));
 		});
 	}
 };
@@ -184,263 +180,42 @@ Handler.prototype.queryTerminal = function (msg, session, next) {
  * @return {[type]}           [description]
  */
 Handler.prototype.queryDevices = function (msg, session, next) {
+	var self = this;
 	var homeId = msg.homeId;
 	var layerName = msg.layerName;
 	var userMobile = session.uid;
-	if (!!homeId && !!layerName) {
-		UserEquipmentModel.find({
-			home_id: homeId,
-			layerName: layerName
-		}).populate('homeGridId').exec(function (err, docs) {
-			if (err) {
-				console.log(err);
-				next(null, Code.DATABASE);
-			} else {
-				var ret = Code.OK;
-				ret.data = docs;
-				next(null, ret);
-			}
-		});
-	} else {
-		UserModel.findOne({mobile: userMobile}, function (err, user) {
-			if (err) {
-				console.log(err);
-				next(null, Code.DATABASE);
-			} else {
-				var ids = {};
-				ids.push(userMobile);
-				if (!!user.parentUser) {
-					ids.push(user.parentUser);
-				}
-				HomeModel.find({userMobile: {$in: ids}}, function (err, homes) {
-					if (!!homes) {
-						var homeIds = [];
-						for (var i = 0; i < homes.length; i++) {
-							homeIds.push(homes[i]._id);
-						}
-
-						UserEquipmentModel.find({home_id: {$in: homeIds}}).populate('homeGridId').exec(function (err, docs) {
-							if (err) {
-								console.log(err);
-								next(null, Code.DATABASE);
-							} else {
-								var ret = Code.OK;
-								ret.data = docs;
-								next(null, ret);
-							}
-						});
-					} else {
-						next(null, Code.DATABASE);
-					}
-				});
-			}
-		});
-	}
+	self.app.rpc.home.homeRemote.queryDevices(session, homeId, layerName, userMobile, function(devices) {
+		next(null, ResponseUtil.resp(Code.OK, devices));
+	});
 };
 
-Handler.prototype.getDeviceList = function (msg, session, next) {
-	var homeId = msg.homeId;
-	var layerName = msg.layerName;
-	var userMobile = session.uid;
-
-	if (!!homeId && !!layerName) {
-		UserEquipmentModel.find({
-			home_id: homeId,
-			layerName: layerName
-		}).populate('homeGridId').exec(function (err, docs) {
-			if (err) {
-				console.log(err);
-				next(null, Code.DATABASE);
-			} else {
-				var ret = Code.OK;
-				ret.data = docs;
-				next(null, ret);
-			}
-		});
-	} else {
-		UserModel.findOne({mobile: userMobile}, function (err, user) {
-			if (err) {
-				console.log(err);
-				next(null, Code.DATABASE);
-			} else {
-				var ids = [];
-				ids.push(userMobile);
-				if (!!user.parentUser) {
-					ids.push(user.parentUser);
-				}
-
-				HomeModel.find({userMobile: {$in: ids}}, function (err, homes) {
-					if (!!homes) {
-						var homeIds = [];
-						for (var i = 0; i < homes.length; i++) {
-							homeIds.push(homes[i]._id);
-						}
-
-						UserEquipmentModel.find({home_id: {$in: homeIds}}).populate('homeGridId').exec(function (err, docs) {
-							if (err) {
-								console.log(err);
-								next(null, Code.DATABASE);
-							} else {
-								var ret = Code.OK;
-								ret.data = docs;
-								next(null, ret);
-							}
-						});
-					} else {
-						next(null, Code.DATABASE);
-					}
-				});
-			}
-		});
-	}
-};
-
+/**
+ * 根据某房间获取设备列表
+ * @param  {[type]}   msg     [description]
+ * @param  {[type]}   session [description]
+ * @param  {Function} next    [description]
+ * @return {[type]}           [description]
+ */
 Handler.prototype.getDeviceListByGridId = function (msg, session, next) {
-	var homeGridId = msg.homeGridId;
-	UserEquipmentModel.find({homeGridId: homeGridId}).populate('homeGridId').exec(function (err, docs) {
-		if (err) {
-			console.log(err);
-			next(null, Code.DATABASE);
-		} else {
-			var ret = Code.OK;
-			ret.data = docs;
-			next(null, ret);
-		}
-	});
-};
-
-
-/********************************************** 常规信息 end ***************************************************/
-
-/**
- * 用户更新
- * @param msg
- * @param session
- * @param next
- */
-Handler.prototype.updateUserInfo = function (msg, session, next) {
 	var self = this;
-	var name = msg.name;
-	var mobile = session.uid;
-	if (StringUtil.isBlank(name)) {
-		next(null, Code.ACCOUNT.NAME_IS_BLANK);
-	} else {
-		self.app.rpc.user.userRemote.updateUserInfo(session, mobile, name, function (msg) {
-			if (msg === 0) {
-				next(null, Code.OK);
-			} else {
-				next(null, Code.DATABASE);
-			}
-		});
-	}
-};
-
-
-Handler.prototype.bindCenterBoxToLayer = function (msg, session, next) {
-	var homeId = msg.homeId;
-	var centerBoxSerialno = msg.centerBoxSerialno;
-	var layerName = msg.layerName;
-
-	HomeModel.update({
-		_id: homeId,
-		"layers.name": layerName
-	}, {$set: {"layers.$.centerBoxSerialno": centerBoxSerialno}}, function (err, docs) {
-		if (err) {
-			console.log(err);
-			next(null, Code.DATABASE);
-		} else {
-			next(null, Code.OK);
-		}
-	});
-};
-
-Handler.prototype.bindTerminalToHomeGrid = function (msg, session, next) {
 	var homeGridId = msg.homeGridId;
-	var terminalId = msg.terminalId;
-
-	HomeGridModel.update({_id: homeGridId}, {$set: {"terminalId": terminalId, "terminal":terminalId}}, function (err, docs) {
-		if (err) {
-			console.log(err);
-			next(null, Code.DATABASE);
-		} else {
-			TerminalModel.update({_id: terminalId}, {$set: {"homeGridId": homeGridId}}, function (err, docs) {
-				if (err) {
-					console.log(err);
-					next(null, Code.DATABASE);
-				} else {
-					next(null, Code.OK);
-				}
-			});
-		}
-	});
-
-
-};
-
-
-/**
- * 初始化链接中控
- */
-Handler.prototype.simulateConnCenterBox = function (msg, session, next) {
-	var uid = session.uid;
-	var ssid = msg.ssid;
-	var passwd = msg.passwd;
-	var serialno = msg.serialno;
-
-	var CenterBoxEntity = new CenterBoxModel({userMobile: uid, ssid: ssid, passwd: passwd, serialno: serialno});
-	CenterBoxEntity.save(function (err) {
-		if (err) {
-			console.log(err);
-			next(null, Code.DATABASE);
-		} else {
-			next(null, Code.OK);
-		}
+	self.app.rpc.home.homeRemote.queryDevices(session, homeGridId, function(devices) {
+		next(null, ResponseUtil.resp(Code.OK, devices));
 	});
 };
 
 /**
- * 初始化链接终端
- */
-Handler.prototype.simulateConnTerminal = function (msg, session, next) {
-	var self = this;
-	var uid = session.uid;
-	var ssid = msg.ssid;
-	var passwd = msg.passwd;
-	var centerBoxSerialno = msg.centerBoxSerialno;
-	var entity = new TerminalModel({userMobile:uid, ssid:ssid, passwd:passwd, centerBoxSerialno:centerBoxSerialno});
-	entity.save(function(err) {
-	  if(err) console.log(err);
-	  else {
-	    next(null);
-	  }
-  });
-};
-
-/**
- 获取用户的家庭信息
+ * 获取用户的家庭信息
+ * @param  {[type]}   msg     [description]
+ * @param  {[type]}   session [description]
+ * @param  {Function} next    [description]
+ * @return {[type]}           [description]
  */
 Handler.prototype.getHomeInfo = function (msg, session, next) {
-	var uid = session.uid;
-	UserModel.findOne({mobile: uid}, function (err, user) {
-		if (err) {
-			console.log(err);
-			next(null, Code.DATABASE);
-		} else {
-			var ids = [];
-			ids.push(userMobile);
-			if (!!user.parentUser) {
-				ids.push(user.parentUser);
-			}
-
-			HomeModel.find({userMobile: {$in: ids}}, function (err, docs) {
-				if (err) console.log(err);
-				else {
-					var ret = Code.OK;
-					ret.data = docs;
-					next(null, ret);
-				}
-			});
-		}
+	var self = this;
+	var userMobile = session.uid;
+	self.app.rpc.home.homeRemote.getHomeListByMobile(session, userMobile, function(homes) {
+		next(null, ResponseUtil.resp(Code.OK, homes));
 	});
 };
 
@@ -452,24 +227,53 @@ Handler.prototype.getHomeInfo = function (msg, session, next) {
  */
 Handler.prototype.getHomeGridList = function (msg, session, next) {
 	var self = this;
-	var uid = session.uid;
+	var userMobile = session.uid;
 	var homeId = msg.homeId;
 	var layerName = msg.layerName;
-	var centerBoxSerialno = msg.centerBoxSerialno;
-	HomeGridModel.find({homeId: homeId, layerName: layerName}).populate('terminal').exec(function (err, grids) {
+	self.app.rpc.home.homeRemote.getHomeGridList(session, homeId, layerName, function(grids) {
+		next(null, ResponseUtil.resp(Code.OK, grids));
+	});
+};
+
+/**
+ * 获取房间详情
+ * @param msg
+ * @param session
+ * @param next
+ */
+Handler.prototype.getGridDetail = function (msg, session, next) {
+	var self = this;
+	var gridId = msg.gridId;
+	console.log("gridId:" + gridId);
+	HomeGridModel.findOne({_id: gridId}, function (err, grid) {
 		if (err) {
 			console.log(err);
-			next(null, Code.DATABASE);
+			next(null, ResponseUtil.resp(Code.DATABASE));
 		} else {
-			var ret = Code.OK;
-			ret.data = grids;
-			ret.centerBoxSerialno = centerBoxSerialno;
-			ret.homeId = homeId;
-			ret.layerName = layerName;
-			next(null, ret);
+			next(null, ResponseUtil.resp(Code.OK, grid));
 		}
 	});
 };
+
+/********************************************** 常规信息 end ***************************************************/
+
+
+/********************************************** 初始化 begin ***************************************************/
+
+/**
+ * 获取区域列表，城市定死为嘉兴
+ * @param  {[type]}   msg     [description]
+ * @param  {[type]}   session [description]
+ * @param  {Function} next    [description]
+ * @return {[type]}           [description]
+ */
+Handler.prototype.getAreaList = function(msg, session, next) {
+	var areaList = [
+		"中心城区","南湖新区","秀洲新区","城西区","城北区","西南区","国际商务区","城南区","湘家荡度假区","五县"
+	];
+	next(null, ResponseUtil.resp(Code.OK, areaList));
+};
+
 
 /**
  * 根据区域获取小区列表
@@ -480,14 +284,14 @@ Handler.prototype.getHomeGridList = function (msg, session, next) {
 Handler.prototype.getFloorList = function (msg, session, next) {
 	var self = this;
 	var area = msg.area;
-	FloorModel.find({area: area}, function (err, docs) {
-		if (err) {
-			console.log(err);
-			next(null, Code.DATABASE);
+	var page = msg.page;
+	var pageSize = msg.pageSize;
+
+	self.app.rpc.home.homeRemote.getFloorList(session, area, page, pageSize, function(err, floors) {
+		if(err) {
+			next(null, ResponseUtil.resp(Code.DATABASE));
 		} else {
-			var ret = Code.OK;
-			ret.data = docs;
-			next(null, ret);
+			next(null, ResponseUtil.resp(Code.OK, floors));
 		}
 	});
 };
@@ -501,161 +305,375 @@ Handler.prototype.getFloorList = function (msg, session, next) {
 Handler.prototype.getFloorModelList = function (msg, session, next) {
 	var self = this;
 	var floorUrl = msg.floorUrl;
-	FloorModelModel.find({floorUrl: floorUrl}, function (err, docs) {
-		if (err) {
-			console.log(err);
-			next(null, Code.DATABASE);
+	var page = msg.page;
+	var pageSize = msg.pageSize;
+
+	self.app.rpc.home.homeRemote.getFloorModelList(session, floorUrl, page, pageSize, function(err, floorModels) {
+		if(err) {
+			next(null, ResponseUtil.resp(Code.DATABASE));
 		} else {
-			var ret = Code.OK;
-			ret.data = docs;
-			next(null, ret);
+			next(null, ResponseUtil.resp(Code.OK, floorModels));
 		}
 	});
 };
 
 /**
- * 获取房间详情
- * @param msg
- * @param session
- * @param next
+ * 初次设定用户的家庭
+ * @param {[type]}   msg     [description]
+ * @param {[type]}   session [description]
+ * @param {Function} next    [description]
  */
-Handler.prototype.getGridDetail = function (msg, session, next) {
+Handler.prototype.addHome = function(msg, session, next) {
 	var self = this;
-	var gridId = msg.gridId;
-	HomeGridModel.findOne({_id: gridId}, function (err, doc) {
-		if (err) {
-			console.log(err);
-			next(null, Code.DATABASE);
-		} else {
-			var ret = Code.OK;
-			ret.data = docs;
-			next(null, ret);
-		}
-	});
-};
-
-/**
- * 更新房间名称
- * @param msg
- * @param session
- * @param next
- */
-Handler.prototype.setGridName = function (msg, session, next) {
-	var self = this;
-	var gridId = msg.gridId;
-	var name = msg.name;
-	HomeGridModel.update({_id: gridId}, {$set: {name: name}}, function (err, docs) {
-		if (err) {
-			console.log(err);
-			next(null, Code.DATABASE);
-		} else {
-			var ret = Code.OK;
-			ret.data = docs;
-			next(null, ret);
-		}
-	});
-};
-
-/**
- * 绑定用户的户型
- * @param msg
- * @param session
- * @param next
- */
-Handler.prototype.confirmModel = function (msg, session, next) {
-	var self = this;
+	var userMobile = session.uid;
 	var room = msg.room;
 	var hall = msg.hall;
 	var toilet = msg.toilet;
 	var kitchen = msg.kitchen;
-	var name = msg.name;
+	var name = msg.layerName;
 	var floorId = msg.floorId;
 	var floorName = msg.floorName;
-	var userMobile = session.uid;
-	HomeModel.find({userMobile: userMobile}, function (err, docs) {
-		if (err) {
-			console.log(err);
-			next(null, Code.DATABASE);
-		} else {
-			// 新建
-			if (docs.length === 0) {
-				var homeEntity = new HomeModel({
-					floorId: floorId,
-					floorName: floorName,
-					userMobile: userMobile,
-					layers: [{
-						name: name,
-						room: room,
-						hall: hall,
-						toilet: toilet,
-						kitchen: kitchen
-					}]
-				});
-				homeEntity.save(function (err, data) {
-					if (err) console.log(err);
-					else {
-						resolveHomeGrids(data._id, name, room, hall, toilet, kitchen);
-						next(null, Code.OK);
+	var homeNumber = msg.homeNumber;
+	if(!name) {
+		next(null, ResponseUtil.resp(Code.PARAMERROR));
+	} else {
+		async.waterfall([
+			function(callback){
+				self.app.rpc.home.homeRemote.getHomeByAddress(session, floorId, homeNumber, function(home) {
+					if(!!home)  {
+						next(null, ResponseUtil.resp(Code.STRUCTURE.HOME_EXIST));
+					} else {
+						callback(null, floorId, floorName, userMobile, homeNumber, name, room, hall, toilet, kitchen);
 					}
 				});
-				// 增加家庭信息
-			} else {
-				var floorExist = false;
-				for (var i = 0; i < docs.length; i++) {
-					var home = docs[i];
-					if (home.floorId == floorId) {
-						var newLayer = {
-							name: name,
-							room: room,
-							hall: hall,
-							toilet: toilet,
-							kitchen: kitchen
-						};
-						floorExist = true;
-						HomeModel.update({_id: home._id}, {'$push': {layers: newLayer}}, function (error, docs) {
-							resolveHomeGrids(docs._id, name, room, hall, toilet, kitchen);
-							next(null, Code.OK);
-						});
-					}
-				}
+			},
+			function(floorId, floorName, userMobile, homeNumber, name, room, hall, toilet, kitchen, callback){
+				self.app.rpc.home.homeRemote.insertHome(session, floorId, floorName, userMobile, homeNumber, name, room, hall, toilet, kitchen, function(home) {
+					callback(null, home);
+				});
+			},
+			function(home) {
+				self.app.rpc.home.homeRemote.autoRanderHomeGrid(session, home, function() {
+					next(null, ResponseUtil.resp(Code.OK));
+				});
+			}
+		]);
+	}
+};
 
-				if(floorExist === false) {
-					var homeEntity_1 = new HomeModel({
-						floorId: floorId,
-						floorName: floorName,
-						userMobile: userMobile,
-						layers: [{
-							name: name,
-							room: room,
-							hall: hall,
-							toilet: toilet,
-							kitchen: kitchen
-						}]
-					});
-					homeEntity_1.save(function (err, data) {
-						if (err) console.log(err);
-						else {
-							resolveHomeGrids(data._id, name, room, hall, toilet, kitchen);
-							next(null, Code.OK);
-						}
-					});
+/**
+ * 添加楼层
+ * @param {[type]}   msg     [description]
+ * @param {[type]}   session [description]
+ * @param {Function} next    [description]
+ */
+Handler.prototype.addLayer = function (msg, session, next) {
+	var self = this;
+	var userMobile = session.uid;
+	var room = msg.room;
+	var hall = msg.hall;
+	var toilet = msg.toilet;
+	var kitchen = msg.kitchen;
+	var name = msg.layerName;
+	var homeId = msg.homeId;
+
+	async.waterfall([
+		function(callback){
+			self.app.rpc.home.homeRemote.getHomeById(session, homeId, function(home) {
+				if(!!home)  {
+					callback(null, home);
+				} else {
+					next(null, ResponseUtil.resp(Code.STRUCTURE.HOME_NOT_EXIST));
+				}
+			});
+		},
+		function(home, callback){
+			var layerExist = false;
+			if(!!home && !!home.layers) {
+				for(var i=0; i<home.layers.length; i++) {
+					if(home.layers[i].name === name) {
+						layerExist = true;
+					}
 				}
 			}
-			var ret = Code.OK;
-			ret.data = docs;
-			next(null, ret);
+
+			if(!layerExist) {
+				self.app.rpc.home.homeRemote.insertLayer(session, homeId, name, room, hall, toilet, kitchen, function(home) {
+					if(!!home) {
+						next(null, ResponseUtil.resp(Code.OK));
+					} else {
+						next(null, ResponseUtil.resp(Code.DATABASE));
+					}
+				});
+			}
+		}
+	]);
+};
+
+/**
+ * 修改房间信息
+ * @param msg
+ * @param session
+ * @param next
+ */
+Handler.prototype.updateGrid = function (msg, session, next) {
+	var self = this;
+	var gridId = msg.gridId;
+	var name = msg.name;
+	var gridType = msg.gridType;
+	self.app.rpc.home.homeRemote.updateGrid(session, gridId, gridType, name, function(err) {
+		if(err) {
+			next(null, ResponseUtil.resp(Code.DATABASE));
+		} else {
+			next(null, ResponseUtil.resp(Code.OK));
 		}
 	});
 };
 
 /**
+ * 绑定用户家庭的路由器信息
+ * @param msg
+ * @param session
+ * @param next
+ */
+Handler.prototype.setHomeWifi = function (msg, session, next) {
+	var self = this;
+
+	var homeId = msg.homeId;
+	var layerName = msg.layerName;
+	var ssid = msg.ssid;
+	var passwd = msg.passwd;
+	var userMobile = session.uid;
+
+	self.app.rpc.home.homeRemote.setHomeWifi(session, userMobile, ssid, passwd, homeId, layerName, function(err, wifi) {
+		if(err) {
+			next(null, ResponseUtil.resp(Code.DATABASE));
+		} else {
+			console.log(wifi);
+			next(null, ResponseUtil.resp(Code.OK, wifi));
+		}
+	});
+};
+
+/**
+ * 设定honeWfi为已侧是通过
+ * @param  {[type]}   msg     [description]
+ * @param  {[type]}   session [description]
+ * @param  {Function} next    [description]
+ * @return {[type]}           [description]
+ */
+Handler.prototype.checkHomeWifi = function(msg, session, next) {
+	var self = this;
+	var homeId = msg.homeId;
+	var layerName = msg.layerName;
+
+	self.app.rpc.home.homeRemote.checkHomeWifi(sessio, homeId, layerName, function(err) {
+		if(err) {
+			next(null, ResponseUtil.resp(Code.DATABASE));
+		} else {
+			next(null, ResponseUtil.resp(Code.OK));
+		}
+	});
+};
+
+
+/**
+ * 用户添加主控
+ * @param {[type]}   msg     [description]
+ * @param {[type]}   session [description]
+ * @param {Function} next    [description]
+ */
+Handler.prototype.addCenterBox = function (msg, session, next) {
+	var self = this;
+
+	var userMobile = session.uid;
+	var ssid = msg.ssid;
+	var passwd = msg.passwd;
+	var serialno = msg.serialno;
+
+	var homeId = msg.homeId;
+	var layerName = msg.layerName;
+
+	async.waterfall([
+		function(callback) {
+			self.app.rpc.home.homeRemote.centerBoxSerailnoExist(serialno, function(err, flag) {
+				if(err) {
+					callback(err);
+				} else {
+					callback(null, flag);
+				}
+			});
+		},
+		function(flag, callback) {
+			// 已经存在了
+			if(flag) {
+				self.app.rpc.home.homeRemote.getCenterBoxBySerailno(session, serialno, function(err, centerBox) {
+					if(centerBox.homeId === homeId && centerBox.layerName === layerName) {
+						next(null, ResponseUtil.resp(Code.OK));
+					} else {
+						next(null, ResponseUtil.resp(Code.STRUCTURE.CENTERBOX_OCCUPIED));
+					}
+				});
+			// 不存在
+			} else {
+				self.app.rpc.home.homeRemote.addCenterBox(session, userMobile, ssid, passwd, serialno, function(err) {
+					if(err) {
+						callback(err);
+					} else {
+						// 如果上传了homeId和layerName，则绑定到具体房间, 否则的话等后期再绑定
+						// 具体看0x1000主控上线推送
+						if(!!homeId && !!layerName) {
+							next(null, ResponseUtil.resp(Code.OK));
+						} else {
+							callback(null, serailno, homeId, layerName);
+						}
+					}
+				});
+			}
+		},
+		function(serialno, homeId, layerName) {
+			self.app.rpc.home.homeRemote.bindCenterBoxToLayer(session, homeId, layerName, serialno, function(err) {
+				if(err) {
+					callback(err);
+				} else {
+					next(null, ResponseUtil.resp(Code.OK));
+				}
+			});
+		}
+	], function(err, result) {
+		next(null, ResponseUtil.resp(Code.DATABASE));
+	});
+};
+
+/**
+ * 将主控绑定都某一家庭的某一层
+ * @param  {[type]}   msg     [description]
+ * @param  {[type]}   session [description]
+ * @param  {Function} next    [description]
+ * @return {[type]}           [description]
+ */
+Handler.prototype.bindCenterBoxToLayer = function (msg, session, next) {
+	var self = this;
+
+	var homeId = msg.homeId;
+	var serialno = msg.serialno;
+	var layerName = msg.layerName;
+
+	async.waterfall([
+		function(callback) {
+			self.app.rpc.home.homeRemote.getCenterBoxBySerailno(session, serialno, function(err, centerBox) {
+				if(!!centerBox && !!centerBox.homeId && !!centerBox.layerName) {
+					next(null, ResponseUtil.resp(Code.STRUCTURE.CENTERBOX_OCCUPIED));
+				} else {
+					callback(null, homeId, layerName, serilno);
+				}
+			});
+		},
+		function(serialno, homeId, layerName) {
+			self.app.rpc.home.homeRemote.bindCenterBoxToLayer(session, homeId, layerName, serialno, function(err) {
+				if(err) {
+					next(null, ResponseUtil.resp(Code.DATABASE));
+				} else {
+					next(null, ResponseUtil.resp(Code.OK));
+				}
+			});
+		}
+	], function(err, result) {
+		next(null, ResponseUtil.resp(Code.DATABASE));
+	});
+};
+
+/**
+ * 添加终端
+ * @param  {[type]}   msg     [description]
+ * @param  {[type]}   session [description]
+ * @param  {Function} next    [description]
+ * @return {[type]}           [description]
+ */
+Handler.prototype.addTerminal = function (msg, session, next) {
+	var self = this;
+	var userMobile = session.uid;
+	var ssid = msg.ssid;
+	var passwd = msg.passwd;
+	var centerBoxSerialno = msg.centerBoxSerialno;
+	var homeGridId = msg.homeGridId;
+
+	async.waterfall([
+		function(callback) {
+			self.app.rpc.home.homeRemote.centerBoxSerailnoExist(session, centerBoxSerialno, function(err, flag) {
+				if(err) {
+					callback(err);
+				} else {
+					callback(null, flag);
+				}
+			});
+		},
+		function(flag, callback) {
+			// 主控存在
+			if(flag) {
+				self.app.rpc.home.homeRemote.addTerminal(session, userMobile, ssid, passwd, centerBoxSerialno, function(err, terminal) {
+					if(err) {
+						callback(err);
+					} else {
+						callback(null, terminal._id, homeGridId);
+					}
+				});
+			// 不存在主控
+			} else {
+				next(null, ResponseUtil.resp(Code.STRUCTURE.CENTERBOX_NOT_EXIST));
+			}
+		},
+		function(terminalId, homeGridId, callback) {
+			if(!!homeGridId && !!terminalId) {
+				self.app.rpc.home.homeRemote.bindTerminalToHomeGrid(session, homeGridId, terminalId, function(err) {
+					if(err) {
+						callback(err);
+					} else {
+						next(null, ResponseUtil.resp(Code.OK));
+					}
+				});
+			} else {
+				next(null, ResponseUtil.resp(Code.OK));
+			}
+		}
+	], function(err, result) {
+		next(null, ResponseUtil.resp(Code.DATABASE));
+	});
+};
+
+/**
+ * 终端绑定到房间
+ * @param  {[type]}   msg     [description]
+ * @param  {[type]}   session [description]
+ * @param  {Function} next    [description]
+ * @return {[type]}           [description]
+ */
+Handler.prototype.bindTerminalToHomeGrid = function (msg, session, next) {
+	var self = this;
+
+	var homeGridId = msg.homeGridId;
+	var terminalId = msg.terminalId;
+
+	self.app.rpc.home.homeRemote.bindTerminalToHomeGrid(session, homeGridId, terminalId, function(err) {
+		if(err) {
+			next(null, ResponseUtil.resp(Code.DATABASE));
+		} else {
+			next(null, ResponseUtil.resp(Code.OK));
+		}
+	});
+};
+
+
+/**
  * 获取设备类型列表
+ * @param  {[type]}   msg     [description]
+ * @param  {[type]}   session [description]
+ * @param  {Function} next    [description]
+ * @return {[type]}           [description]
  */
 Handler.prototype.getDeviceTypes = function (msg, session, next) {
 	var types = [{name: '空调'}, {name: '电视'}, {name: '电灯'}, {name: '窗帘'}];
-	var ret = Code.OK;
-	ret.data = types;
-	next(null, ret);
+	next(null, ResponseUtil.resp(Code.OK, types));
 };
 
 /**
@@ -665,15 +683,13 @@ Handler.prototype.getDeviceTypes = function (msg, session, next) {
  * @param next
  */
 Handler.prototype.getDeviceBrands = function (msg, session, next) {
+	var self = this;
 	var type = msg.type;
-	RDeviceModel.distinct("brand", {devType: type}, function (err, docs) {
-		if (err) {
-			console.log(err);
-			next(null, Code.DATABASE);
+	self.app.rpc.home.homeRemote.getDeviceBrands(session, type, function(err, brands) {
+		if(err) {
+			next(null, ResponseUtil.resp(Code.DATABASE));
 		} else {
-			var ret = Code.OK;
-			ret.data = docs;
-			next(null, ret);
+			next(null, ResponseUtil.resp(Code.OK, brands));
 		}
 	});
 };
@@ -685,21 +701,26 @@ Handler.prototype.getDeviceBrands = function (msg, session, next) {
  * @param next
  */
 Handler.prototype.getDeviceModels = function (msg, session, next) {
+	var self = this;
 	var brand = msg.brand;
-	var type = msg.type;
-	RDeviceModel.distinct("typeName", {brand: brand}, function (err, docs) {
-		if (err) {
-			console.log(err);
-			next(null, Code.DATABASE);
+	self.app.rpc.home.homeRemote.getDeviceModels(session, brand, type, function(err, deviceModels) {
+		if(err) {
+			next(null, ResponseUtil.resp(Code.DATABASE));
 		} else {
-			var ret = Code.OK;
-			ret.data = docs;
-			ret.type = type;
-			next(null, ret);
+			next(null, ResponseUtil.resp(Code.OK, deviceModels));
 		}
 	});
 };
 
+// TODO 缺少一个测试红外线的接口
+
+/**
+ * 新增电器
+ * @param  {[type]}   msg     [description]
+ * @param  {[type]}   session [description]
+ * @param  {Function} next    [description]
+ * @return {[type]}           [description]
+ */
 Handler.prototype.saveNewDevice = function (msg, session, next) {
 	var terminalId = msg.terminalId;
 	var homeId = msg.homeId;
@@ -771,28 +792,32 @@ Handler.prototype.deleteDevice = function (msg, session, next) {
 	}
 };
 
+// TODO 所有相关的删除方法
+
+/********************************************** 初始化 end ***************************************************/
+
+
 /**
- * 绑定用户家庭的路由器信息
+ * 用户更新
  * @param msg
  * @param session
  * @param next
  */
-Handler.prototype.bindUserHomeWifi = function (msg, session, next) {
-	var type = msg.type;
-	var ssid = msg.ssid;
-	var passwd = msg.passwd;
-	var uid = session.uid;
-
-	var homeWifiEntity = new HomeWifiModel({ssid: ssid, passwd: passwd, usermobile: uid});
-	homeWifiEntity.save(function (err) {
-		if (err) {
-			console.log(err);
-			next(null, Code.DATABASE);
-		}
-		else {
-			next(null, Code.OK);
-		}
-	});
+Handler.prototype.updateUserInfo = function (msg, session, next) {
+	var self = this;
+	var name = msg.name;
+	var mobile = session.uid;
+	if (StringUtil.isBlank(name)) {
+		next(null, Code.ACCOUNT.NAME_IS_BLANK);
+	} else {
+		self.app.rpc.user.userRemote.updateUserInfo(session, mobile, name, function (msg) {
+			if (msg === 0) {
+				next(null, Code.OK);
+			} else {
+				next(null, Code.DATABASE);
+			}
+		});
+	}
 };
 
 
@@ -916,7 +941,9 @@ Handler.prototype.userSaySomething = function (msg, session, next) {
 								};
 								words = escape(escape(words));
 								console.log("java request begin:::" + Moment(new Date()).format('HH:mm:ss'));
-								var host = "http://122.225.88.66:8180/SpringMongod/main/ao?str=" + words + "&user_id=" + user_id + "&home_id=" + homeId;
+								// var host = "http://122.225.88.66:8180/SpringMongod/main/ao?str=" + words + "&user_id=" + user_id + "&home_id=" + homeId;
+								// var host = "http://abc.buiud.bid:8080/main/ao?str=" + words + "&user_id=" + user_id + "&home_id=" + homeId;
+								var host = "http://abc.buiud.bid:8080/main/ao?str=" + words + "&user_id=" + user_id + "&home_id=" + homeId + "&loccode=analyze_findueq&runtimeinfo_id=57fdc4390cf2c6ce2f2d47a0";
 								request(host, function (error, response, body) {
 									console.log("java request end  :::" + Moment(new Date()).format('HH:mm:ss'));
 									console.log("返回JAVA端数据：：" + body);
@@ -932,6 +959,12 @@ Handler.prototype.userSaySomething = function (msg, session, next) {
 											data.isDelayOrder = result.delayOrder;
 											data.isCanLearn = result.iscanlearn;
 											data.from = result.status;
+											if(!!result.loccode && result.loccode === 'analyze_findueq') {
+												data.loccode = result.loccode;
+												data.runtimeinfo_id = result.runtimeinfo_id;
+												data.optionList = result.xxxxxx
+											}
+
 
 											if (!!result.orderAndInfrared && result.orderAndInfrared.length > 0) {
 												// 判断房间是否相同 如果相同，则直接执行，如果不同，对用户进行询问

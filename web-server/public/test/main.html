@@ -41,7 +41,7 @@
 
         $(document).ready(function() {
             pomelo.on('onMsg', function (data) {
-                layer.alert(JSON.stringify(data));
+                // layer.alert(JSON.stringify(data));
                 // 中控上线
                 if(data.command === '1000') {
                     $("#isOnlineSpan" + data.serialno).attr('style', 'color:green;');
