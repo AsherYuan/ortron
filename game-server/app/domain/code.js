@@ -29,7 +29,8 @@ module.exports = {
         PASSWORD_NOT_CORRECT: {'code': 2004, 'codetxt': Lang.error.ACCOUNT.PASSWORD_NOT_CORRECT},
         NAME_IS_BLANK: {'code': 2004, 'codetxt': Lang.error.ACCOUNT.NAME_IS_BLANK},
         USERNAME_IS_BLANK: {'code': 2005, 'codetxt': Lang.error.ACCOUNT.USERNAME_IS_BLANK},
-        MOBILE_FORMAT_ERROR: {'code': 2006, 'codetxt': Lang.error.ACCOUNT.MOBILE_FORMAT_ERROR}
+        MOBILE_FORMAT_ERROR: {'code': 2006, 'codetxt': Lang.error.ACCOUNT.MOBILE_FORMAT_ERROR},
+        VERIFY_ERROR: {'code': 2007, 'codetxt': Lang.error.ACCOUNT.VERIFY_ERROR}
     },
 
     STRUCTURE: {

@@ -9,7 +9,8 @@ var Error_cn = {
         USER_NOT_EXIST : '用户不存在',
         PASSWORD_NOT_CORRECT : '密码不正确',
         USERNAME_IS_BLANK : '用户名不能为空',
-        MOBILE_FORMAT_ERROR : '手机号码格式不正确'
+        MOBILE_FORMAT_ERROR : '手机号码格式不正确',
+        VERIFY_ERROR : '验证码不正确'
     },
     STRUCTURE : {
         USER_NO_HOME : '用户尚未设置家庭信息',

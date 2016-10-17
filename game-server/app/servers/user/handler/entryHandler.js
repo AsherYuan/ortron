@@ -10,6 +10,9 @@ var HomeModel = require('../../../mongodb/models/HomeModel');
 var HomeWifiModel = require('../../../mongodb/models/HomeWifiModel');
 var CenterBoxModel = require('../../../mongodb/models/CenterBoxModel');
 var async = require('async');
+var UserVerifyModel = require("../../../mongodb/models/UserVerifyModel");
+var ResponseUtil = require("../../../util/ResponseUtil");
+
 
 module.exports = function (app) {
     return new Handler(app);
@@ -28,8 +31,6 @@ var Handler = function (app) {
  * @return {Void}
  */
 Handler.prototype.auth = function (msg, session, next) {
-    console.log("----------------auth--------------------" + JSON.stringify(msg));
-    console.log("----------------auth--------------------" + session);
     var self = this;
     var token = msg.token;
 
@@ -39,24 +40,18 @@ Handler.prototype.auth = function (msg, session, next) {
         function(cb) {
             //根据token获取uid
             var res = tokenManager.parse(token, authConfig.authSecret);
-            console.log('第一步:' + JSON.stringify(res));
             if (!res) {
                 next(null, Code.ENTRY.FA_TOKEN_INVALID);
-                return;
             } else {
                 uid = res.uid;
-                console.log('第二步:');
                 UserModel.find({'mobile':uid}, function(err, userDoc) {
                     if(err) {
                         console.log(err);
-                        next(null, Code.ENTRY.FA_USER_NOT_EXIST);
-                        return;
+                        next(null, ResponseUtil.resp(Code.DATABASE));
                     } else {
                         if (userDoc.length === 0) {
-                            next(null, Code.ACCOUNT.USER_NOT_EXIST);
-                            return;
+                            next(null, ResponseUtil.resp(Code.ACCOUNT.USER_NOT_EXIST));
                         } else {
-                            console.log('第二步:' + JSON.stringify(userDoc));
                             userGlobal = userDoc;
                             cb();
                         }
@@ -64,46 +59,18 @@ Handler.prototype.auth = function (msg, session, next) {
                 });
             }
         }, function(cb) {
-            console.log("第三步");
             self.app.get('sessionService').kick(uid, cb);
         }, function(cb) {
-            console.log("第四步");
             session.bind(uid, cb);
         }, function(cb) {
             session.set('serverId', 'user-server-1');
             session.on('closed', onUserLeave.bind(null, self.app));
-            console.log("第五步");
             session.pushAll(cb);
-        }, function(cb) {
-            console.log("第六步");
-            // TODO 与userHandler中的getUserInfo合并到UserRemote中取去
-            HomeModel.find({userMobile: uid}, function (err, homeDocs) {
-                if (err) {
-                    console.log(err);
-                    next(null, Code.DATABASE);
-                } else {
-                    HomeWifiModel.find({usermobile: uid}, function (err, homeWifiDocs) {
-                        if (err) {
-                            console.log(err);
-                            next(null, Code.DATABASE);
-                        } else {
-                            CenterBoxModel.find({userMobile: uid}, function (err, centerBoxDocs) {
-                                if (err) {
-                                    console.log(err);
-                                    next(null, Code.DATABASE);
-                                } else {
-                                    userGlobal.homeInfo = homeDocs;
-                                    userGlobal.centerBox = centerBoxDocs;
-                                    userGlobal.homeWifi = homeWifiDocs;
-
-                                    var ret = Code.OK;
-                                    ret.data = userGlobal;
-                                    next(null, ret);
-                                }
-                            });
-                        }
-                    });
-                }
+        }, function() {
+            self.app.rpc.home.homeRemote.getHomeInfoByMobile(session, uid, function(homes) {
+                user.homeInfo = homes
+                var token = tokenManager.create(uid, authConfig.authSecret);
+                next(null, {code:200, codetxt:'操作成功', data:user, token:token})
             });
         }
     ], function(err) {
@@ -115,103 +82,67 @@ Handler.prototype.auth = function (msg, session, next) {
     });
 };
 
+/**
+ * 登录功能，后期需要APP端配合，改增为只做登录验证，和token获取，实际初始化session这些功能放入auth接口
+ * TODO
+ * @param msg
+ * @param session
+ * @param next
+ */
 Handler.prototype.login = function (msg, session, next) {
-    console.log("----------------login--------------------" + msg.mobile);
-    console.log("----------------login--------------------" + msg.password);
     var self = this;
-    var mobile = msg.mobile;
-    var password = msg.password;
     var sessionService = self.app.get('sessionService');
     var channelService = self.app.get('channelService');
+
+    var mobile = msg.mobile;
+    var password = msg.password;
     var uid = mobile;
     var userGlobal;
+
     if (StringUtil.isBlank(mobile)) {
-        next(null, Code.ACCOUNT.MOBILE_IS_BLANK);
-        return;
+        next(null, ResponseUtil.resp(Code.ACCOUNT.MOBILE_IS_BLANK));
     } else if (StringUtil.isBlank(password)) {
-        next(null, Code.ACCOUNT.PASSWORD_IS_BLANK);
-        return;
+        next(null, ResponseUtil.resp(Code.ACCOUNT.PASSWORD_IS_BLANK));
     } else {
         async.waterfall([
             function (cb) {
-                console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" + mobile);
-                UserModel.find({'mobile': mobile}, function (err, userDoc) {
+                UserModel.findOne({'mobile': mobile}, function (err, userDoc) {
                     if (err) {
                         console.log(err);
-                        console.log("Code::Code.ENTRY.FA_USER_NOT_EXIST");
-                        next(null, Code.ENTRY.FA_USER_NOT_EXIST);
-                        return;
+                        next(null, ResponseUtil.resp(Code.DATABASE));
                     } else {
-                        console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-                        console.log(JSON.stringify(userDoc));
                         if (userDoc.length === 0) {
-                            console.log("Code::Code.ACCOUNT.USER_NOT_EXIST");
                             next(null, Code.ACCOUNT.USER_NOT_EXIST);
-                            return;
                         } else {
-                            console.log('a第二步:' + JSON.stringify(userDoc));
                             userGlobal = userDoc;
                             cb();
                         }
                     }
                 });
             }, function (cb) {
-                console.log("a第三步");
-                console.log(self.app.get('sessionService').getByUid(uid));
                 self.app.get('sessionService').kick(uid, cb);
             }, function (cb) {
-                console.log("a第四步");
                 session.bind(uid, cb);
             }, function (cb) {
                 session.set('serverId', 'user-server-1');
                 session.on('closed', onUserLeave.bind(null, self.app));
-                console.log("a第五步");
                 session.pushAll(cb);
-            }, function (cb) {
-                console.log("a第六步");
-                // TODO 与userHandler中的getUserInfo合并到UserRemote中取去
-                HomeModel.find({userMobile: uid}, function (err, homeDocs) {
-                    if (err) {
-                        console.log(err);
-                        next(null, Code.DATABASE);
-                    } else {
-                        HomeWifiModel.find({usermobile: uid}, function (err, homeWifiDocs) {
-                            if (err) {
-                                console.log(err);
-                                next(null, Code.DATABASE);
-                            } else {
-                                CenterBoxModel.find({userMobile: uid}, function (err, centerBoxDocs) {
-                                    if (err) {
-                                        console.log(err);
-                                        next(null, Code.DATABASE);
-                                    } else {
-                                        userGlobal.homeInfo = homeDocs;
-                                        userGlobal.centerBox = centerBoxDocs;
-                                        userGlobal.homeWifi = homeWifiDocs;
-
-                                        var ret = Code.OK;
-                                        ret.data = userGlobal;
-                                        var token = tokenManager.create(uid, authConfig.authSecret);
-                                        ret.token = token;
-                                        console.log("json:" + JSON.stringify(ret));
-                                        next(null, ret);
-                                    }
-                                });
-                            }
-                        });
-                    }
+            }, function () {
+                self.app.rpc.home.homeRemote.getHomeInfoByMobile(session, uid, function(homes) {
+                    user.homeInfo = homes
+                    var token = tokenManager.create(uid, authConfig.authSecret);
+                    next(null, {code:200, codetxt:'操作成功', data:user, token:token})
                 });
             }
         ], function (err) {
             if (err) {
-                console.log("auth错误::");
+                console.log("login错误::");
                 next(null, Code.FAIL);
                 return null;
             }
         });
     }
 };
-
 
 Handler.prototype.estateLogin = function (msg, session, next) {
     var self = this;
@@ -264,38 +195,6 @@ Handler.prototype.manageLogin = function (msg, session, next) {
         next(null, ret);
     } else {
         next(null, Code.ACCOUNT.PASSWORD_NOT_CORRECT);
-    }
-};
-
-/**
- * 注册用户信息
- *
- * @param  {Object}   msg     request message-
- * @param  {Object}   session current session object
- * @param  {Function} next    next step callback
- * @return {Void}
- */
-Handler.prototype.register = function (msg, session, next) {
-    var self = this;
-    var mobile = msg.mobile;
-    var username = msg.username;
-    var password = msg.password;
-
-    if (StringUtil.isBlank(mobile)) {
-        next(null, Code.ACCOUNT.MOBILE_IS_BLANK);
-    } else if (StringUtil.isBlank(username)) {
-        next(null, Code.ACCOUNT.USERNAME_IS_BLANK);
-    } else if (StringUtil.isBlank(password)) {
-        next(null, Code.ACCOUNT.PASSWORD_IS_BLANK);
-    } else if (!RegexUtil.checkPhone(mobile)) {
-        next(null, Code.ACCOUNT.MOBILE_IS_BLANK);
-    } else {
-        // 用户注册
-        self.app.rpc.user.userRemote.register(session, mobile, username, password, function (msg) {
-            var ret = Code.OK;
-            ret.msg = msg;
-            next(null, ret);
-        });
     }
 };
 
