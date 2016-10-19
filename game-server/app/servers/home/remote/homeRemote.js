@@ -268,13 +268,25 @@ HomeRemote.prototype.getHomeInfoByMobile = function(userMobile, cb) {
     var renderHomeLayerInfo = function(box) {
         return new Promise(function (resolve, reject) {
             HomeWifiModel.find({homeId:box.homeId, layerName:box.layerName}, function(err, homeWifis) {
-                if(err) {reject(err);}
-                box.homeWifi = homeWifis;
-                CenterBoxModel.findOne({serialno:new Object(box.serialno)}, function(err, centerBox) {
-                    if(err) {reject(err);}
-                    box.centerBox = centerBox;
-                    resolve(box);
-                });
+                if(err) {
+                    logger.error(err);
+                    reject(err);
+                } else {
+                    box.homeWifi = homeWifis;
+                    if(!!box.serialno) {
+                        CenterBoxModel.findOne({serialno:new Object(box.serialno)}, function(err, centerBox) {
+                            if(err) {
+                                logger.error(err);
+                                reject(err);
+                            } else {
+                                box.centerBox = centerBox;
+                                resolve(box);
+                            }
+                        });
+                    } else {
+                        resolve(box);
+                    }
+                }
             });
         });
     };
@@ -296,7 +308,7 @@ HomeRemote.prototype.getHomeInfoByMobile = function(userMobile, cb) {
             }
         }
 
-        Promise.all(toRandering).then(function(infos) {
+        Promise.all(toRandering).then(function(homes) {
             cb(homes);
         });
     }).catch(function(err) {

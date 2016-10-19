@@ -68,9 +68,9 @@ Handler.prototype.auth = function (msg, session, next) {
             session.pushAll(cb);
         }, function() {
             self.app.rpc.home.homeRemote.getHomeInfoByMobile(session, uid, function(homes) {
-                user.homeInfo = homes;
+                userGlobal.homeInfo = homes;
                 var token = tokenManager.create(uid, authConfig.authSecret);
-                next(null, {code:200, codetxt:'操作成功', data:user, token:token});
+                next(null, {code:200, codetxt:'操作成功', data:userGlobal, token:token});
             });
         }
     ], function(err) {

@@ -23,12 +23,12 @@ var NoticeModel = require('../../../mongodb/models/NoticeModel');
 var Moment = require('moment');
 var WeatherModel = require('../../../mongodb/grabmodel/WeatherModel');
 var TSensorDataModel = require('../../../mongodb/models/TSensorDataModel');
-var AccountModel = require('../../../mongodb/estateModels/accountModel');
-var ComplaintModel = require('../../../mongodb/estateModels/complaintModel');
-var CourierModel = require('../../../mongodb/estateModels/courierModel');
-var HouseKeepingModel = require('../../../mongodb/estateModels/housekeepingModel');
-var PayModel = require('../../../mongodb/estateModels/payModel');
-var RepairModel = require('../../../mongodb/estateModels/repairModel');
+var AccountModel = require('../../../mongodb/estateModels/AccountModel');
+var ComplaintModel = require('../../../mongodb/estateModels/ComplaintModel');
+var CourierModel = require('../../../mongodb/estateModels/CourierModel');
+var HouseKeepingModel = require('../../../mongodb/estateModels/HousekeepingModel');
+var PayModel = require('../../../mongodb/estateModels/PayModel');
+var RepairModel = require('../../../mongodb/estateModels/RepairModel');
 
 var ResponseUtil = require('../../../util/ResponseUtil');
 var logger = require('pomelo-logger').getLogger('pomelo',  __filename);
@@ -179,7 +179,7 @@ Handler.prototype.queryTerminal = function (msg, session, next) {
  * @param  {Function} next    [description]
  * @return {[type]}           [description]
  */
-Handler.prototype.queryDevices = function (msg, session, next) {
+Handler.prototype.getDeviceList = function (msg, session, next) {
 	var self = this;
 	var homeId = msg.homeId;
 	var layerName = msg.layerName;
@@ -335,41 +335,40 @@ Handler.prototype.addHome = function(msg, session, next) {
 	var homeNumber = msg.homeNumber;
 	if(!name) {
 		name = "一楼";
-	} else {
-		async.waterfall([
-			function(callback) {
-				self.app.rpc.home.homeRemote.getFloorByFloorId(session, floorId, function(err, floor) {
-					if(err) {
-						next(null, ReponseUtil.resp(Code.DATABASE));
-					} else {
-						callback(null, floor.name);
-					}
-				});
-			},
-			function(floorName, callback){
-				if(!homeNumber || homeNumber === "") {
-					homeNumber = floorName;
-				}
-				self.app.rpc.home.homeRemote.getHomeByAddress(session, floorId, homeNumber, function(home) {
-					if(!!home)  {
-						next(null, ResponseUtil.resp(Code.STRUCTURE.HOME_EXIST));
-					} else {
-						callback(null, floorId, floorName, userMobile, homeNumber, name, room, hall, toilet, kitchen);
-					}
-				});
-			},
-			function(floorId, floorName, userMobile, homeNumber, name, room, hall, toilet, kitchen, callback){
-				self.app.rpc.home.homeRemote.insertHome(session, floorId, floorName, userMobile, homeNumber, name, room, hall, toilet, kitchen, function(home) {
-					callback(null, home);
-				});
-			},
-			function(home) {
-				self.app.rpc.home.homeRemote.autoRanderHomeGrid(session, home, function() {
-					next(null, ResponseUtil.resp(Code.OK));
-				});
-			}
-		]);
 	}
+	async.waterfall([
+		function(callback) {
+			self.app.rpc.home.homeRemote.getFloorByFloorId(session, floorId, function(err, floor) {
+				if(err) {
+					next(null, ReponseUtil.resp(Code.DATABASE));
+				} else {
+					callback(null, floor.name);
+				}
+			});
+		},
+		function(floorName, callback){
+			if(!homeNumber || homeNumber === "") {
+				homeNumber = floorName;
+			}
+			self.app.rpc.home.homeRemote.getHomeByAddress(session, floorId, homeNumber, function(home) {
+				if(!!home)  {
+					next(null, ResponseUtil.resp(Code.STRUCTURE.HOME_EXIST));
+				} else {
+					callback(null, floorId, floorName, userMobile, homeNumber, name, room, hall, toilet, kitchen);
+				}
+			});
+		},
+		function(floorId, floorName, userMobile, homeNumber, name, room, hall, toilet, kitchen, callback){
+			self.app.rpc.home.homeRemote.insertHome(session, floorId, floorName, userMobile, homeNumber, name, room, hall, toilet, kitchen, function(home) {
+				callback(null, home);
+			});
+		},
+		function(home) {
+			self.app.rpc.home.homeRemote.autoRanderHomeGrid(session, home, function() {
+				next(null, ResponseUtil.resp(Code.OK));
+			});
+		}
+	]);
 };
 
 /**
@@ -399,6 +398,31 @@ Handler.prototype.addLayer = function (msg, session, next) {
 			});
 		},
 		function(home, callback){
+
+			if(!name) {
+				var layerCount = home.layers.length;
+				layerCount = layerCount + 1;
+				if(layerCount == 1) {
+					name = '一楼';
+				} else if(layerCount == 2) {
+					name = '二楼';
+				} else if(layerCount == 3) {
+					name = '三楼';
+				} else if(layerCount == 4) {
+					name = '四楼';
+				} else if(layerCount == 5) {
+					name = '五楼';
+				} else if(layerCount == 6) {
+					name = '六楼';
+				} else if(layerCount == 7) {
+					name = '七楼';
+				} else if(layerCount == 8) {
+					name = '八楼';
+				} else if(layerCount == 9) {
+					name = '九楼';
+				}
+			}
+
 			var layerExist = false;
 			if(!!home && !!home.layers) {
 				for(var i=0; i<home.layers.length; i++) {
@@ -416,6 +440,8 @@ Handler.prototype.addLayer = function (msg, session, next) {
 						next(null, ResponseUtil.resp(Code.DATABASE));
 					}
 				});
+			} else {
+				next(null, ResponseUtil.resp(Code.STRUCTURE.HOME_EXIST))
 			}
 		}
 	]);
@@ -507,25 +533,25 @@ Handler.prototype.addCenterBox = function (msg, session, next) {
 
 	async.waterfall([
 		function(callback) {
-			self.app.rpc.home.homeRemote.centerBoxSerailnoExist(serialno, function(err, flag) {
+			self.app.rpc.home.homeRemote.centerBoxSerailnoExist(session, serialno, function(err, flag) {
 				if(err) {
 					callback(err);
 				} else {
-					callback(null, flag);
+					callback(null, flag, serialno);
 				}
 			});
 		},
-		function(flag, callback) {
+		function(flag, serialno, callback) {
 			// 已经存在了
 			if(flag) {
 				self.app.rpc.home.homeRemote.getCenterBoxBySerailno(session, serialno, function(err, centerBox) {
-					if(centerBox.homeId === homeId && centerBox.layerName === layerName) {
+					if(!!centerBox.homeId && centerBox.homeId === homeId && !!centerBox.layerName && centerBox.layerName === layerName) {
 						next(null, ResponseUtil.resp(Code.OK));
 					} else {
 						next(null, ResponseUtil.resp(Code.STRUCTURE.CENTERBOX_OCCUPIED));
 					}
 				});
-			// 不存在
+				// 不存在
 			} else {
 				self.app.rpc.home.homeRemote.addCenterBox(session, userMobile, ssid, passwd, serialno, function(err) {
 					if(err) {
@@ -629,7 +655,7 @@ Handler.prototype.addTerminal = function (msg, session, next) {
 						callback(null, terminal._id, homeGridId);
 					}
 				});
-			// 不存在主控
+				// 不存在主控
 			} else {
 				next(null, ResponseUtil.resp(Code.STRUCTURE.CENTERBOX_NOT_EXIST));
 			}
@@ -1301,7 +1327,7 @@ Handler.prototype.remoteControll = function (msg, session, next) {
 				var chg_voice = msg.chg_voice === undefined ? '' : msg.chg_voice;
 				var chg_chn = msg.chg_chn === undefined ? '' : msg.chg_chn;
 				var inst = msg.inst === undefined ? '' : msg.inst;
-console.log("参数devictType: " + deviceType);
+				console.log("参数devictType: " + deviceType);
 				model = escape(escape(model));
 				deviceType = escape(escape(deviceType));
 				status = escape(escape(status));
