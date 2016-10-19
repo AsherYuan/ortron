@@ -24,6 +24,12 @@ var Error_cn = {
     REMOTECONTROLL : {
         USEREQUIPMENT_NOT_EXIST : '用户设备不存在'
     },
+    ESTATE : {
+        USERNAME_IS_BLANK : '用户名不能为空',
+        PASSWORD_IS_BLANK : '密码不能为空',
+        MANAGER_NOT_EXIST : '该管理员不存在',
+        PASSWORD_NOT_CORRECT : '密码不正确'
+    },
     SUCC : "操作成功",
     FAIL : "操作失败",
     NET_FAIL : '网络通信错误',

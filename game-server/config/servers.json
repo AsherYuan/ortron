@@ -12,7 +12,11 @@
         "user":[
 	        {"id": "user-server-1", "host": "121.40.172.233",  "port":7050, "clientPort": 3015, "frontend": true},
             {"id": "user-server-remote-1", "host": "121.40.172.233",  "port":7051}
-	    ]
+	    ],
+        "estate":[
+            {"id": "estate-server-1", "host": "121.40.172.233",  "port":8050, "clientPort": 3016, "frontend": true},
+            {"id": "estate-server-remote-1", "host": "121.40.172.233",  "port":8051}
+        ]
     },
     "production":{
         "connector":[
@@ -27,6 +31,10 @@
         "user":[
 	        {"id": "user-server-1", "host": "121.40.172.233",  "port":7050, "clientPort": 3015, "frontend": true},
             {"id": "user-server-remote-1", "host": "121.40.172.233",  "port":7051}
-	    ]
+	    ],
+        "estate":[
+            {"id": "estate-server-1", "host": "121.40.172.233",  "port":8050, "clientPort": 3016, "frontend": true},
+            {"id": "estate-server-remote-1", "host": "121.40.172.233",  "port":8051}
+        ]
     }
 }

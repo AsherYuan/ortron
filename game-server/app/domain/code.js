@@ -45,5 +45,12 @@ module.exports = {
 
     REMOTECONTROLL : {
         USEREQUIPMENT_NOT_EXIST : {'code' : 4001, 'codetxt' : Lang.error.REMOTECONTROLL.USEREQUIPMENT_NOT_EXIST}
+    },
+
+    ESTATE: {
+        USERNAME_IS_BLANK: {'code': 5001, 'codetxt': Lang.error.ESTATE.USERNAME_IS_BLANK},
+        PASSWORD_IS_BLANK: {'code': 5002, 'codetxt': Lang.error.ESTATE.PASSWORD_IS_BLANK},
+        MANGAER_NOT_EXIST: {'code': 5003, 'codetxt': Lang.error.ESTATE.MANAGER_NOT_EXIST},
+        PASSWORD_NOT_CORRECT: {'code': 5004, 'codetxt': Lang.error.ESTATE.PASSWORD_NOT_CORRECT}
     }
 };

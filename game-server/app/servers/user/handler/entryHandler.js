@@ -68,9 +68,9 @@ Handler.prototype.auth = function (msg, session, next) {
             session.pushAll(cb);
         }, function() {
             self.app.rpc.home.homeRemote.getHomeInfoByMobile(session, uid, function(homes) {
-                user.homeInfo = homes
+                user.homeInfo = homes;
                 var token = tokenManager.create(uid, authConfig.authSecret);
-                next(null, {code:200, codetxt:'操作成功', data:user, token:token})
+                next(null, {code:200, codetxt:'操作成功', data:user, token:token});
             });
         }
     ], function(err) {
@@ -129,9 +129,9 @@ Handler.prototype.login = function (msg, session, next) {
                 session.pushAll(cb);
             }, function () {
                 self.app.rpc.home.homeRemote.getHomeInfoByMobile(session, uid, function(homes) {
-                    user.homeInfo = homes
+                    userGlobal.homeInfo = homes;
                     var token = tokenManager.create(uid, authConfig.authSecret);
-                    next(null, {code:200, codetxt:'操作成功', data:user, token:token})
+                    next(null, {code:200, codetxt:'操作成功', data:userGlobal, token:token});
                 });
             }
         ], function (err) {
@@ -144,34 +144,6 @@ Handler.prototype.login = function (msg, session, next) {
     }
 };
 
-Handler.prototype.estateLogin = function (msg, session, next) {
-    var self = this;
-    var sessionService = self.app.get('sessionService');
-    var channelService = self.app.get('channelService');
-    // TODO 后续分小区，现在是统一一个账号
-    var uid = 'estate';
-    async.waterfall([
-        function (cb) {
-            self.app.get('sessionService').kick(uid, cb);
-        }, function (cb) {
-            session.bind(uid, cb);
-        }, function (cb) {
-            session.set('serverId', 'user-server-1');
-            session.on('closed', onUserLeave.bind(null, self.app));
-            cb();
-        }, function () {
-            next(null, Code.OK);
-        }
-    ], function (err) {
-        if (err) {
-            console.log("auth错误::");
-            next(null, Code.FAIL);
-            return null;
-        }
-    });
-};
-
-
 Handler.prototype.manageLogin = function (msg, session, next) {
     var self = this;
     var username = msg.username;
@@ -181,7 +153,6 @@ Handler.prototype.manageLogin = function (msg, session, next) {
     console.log(username);
     console.log(password);
     if(username == "admin" && password == "orz123") {
-        var sessionService = self.app.get('sessionService');
         // 登录验证成功，处理session
         session.on('closed', onUserLeave.bind(null, self.app));
         session.bind(username);

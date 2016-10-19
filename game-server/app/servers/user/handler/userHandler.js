@@ -332,13 +332,24 @@ Handler.prototype.addHome = function(msg, session, next) {
 	var kitchen = msg.kitchen;
 	var name = msg.layerName;
 	var floorId = msg.floorId;
-	var floorName = msg.floorName;
 	var homeNumber = msg.homeNumber;
 	if(!name) {
-		next(null, ResponseUtil.resp(Code.PARAMERROR));
+		name = "一楼";
 	} else {
 		async.waterfall([
-			function(callback){
+			function(callback) {
+				self.app.rpc.home.homeRemote.getFloorByFloorId(session, floorId, function(err, floor) {
+					if(err) {
+						next(null, ReponseUtil.resp(Code.DATABASE));
+					} else {
+						callback(null, floor.name);
+					}
+				});
+			},
+			function(floorName, callback){
+				if(!homeNumber || homeNumber === "") {
+					homeNumber = floorName;
+				}
 				self.app.rpc.home.homeRemote.getHomeByAddress(session, floorId, homeNumber, function(home) {
 					if(!!home)  {
 						next(null, ResponseUtil.resp(Code.STRUCTURE.HOME_EXIST));

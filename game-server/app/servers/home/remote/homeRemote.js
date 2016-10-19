@@ -361,7 +361,7 @@ HomeRemote.prototype.getTerminaListByCenterBoxAndCode = function(serialno, code,
  * @param  {Function} cb         [description]
  * @return {[type]}              [description]
  */
-HomeRemote.prototype.queryDevices = function(homeId, layerName, userMobile, cb) {
+HomeRemote.prototype.getDeviceList = function(homeId, layerName, userMobile, cb) {
 	if (!!homeId && !!layerName) {
 		UserEquipmentModel.find({
 			home_id: homeId,
@@ -430,6 +430,23 @@ HomeRemote.prototype.getFloorList = function(area, page, pageSize, cb) {
         logger.error(err);
         cb(Code.DATABASE);
 	});
+};
+
+/**
+ * 根据floorId获取小区详情
+ * @param  {[type]}   floorId [description]
+ * @param  {Function} cb      [description]
+ * @return {[type]}           [description]
+ */
+HomeRemote.prototype.getFloorByFloorId = function(floorId, cb) {
+    FloorModel.findById(floorId, function(err, floor) {
+        if(err) {
+            logger.error(err);
+            cb(err);
+        } else {
+            cb(null, floor);
+        }
+    });
 };
 
 /**

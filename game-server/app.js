@@ -7,7 +7,7 @@ var app = pomelo.createApp();
 app.set('name', 'ortron');
 
 // app configuration
-app.configure('production|development', 'connector|user|home', function(){
+app.configure('production|development', 'connector|user|home|estate', function(){
   app.set('connectorConfig',
     {
       connector : pomelo.connectors.hybridconnector,
