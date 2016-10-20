@@ -1,4 +1,6 @@
-var AccountModel = require('../../../mongodb/estateModels/accountModel');
+var Code = require('../../../domain/code');
+
+var AccountModel = require('../../../mongodb/estateModels/AccountModel');
 
 module.exports = function (app) {
     return new Handler(app);
@@ -32,4 +34,15 @@ Handler.prototype.login = function (msg, session, next) {
             }
         });
     }
+};
+
+Handler.prototype.tell = function(msg, session, next) {
+    var self = this;
+
+    self.app.get('globalChannelService').pushMessage(stype, route, {hello:'你好'}, 'user-server-1', null, function() {});
+
+    self.app.get('channelService').pushMessageByUids('onMsg', {hello:'你好'}, [{
+        uid: '13600000001',
+        sid: 'user-server-1'
+    }]);
 };

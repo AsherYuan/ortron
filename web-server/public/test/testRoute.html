@@ -28,6 +28,10 @@
         var uid = '';
 
         $(document).ready(function() {
+            pomelo.on('onMsg', function (data) {
+                layer.alet('推送:' + JSON.stringify(data));
+            });
+
             var cookieToken = $.cookie('token');
             if(cookieToken == null || cookieToken == undefined || cookieToken === '') {
                 window.location.href = '/test/login.html';
@@ -39,7 +43,6 @@
                             layer.msg('验证失败');
                         } else {
                             layer.msg('验证成功');
-                            initUserInfo();
                         }
                     });
                 });
