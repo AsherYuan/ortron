@@ -33,15 +33,16 @@ Cron.prototype.currentData = function () {
 		}).on('end', function () {
 			var data = JSON.parse(receiveData);
 			var list = data["HeWeather data service 3.0"];
-			if (list[0].aqi != undefined && list.length > 0) {
-				var item = list[0];
-				var pm = item.aqi.city.pm25;
-				var tem = item.now.tmp;
-				var hum = item.now.hum;
+			var item,pm,tem,hum;
+			if (list[0].aqi !== undefined && list.length > 0) {
+				item = list[0];
+				pm = item.aqi.city.pm25;
+				tem = item.now.tmp;
+				hum = item.now.hum;
 			} else {
-				var pm = "";
-				var tem = "";
-				var hum = "";
+				pm = "";
+				tem = "";
+				hum = "";
 			}
 
 			var WeatherEntity = new WeatherModel({

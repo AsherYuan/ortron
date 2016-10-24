@@ -46,9 +46,9 @@ Cron.prototype.currentData = function () {
                     }).on('end', function () {
                         var data = JSON.parse(receiveData);
                         var list = data["HeWeather data service 3.0"];
-                        if (list[0].suggestion != undefined && list.length > 0) {
+                        if (list[0].suggestion !== undefined && list.length > 0) {
                             var suggestion = list[0].suggestion;
-                            if (suggestion.drsg != undefined) {
+                            if (suggestion.drsg !== undefined) {
                                 var drsg = suggestion.drsg.brf + "," + suggestion.drsg.txt;
                                 var flu = suggestion.flu.brf + "," + suggestion.flu.txt;
                                 var suggest = "穿衣建议及以防感冒";
@@ -62,54 +62,61 @@ Cron.prototype.currentData = function () {
                                 SuggestionEntity.save(function (err) {
                                     if (err) console.log(err);
                                     else {
-                                        UserModel.find({}, function (err, docs) {
+                                        UserModel.find({}, function (err, users) {
                                         	if (err) console.log(err);
                                         	else {
-                                        		for (var i = 0; i < docs.length; i++) {
-                                        			var userMobile = docs[i].mobile;
+												var renderNotise = function(userMobile, hasRead, suggest, drsg, flu, noticeType, summary) {
+													return new Promise(function (resolve, reject) {
+														var NoticeEntity = new NoticeModel({
+															userMobile: userMobile,
+															hasRead: hasRead,
+															title: suggest,
+															content: drsg + flu,
+															noticeType: noticeType,
+															summary: summary
+														});
+
+														NoticeEntity.save(function (err) {
+															if (err) console.log(err);
+															else {
+																NoticeModel.count({hasRead: 0, userMobile: userMobile}, function (err, count) {
+																	var param = {
+																		command: '9003',
+																		title: suggest,
+																		content: drsg + flu,
+																		addTime: new Date(),
+																		addTimeLabel: Moment(new Date()).format('HH:mm'),
+																		mobile: userMobile,
+																		notReadCount: count
+																	};
+																	self.app.get('channelService').pushMessageByUids('onMsg', param, [{
+																		uid: userMobile,
+																		sid: 'user-server-1'
+																	}]);
+																	resolve();
+																});
+															}
+														});
+													});
+												};
+												var toRandering = [];
+                                        		for (var i = 0; i < users.length; i++) {
+                                        			var userMobile = users[i].mobile;
                                         			var hasRead = 0;
                                         			var noticeType = 3;
                                         			var summary = (drsg + flu).substring(0, 60);
-
-                                        			var NoticeEntity = new NoticeModel({
-                                        				userMobile: userMobile,
-                                        				hasRead: hasRead,
-                                        				title: suggest,
-                                        				content: drsg + flu,
-                                        				noticeType: noticeType,
-                                        				summary: summary
-                                        			});
-
-                                        			NoticeEntity.save(function (err) {
-                                        				if (err) console.log(err);
-                                        			});
-
-                                        			var mobile = docs[i].mobile;
-													NoticeModel.count({hasRead: 0, userMobile: mobile}, function (err, count) {
-														var param = {
-															command: '9003',
-															title: suggest,
-															content: drsg + flu,
-															addTime: new Date(),
-															addTimeLabel: Moment(new Date()).format('HH:mm'),
-															mobile: mobile,
-															notReadCount: count
-														};
-														self.app.get('channelService').pushMessageByUids('onMsg', param, [{
-															uid: mobile,
-															sid: 'user-server-1'
-														}]);
-
-													});
+													toRandering.push(renderNotise(users[i].mobile, hasRead, suggest, drsg, flu, noticeType, summary));
                                         		}
+
+												Promise.all(toRandering).then(function() {
+													logger.info('所有用户消息通知完成');
+												});
                                         	}
                                         });
                                     }
                                 });
                             }
                         }
-
-
                     });
                 };
 

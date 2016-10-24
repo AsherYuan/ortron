@@ -35,7 +35,7 @@ var sendQuery = function(curIpAddress, curPort, centerBoxSerialno, channelServic
             }
         });
     }
-}
+};
 
 /**
  * 定时任务，定时给所有用户去推送消息

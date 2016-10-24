@@ -5,6 +5,7 @@ var HomeGridModel = require('../../../mongodb/models/HomeGridModel');
 var UserEquipmentModel = require('../../../mongodb/models/UserEquipmentModel');
 
 var StringUtil = require('../../../util/StringUtil');
+var logger = require('pomelo-logger').getLogger('pomelo',  __filename);
 
 module.exports = function (app) {
 	return new Cron(app);
@@ -23,7 +24,7 @@ Cron.prototype.currentData = function () {
 			console.log(err);
 		} else {
 			for(var i=0;i<users.length;i++) {
-				var ids = new Array();
+				var ids = [];
 				ids.push(users[i].mobile);
 				ids.push(users[i].parentUser);
 
@@ -37,25 +38,22 @@ Cron.prototype.currentData = function () {
 var sendNotice = function(userMobile, ids, self) {
 	CenterBoxModel.find({userMobile:{$in:ids}}, function(err, centerBoxs) {
 		if(err) {
-			console.log(err);
+			logger.error(err);
 		} else {
-			var ids = new Array();
+			var ids = [];
 			for(var i=0;i<centerBoxs.length;i++) {
 				ids.push(centerBoxs[i].serialno);
 			}
 
-			console.log("centerBoxIds::::" + JSON.stringify(ids));
-
 			TerminalModel.find({centerBoxSerialno:{$in:ids}}, function(err, terminals) {
 				if(err) {
-					console.log(err);
+					logger.error(err);
 				} else {
-					var tIds = new Array();
+					var tIds = [];
 					for(var j=0;j<terminals.length; j++) {
 						tIds.push(terminals[j]._id);
 					}
 
-					console.log("terminaIds::::" + JSON.stringify(tIds));
 					UserEquipmentModel.find({terminalId:{$in:tIds}}).populate({
 						path: 'homeGridId',
 						model: 'homeGrid',
@@ -65,9 +63,9 @@ var sendNotice = function(userMobile, ids, self) {
 						}
 					}).exec(function(err, devices) {
 						if(err) {
-							console.log(err);
+							logger.error(err);
 						} else {
-							var ds = new Array();
+							var ds = [];
 							for(var k=0;k<devices.length;k++) {
 								ds.push(devices[k]);
 							}
@@ -86,4 +84,4 @@ var sendNotice = function(userMobile, ids, self) {
 			});
 		}
 	});
-}
+};

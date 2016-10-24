@@ -329,27 +329,3 @@ Handler.prototype.webMsg = function(msg, session, next) {
 		sid: 'connector-server-1'
 	}]);
 };
-
-Handler.prototype.controllerList = function(msg, session, next) {
-	var self = this;
-	CenterBoxModel.getList(function(err, docs) {
-		if(err) {
-			next(err);
-		} else {
-			next(null, docs);
-		}
-	});
-};
-
-Handler.prototype.deleteController = function(msg, session, next) {
-	var self = this;
-
-	var serialno = msg.serialno;
-	CenterBoxModel.delteCtrl(serialno, function(flag) {
-		next(null, {flag:flag});
-	});
-};
-
-Handler.prototype.monitorhooker = function(msg, session, next) {
-	next(null, Code.OK);
-};

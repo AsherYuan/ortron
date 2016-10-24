@@ -36,9 +36,9 @@ Cron.prototype.currentData = function () {
 		}).on('end', function () {
 			var data = JSON.parse(receiveData);
 			var list = data["HeWeather data service 3.0"];
-			if (list[0].alarms != undefined && list.length > 0) {
+			if (list[0].alarms !== undefined && list.length > 0) {
 				var alarms = list[0].alarms;
-				if (alarms[0].level != undefined && alarms.length > 0) {
+				if (alarms[0].level !== undefined && alarms.length > 0) {
 					var alar = "有预警";
 					var level = alarms[0].level;
 					var stat = alarms[0].stat;

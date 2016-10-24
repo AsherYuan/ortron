@@ -5,6 +5,8 @@ var ZixunModel = require('../../../mongodb/grabmodel/ZixunModel');
 var cheerio = require('cheerio');
 var graber = require('../../../graber/graber');
 var Moment = require('moment');
+var logger = require('pomelo-logger').getLogger('pomelo',  __filename);
+
 
 module.exports = function (app) {
 	return new Cron(app);
@@ -34,12 +36,9 @@ Cron.prototype.currentData = function () {
 				text = news.find('p').text().trim();
 			}
 		});
-		console.log(title);
-		console.log(href);
-		console.log(text);
 
 		ZixunModel.find({title: title}, function (err, doc) {
-			if (doc.length == 0) {
+			if (doc.length === 0) {
 				var ZixunEntity = new ZixunModel({
 					title: title,
 					text: text,
@@ -50,43 +49,55 @@ Cron.prototype.currentData = function () {
 
 				ZixunEntity.save(function (err) {
 					if (err) {
-						console.log(err);
+						logger.error(err);
 					} else {
 						UserModel.find({}, function(err, users) {
 							if(err) {
-								console.log(err);
+								logger.error(err);
 							} else {
-								for(var i=0; i<users.length; i++) {
-									var userMobile = users[i].mobile;
-									var NoticeEntity = new NoticeModel({
-										userMobile: userMobile,
-										hasRead: 0,
-										title: title,
-										content: text,
-										noticeType: 1,
-										summary: summary
-									});
-									NoticeEntity.save(function (err) {
-										if (err) console.log(err);
-									});
-
-									NoticeModel.count({hasRead: 0, userMobile: userMobile}, function (err, count) {
-										// 保存成功，开始向用户发送消息
-										var param = {
-											command: '9002',
+								var renderNotise = function(userMobile, title, content, summary) {
+						            return new Promise(function (resolve, reject) {
+										var NoticeEntity = new NoticeModel({
+											userMobile: userMobile,
+											hasRead: 0,
 											title: title,
-											content: text,
-											addTime: new Date(),
-											addTimeLabel: Moment(new Date()).format('HH:mm'),
-											summary: summary,
-											notReadCount: count
-										};
-										self.app.get('channelService').pushMessageByUids('onMsg', param, [{
-											uid: userMobile,
-											sid: 'user-server-1'
-										}]);
-									});
-								}
+											content: content,
+											noticeType: 1,
+											summary: summary
+										});
+										NoticeEntity.save(function (err) {
+											if (err) {
+												logger.error(err);
+											} else {
+												NoticeModel.count({hasRead: 0, userMobile: userMobile}, function (err, count) {
+													// 保存成功，开始向用户发送消息
+													var param = {
+														command: '9002',
+														title: title,
+														content: content,
+														addTime: new Date(),
+														addTimeLabel: Moment(new Date()).format('HH:mm'),
+														summary: summary,
+														notReadCount: count
+													};
+													self.app.get('channelService').pushMessageByUids('onMsg', param, [{
+														uid: userMobile,
+														sid: 'user-server-1'
+													}]);
+
+													resolve();
+												});
+											}
+										});
+						            });
+						        };
+						        var toRandering = [];
+						        for(var i=0;i<users.length;i++) {
+						            toRandering.push(renderNotise(users[i].mobile, title, text, summary));
+						        }
+						        Promise.all(toRandering).then(function() {
+						            logger.info('所有用户消息通知完成');
+						        });
 							}
 						});
 					}

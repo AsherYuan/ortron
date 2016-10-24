@@ -32,7 +32,6 @@ var RepairModel = require('../../../mongodb/estateModels/RepairModel');
 
 var ResponseUtil = require('../../../util/ResponseUtil');
 var logger = require('pomelo-logger').getLogger('pomelo',  __filename);
-var async = require('async');
 
 module.exports = function (app) {
 	return new Handler(app);
