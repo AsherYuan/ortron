@@ -14,19 +14,18 @@ var UserRemote = function(app) {
 };
 
 /**
- * 根据用户手机号码，查询单个用户的基本信息
+ * 根据用户手机号码，查询单个用户的基本信息getUserInfoByMobile
  * @param  {[type]}   userMobile [description]
  * @param  {Function} cb         [description]
  * @return {[type]}              [description]
  */
 UserRemote.prototype.getUserInfoByMobile = function(userMobile, cb) {
-    console.log("查找用户信息: " + userMobile);
     UserModel.findOne({mobile:userMobile}, function(err, user) {
         if(err) {
             logger.error(err);
+            cb(err);
         } else {
-            console.log("查找到用户的信息: " + JSON.stringify(user));
-            cb(user);
+            cb(null, user);
         }
     });
 };

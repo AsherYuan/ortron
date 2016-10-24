@@ -44,6 +44,7 @@ Handler.prototype.auth = function (msg, session, next) {
                 next(null, Code.ENTRY.FA_TOKEN_INVALID);
             } else {
                 uid = res.uid;
+                console.log('用户：：' + uid);
                 UserModel.find({'mobile':uid}, function(err, userDoc) {
                     if(err) {
                         console.log(err);

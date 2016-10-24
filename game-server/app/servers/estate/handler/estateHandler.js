@@ -39,10 +39,17 @@ Handler.prototype.login = function (msg, session, next) {
 Handler.prototype.tell = function(msg, session, next) {
     var self = this;
 
-    self.app.get('globalChannelService').pushMessage(stype, route, {hello:'你好'}, 'user-server-1', null, function() {});
+    var statusService = self.app.get('statusService');
+    console.log('statusService:' + statusService);
 
-    self.app.get('channelService').pushMessageByUids('onMsg', {hello:'你好'}, [{
-        uid: '13600000001',
-        sid: 'user-server-1'
-    }]);
+    statusService.getSidsByUid('13600000001', function(err, list) {
+        console.log("err:" + err);
+        console.log("list:" + list);
+    });
+
+    statusService.pushByUids('13600000001', 'user.userHandler.toSend', {hello:'haha'}, function(err, fails) {
+        console.log('111:' + err);
+        console.log('222:' + fails);
+    });
+
 };

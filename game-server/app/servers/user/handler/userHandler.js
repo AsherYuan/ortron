@@ -69,19 +69,27 @@ Handler.prototype.getUserInfo = function (msg, session, next) {
 	async.waterfall([
 		/* 获取用户基本数据 */
 		function(cb) {
-			self.app.rpc.user.userRemote.getUserInfoByMobile(session, userMobile, function(user) {
-				if(!!user) {
-					cb(null, user);
+			self.app.rpc.user.userRemote.getUserInfoByMobile(session, userMobile, function(err, user) {
+				if(err) {
+					next(null, next(null, ResponseUtil.resp(Code.DATABASE)));
 				} else {
-					next(null, next(null, ResponseUtil.resp(Code.ACCOUNT.USER_NOT_EXIST)));
+					if(!!user) {
+						cb(null, user);
+					} else {
+						next(null, next(null, ResponseUtil.resp(Code.ACCOUNT.USER_NOT_EXIST)));
+					}
 				}
 			});
 		},
 		/* 关联用户的家庭信息 */
 		function(user, cb) {
-			self.app.rpc.home.homeRemote.getHomeInfoByMobile(session, userMobile, function(homes) {
-				user.homeInfo = homes;
-				next(null, ResponseUtil.resp(Code.OK, user));
+			self.app.rpc.home.homeRemote.getHomeInfoByMobile(session, userMobile, function(err, homes) {
+				if(err) {
+					next(null, ResponseUtil.resp(Code.DATABASE));
+				} else {
+					user.homeInfo = homes;
+					next(null, ResponseUtil.resp(Code.OK, user));
+				}
 			});
 		}
 	]);
@@ -441,7 +449,7 @@ Handler.prototype.addLayer = function (msg, session, next) {
 					}
 				});
 			} else {
-				next(null, ResponseUtil.resp(Code.STRUCTURE.HOME_EXIST))
+				next(null, ResponseUtil.resp(Code.STRUCTURE.HOME_EXIST));
 			}
 		}
 	]);
@@ -562,20 +570,24 @@ Handler.prototype.addCenterBox = function (msg, session, next) {
 						if(!!homeId && !!layerName) {
 							next(null, ResponseUtil.resp(Code.OK));
 						} else {
-							callback(null, serailno, homeId, layerName);
+							callback(null, serialno, homeId, layerName);
 						}
 					}
 				});
 			}
 		},
-		function(serialno, homeId, layerName) {
-			self.app.rpc.home.homeRemote.bindCenterBoxToLayer(session, homeId, layerName, serialno, function(err) {
-				if(err) {
-					callback(err);
-				} else {
-					next(null, ResponseUtil.resp(Code.OK));
-				}
-			});
+		function(serialno, homeId, layerName, callback) {
+			if(!!homeId && !!layerName) {
+				self.app.rpc.home.homeRemote.bindCenterBoxToLayer(session, homeId, layerName, serialno, function(err) {
+					if(err) {
+						callback(err);
+					} else {
+						next(null, ResponseUtil.resp(Code.OK));
+					}
+				});
+			} else {
+				next(null, ResponseUtil.resp(Code.OK));
+			}
 		}
 	], function(err, result) {
 		next(null, ResponseUtil.resp(Code.DATABASE));
@@ -921,170 +933,219 @@ var resolveHomeGrids = function (homeId, layerName, room, hall, toilet, kitchen)
 };
 
 /**
- * 前台用户发出语音指令
- * @param msg
- * @param session
- * @param next
+ * 前台用户语音
+ * @param  {[type]}   msg     [description]
+ * @param  {[type]}   session [description]
+ * @param  {Function} next    [description]
+ * @return {[type]}           [description]
  */
 Handler.prototype.userSaySomething = function (msg, session, next) {
 	var self = this;
 	var uid = session.uid;
-	var words = msg.words;
+	/** 用户经过讯飞解析后的文本 **/
+	var words = msg.word;
+	/** 辅助判断 **/
+
 	var ipAddress = msg.ipAddress;
 	var port = msg.port;
-	if (words == "图片") {
-		var ret = Code.OK;
-		var data = {};
-		var answer = [];
-		answer.push("https://timgsa.baidu.com/timg?image&quality=80&size=b10000_10000&sec=1471605536296&di=31deda21579c79876b8adc8a0d0fbf10&imgtype=jpg&src=http%3A%2F%2Fpic65.nipic.com%2Ffile%2F20150503%2F7487939_220838368000_2.jpg");
-		data.answer = answer;
-		data.type = "pic";
-		ret.data = data;
-		next(null, ret);
-	} else if (words == "链接") {
-		var ret_1 = Code.OK;
-		var data_1 = [];
-		var answer_1 = [];
-		answer_1.push("<a href='http://www.baidu.com'>百度</a>");
-		data_1.answer = answer_1;
-		data_1.type = "link";
-		ret_1.data = data_1;
-		next(null, ret_1);
-	} else {
-		UserModel.findOne({mobile: uid}, function (err, userDocs) {
-			console.log("用户列表:" + JSON.stringify(userDocs));
-			if (err) {
-				console.log(err);
-				next(null, Code.DATABASE);
+
+	var answer = [];
+	var data = {};
+
+	async.waterfall([
+		/** 第一步, 预置操作 图片和链接 **/
+		function(callback) {
+			if(words === '图片') {
+				answer.push("https://timgsa.baidu.com/timg?image&quality=80&size=b10000_10000&sec=1471605536296&di=31deda21579c79876b8adc8a0d0fbf10&imgtype=jpg&src=http%3A%2F%2Fpic65.nipic.com%2Ffile%2F20150503%2F7487939_220838368000_2.jpg");
+				data.answer = answer;
+				data.type = 'pic';
+				next(null, ResponseUtil.resp(Code.OK, data));
+			} else if(words === '链接') {
+				answer.push("<a href='http://www.orz-tech.com/'>奧智网络</a>");
+				data.answer = answer;
+				data.type = 'link';
+				next(null, ResponseUtil.resp(Code.OK, data));
 			} else {
-				if (!!userDocs) {
-					var userIds = [];
-					userIds.push(userDocs.mobile);
-					userIds.push(userDocs.parentUser);
-					HomeModel.find({userMobile: {$in: userIds}}, function (err, docs) {
-						console.log("用户家庭请求:" + JSON.stringify(docs));
-						if (err) {
-							console.log(docs);
-							next(null, Code.DATABASE);
-						} else {
-							var user_id = userDocs._id;
-							// TODO 选择homeId, 语言模式上调整
-							if (!!docs) {
-								var homeId = docs[0]._id;
-								var data = {
-									str: words,
-									user_id: user_id,
-									home_id: homeId
-								};
-								words = escape(escape(words));
-								console.log("java request begin:::" + Moment(new Date()).format('HH:mm:ss'));
-								// var host = "http://122.225.88.66:8180/SpringMongod/main/ao?str=" + words + "&user_id=" + user_id + "&home_id=" + homeId;
-								// var host = "http://abc.buiud.bid:8080/main/ao?str=" + words + "&user_id=" + user_id + "&home_id=" + homeId;
-								var host = "http://abc.buiud.bid:8080/main/ao?str=" + words + "&user_id=" + user_id + "&home_id=" + homeId + "&loccode=analyze_findueq&runtimeinfo_id=57fdc4390cf2c6ce2f2d47a0";
-								request(host, function (error, response, body) {
-									console.log("java request end  :::" + Moment(new Date()).format('HH:mm:ss'));
-									console.log("返回JAVA端数据：：" + body);
-									console.log("返回JAVA端错误：：" + response.statusCode);
-									if (!error && response.statusCode == 200) {
-										var javaResult = JSON.parse(body);
-										if (!!javaResult && javaResult.code == 200) {
-											var result = JSON.parse(javaResult.data);
-											console.log("语音解析结果:" + JSON.stringify(result));
-											var ret = Code.OK;
-											var data = {};
-											data.voiceId = result.inputstr_id;
-											data.isDelayOrder = result.delayOrder;
-											data.isCanLearn = result.iscanlearn;
-											data.from = result.status;
-											if(!!result.loccode && result.loccode === 'analyze_findueq') {
-												data.loccode = result.loccode;
-												data.runtimeinfo_id = result.runtimeinfo_id;
-												data.optionList = result.xxxxxx
-											}
-
-
-											if (!!result.orderAndInfrared && result.orderAndInfrared.length > 0) {
-												// 判断房间是否相同 如果相同，则直接执行，如果不同，对用户进行询问
-												// 返回的数据结构：
-												var targetArray = [];
-												var devices = [];
-												var sentence = "";
-
-												for (var i = 0; i < result.orderAndInfrared.length; i++) {
-													var t = result.orderAndInfrared[i];
-													targetArray.push(SayingUtil.translateStatus(t.order.ueq));
-													devices.push(t.order.ueq);
-
-													if (!!t.infrared && !!t.infrared.infraredcode) {
-														var ircode = t.infrared.infraredcode;
-														var terminalCode = "01";
-
-														// 开始发送红外命令
-														UserEquipmentModel.find({_id: t.order.ueq.id}, function (err, docs) {
-															TerminalModel.find({_id: docs[0].terminalId}, function (err, docs) {
-																var serialNo = docs[0].centerBoxSerialno;
-																CenterBoxModel.find({serialno: serialNo}, function (err, docs) {
-																	var curPort = docs[0].curPort;
-																	var curIpAddress = docs[0].curIpAddress;
-																	console.log("---------------------寻找当前主控信信息---------------------");
-																	console.log("curIpAddress : " + curIpAddress + "___curPort : " + curPort);
-																	var param = {
-																		command: '3000',
-																		ipAddress: curIpAddress,
-																		serialNo: serialNo,
-																		data: terminalCode + " " + ircode,
-																		port: curPort
-																	};
-																	var sessionService = self.app.get('sessionService');
-																	console.log("向ots推送消息:" + JSON.stringify(param));
-																	self.app.get('channelService').pushMessageByUids('onMsg', param, [{
-																		uid: 'socketServer*otron',
-																		sid: 'connector-server-1'
-																	}]);
-																});
-															});
-														});
-													} else {
-														console.log("没有红外码");
-													}
-												}
-												// 判断是否延时
-												if (result.delayOrder === true) {
-													sentence = result.delayDesc + "将为您" + JSON.stringify(targetArray);
-												} else {
-													sentence = "已为您" + JSON.stringify(targetArray);
-												}
-
-												data.answer = sentence;
-												data.devices = devices;
-												data.type = "data";
-												ret.data = data;
-											} else {
-												if (result.status == "turing") {
-													var msgObj = JSON.parse(result.msg);
-													ret.data = {result: msgObj.text, type: "data"};
-												} else {
-													ret.data = {result: result.msg, type: "data"};
-												}
-											}
-											console.log("最终反馈给用户:" + JSON.stringify(ret));
-											next(null, ret);
-										} else {
-											console.log("错误：：：" + JSON.stringify(javaResult));
-										}
-									} else {
-										next(null, Code.NET_FAIL);
-									}
-								});
-							} else {
-								next(null, Code.DATABASE);
-							}
-						}
-					});
-				}
+				callback(null, uid);
 			}
-		});
-	}
+		},
+
+		/** 第二步，查找用户具体信息  **/
+		function(userMobile, callback) {
+			self.app.rpc.user.userRemote.getUserInfoByMobile(session, userMobile, function(err, user) {
+				if(err) {
+					callback(err);
+				} else {
+					callback(null, user);
+				}
+			});
+		},
+
+		/** 第三步，查找对应家庭信息 **/
+		function(user, callback) {
+			self.app.rpc.home.homeRemote.getHomeInfoByMobile(session, user.mobile, function(err, homes) {
+				if(err) {
+					callback(err);
+				} else {
+					callback(null, user, homes);
+				}
+			});
+		},
+
+		/** 第四步，访问JAVA服务器，获取智能解析结果 **/
+		function(user, homes, callback) {
+			if(!!homes) {
+				var userId = user._id;
+				// TODO 分析当前操作的home
+				var homeId = homes[0].homeId;
+				// 因为get方式提交，所以进行两次escape转吗防止出现中文乱码
+				words = escape(escape(words));
+				var params = {
+					str:words,
+					user_id:userId,
+					home_id:homeId
+				};
+				// 主服务器
+				// var host = "http://122.225.88.66:8180/SpringMongod/main/ao;
+				//  + "&loccode=analyze_findueq&runtimeinfo_id=57fdc4390cf2c6ce2f2d47a0"
+				var host = "http://abc.buiud.bid:8080/main/ao?str=" + words + "&user_id=" + userId + "&home_id=" + homeId;
+				logger.debug('request smart center with params : ' + host + "::" + Moment(new Date()).format('HH:mm:ss'));
+				request(host, function(err, response, body) {
+					if(err) {
+						callback(err);
+					} else {
+						if(response.statusCode === 200) {
+							logger.debug('smart center response :: ' + response.statusCode + "\n" + body);
+							callback(null, body);
+						} else {
+							next(null, Code.NET_FAIL);
+						}
+					}
+				});
+			} else {
+				next(null, ResponseUtil.resp(Code.STRUCTURE.HOME_NOT_EXIST));
+			}
+		},
+
+		/** 第五步, 解析smart center的返回 **/
+		function(body, callback) {
+			var javaResult = JSON.parse(body);
+			var data = {};
+			if (!!javaResult && javaResult.code == 200) {
+				if(!!javaResult.data) {
+					var result = JSON.parse(javaResult.data);
+					data.voiceId = result.inputstr_id;
+					data.isDelayOrder = result.delayOrder;
+					data.isCanLearn = result.iscanlearn;
+					data.from = result.status;
+
+					// 处理是否返回 TODO
+					console.log("----------------------------------------------------------");
+					if(!!result.loccode && result.loccode === 'analyze_findueq') {
+						data.loccode = result.loccode;
+						data.runtimeinfo_id = result.runtimeinfo_id;
+						data.optionList = result.xxxxxx;
+					}
+
+					if (!!result.orderAndInfrared && result.orderAndInfrared.length > 0) {
+						var targetArray = [];
+					    var devices = [];
+					    var sentence = "";
+
+					    var render_sendingIrCode = function(orderAndInfrared, targetArray, devices, sentence) {
+					        return new Promise(function (resolve, reject) {
+					            var t = orderAndInfrared;
+					            targetArray.push(SayingUtil.translateStatus(t.order.ueq));
+					            devices.push(t.order.ueq);
+					            if (!!t.infrared && !!t.infrared.infraredcode) {
+					                var ircode = t.infrared.infraredcode;
+									self.app.rpc.home.homeRemote.getDeviceById(session, t.order.ueq.id, function(err, userEquipment) {
+										if(err) {
+											reject(err);
+										} else {
+											self.app.rpc.home.homeRemote.getTerminalById(session, userEquipment.terminalId, function(err, terminal) {
+												if(err) {
+													reject(err);
+												} else {
+													var serialno = terminal.centerBoxSerialno;
+													var terminalCode = terminal.code;
+													self.app.rpc.home.homeRemote.getCenterBoxBySerailno(session, serialno, function(err, centerBox) {
+														if(err) {
+															reject(err);
+														} else {
+															var curPort = centerBox.curPort;
+															var curIpAddress = centerBox.curIpAddress;
+															console.log("---------------------寻找当前主控信信息---------------------");
+															console.log("curIpAddress : " + curIpAddress + "___curPort : " + curPort);
+															var param = {
+																command: '3000',
+																ipAddress: curIpAddress,
+																serialNo: serialno,
+																data: terminalCode + " " + ircode,
+																port: curPort
+															};
+															console.log("向ots推送消息:" + JSON.stringify(param));
+															self.app.get('channelService').pushMessageByUids('onMsg', param, [{
+																uid: 'socketServer*otron',
+																sid: 'connector-server-1'
+															}]);
+														}
+													});
+												}
+											});
+										}
+									});
+					            }
+					        });
+					    };
+					    var toRandering = [];
+					    for (var i = 0; i < result.orderAndInfrared.length; i++) {
+							console.log(render_sendingIrCode(result.orderAndInfrared[i], targetArray, devices, sentence));
+					        toRandering.push(render_sendingIrCode(result.orderAndInfrared[i], targetArray, devices, sentence));
+					    }
+
+					    Promise.all(toRandering).then(function() {
+					        console.log("全部执行完成");
+					    });
+
+					    // 判断是否延时
+					    if (result.delayOrder === true) {
+					        sentence = result.delayDesc + "将为您" + JSON.stringify(targetArray);
+					    } else {
+					        sentence = "已为您" + JSON.stringify(targetArray);
+					    }
+					    data.answer = sentence;
+					    data.devices = devices;
+					    data.type = "data";
+						next(null, ResponseUtil.resp(Code.OK, data));
+
+					} else {
+						if (result.status == "turing") {
+							var msgObj = JSON.parse(result.msg);
+							data = {result: msgObj.text, type: "data"};
+						} else {
+							data = {result: result.msg, type: "data"};
+						}
+						next(null, ResponseUtil.resp(Code.OK, data));
+					}
+				} else {
+					// 服务器中没有得到信息
+					var answer = [];
+					answer.push("访问的用户太多，奧创忙不过来了，请稍后再试");
+					data.answer = answer;
+					data.type = "data";
+					next(null, ResponseUtil.resp(Code.OK, data));
+				}
+			} else {
+				next(null, ResponseUtil.resp(Code.NET_FAIL));
+			}
+		}
+	], function(err, result) {
+		if(err) {
+			logger.error(JSON.stringify(err));
+			next(null, ResponseUtil.resp(Code.DATABASE));
+		}
+	});
 };
 
 // TODO 只对在语音界面的用户推送
@@ -2314,3 +2375,8 @@ Handler.prototype.addNewComplaint = function(msg, session, next) {
 };
 
 /******************************  物业方法  结束  ************************************/
+
+
+Handler.prototype.toSend = function(msg, session, next) {
+	console.log("toSend...." + JSON.stringify(msg));
+};

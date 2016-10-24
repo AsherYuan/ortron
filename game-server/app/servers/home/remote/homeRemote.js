@@ -1,4 +1,5 @@
 var logger = require('pomelo-logger').getLogger('pomelo',  __filename);
+var SayingUtil = require('../../../domain/SayingUtil');
 var HomeModel = require("../../../mongodb/models/HomeModel");
 var HomeWifiModel = require('../../../mongodb/models/HomeWifiModel');
 var CenterBoxModel = require('../../../mongodb/models/CenterBoxModel');
@@ -309,10 +310,11 @@ HomeRemote.prototype.getHomeInfoByMobile = function(userMobile, cb) {
         }
 
         Promise.all(toRandering).then(function(homes) {
-            cb(homes);
+            cb(null, homes);
         });
     }).catch(function(err) {
         logger.error(err);
+        cb(err);
     });
 };
 
@@ -323,7 +325,7 @@ HomeRemote.prototype.getHomeInfoByMobile = function(userMobile, cb) {
  * @param  {Function} cb         [description]
  * @return {[type]}              [description]
  */
-HomeRemote.prototype.getCenterBoxList = function(userMobile, withFamily, cb) {
+HomeRemote.prototype.BoxList = function(userMobile, withFamily, cb) {
     CenterBoxModel.find({userMobile:userMobile}, function(err, centerBoxs) {
         if(err) {
             logger.error(err);
@@ -343,8 +345,9 @@ HomeRemote.prototype.getTerminaListByCenterBox = function(serialno, cb) {
     TerminalModel.find({centerBoxSerialno:serialno}, function(err, terminals) {
         if(err) {
             logger.error(err);
+            cb(err);
         } else {
-            cb(terminals);
+            cb(null, terminals);
         }
     });
 };
@@ -359,8 +362,9 @@ HomeRemote.prototype.getTerminaListByCenterBoxAndCode = function(serialno, code,
     TerminalModel.find({centerBoxSerialno:serialno, code:code}, function(err, terminals) {
         if(err) {
             logger.error(err);
+            cb(err);
         } else {
-            cb(terminals);
+            cb(null, terminals);
         }
     });
 };
@@ -587,13 +591,11 @@ HomeRemote.prototype.centerBoxSerailnoExist = function(serialno, cb) {
  * @return {[type]}            [description]
  */
 HomeRemote.prototype.getCenterBoxBySerailno = function(serialno, cb) {
-    CenterBoxModel.findOne({serialno:serialno}).exec().then(function(err, centerBox) {
-        if(err) {
-            logger.error(err);
-            cb(err);
-        } else {
-            cb(null, centerBox);
-        }
+    CenterBoxModel.findOne({serialno:serialno}).exec().then(function(centerBox) {
+        cb(null, centerBox);
+    }).catch(function(err) {
+        logger.error(err);
+        cb(err);
     });
 };
 
@@ -672,6 +674,73 @@ HomeRemote.prototype.getDeviceModels = function(brand, callback) {
             callback(err);
         } else {
             callback(null, deviceModels);
+        }
+    });
+};
+
+/**
+ * 根据ID获取设备
+ */
+HomeRemote.prototype.getDeviceById = function(id, callback) {
+    UserEquipmentModel.findById(id, function(err, device) {
+        if(err) {
+            callback(err);
+        } else {
+            callback(null, device);
+        }
+    });
+};
+
+/**
+ * 根据Id获取终端
+ */
+HomeRemote.prototype.getTerminalById = function(id, callback) {
+    TerminalModel.findById(id, function(err, terminal) {
+        if(err) {
+            callback(err);
+        } else {
+            callback(null, terminal);
+        }
+    });
+};
+
+/**
+ * 保存终端传感器数据
+ * @param  {[type]}   terminalId  [description]
+ * @param  {[type]}   temperature [description]
+ * @param  {[type]}   humidity    [description]
+ * @param  {Function} callback    [description]
+ * @return {[type]}               [description]
+ */
+HomeRemote.prototype.saveTSensorData = function(terminalId, temperature, humidity, callback) {
+    var tSensorEntity = new TSensorDataModel({terminalId:terminalId, temperature:temperature, humidity:humidity});
+    tSensorEntity.save(function(err) {
+        if(err) {
+            callback(err);
+        } else {
+            callback(null);
+        }
+    });
+};
+
+/**
+ * 保存主控传感器数据
+ * @param  {[type]}   centerBoxId [description]
+ * @param  {[type]}   temperature [description]
+ * @param  {[type]}   humidity    [description]
+ * @param  {[type]}   co          [description]
+ * @param  {[type]}   quality     [description]
+ * @param  {[type]}   pm25        [description]
+ * @param  {Function} callback    [description]
+ * @return {[type]}               [description]
+ */
+HomeRemote.prototype.saveSensorData = function(centerBoxId, temperature, humidity, co, quality, pm25, callback) {
+    var entity = new SensorDataModel({centerBoxId:centerBoxId, temperature:temperature, humidity:humidity, co:co, quality:quality, pm25:pm25});
+    entity.save(function(err, docs) {
+        if(err) {
+            callback(err);
+        } else {
+            callback(null);
         }
     });
 };
