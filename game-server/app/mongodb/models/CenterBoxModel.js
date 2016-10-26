@@ -1,22 +1,31 @@
 var mongoose = require('../mongoose.js');
 var CenterBoxSchema = new mongoose.Schema({
-    userMobile : String,
-    serialno : String,
-    ssid : String,
-    passwd : String,
-    code : String,
-    hasConnected:{type:Boolean, default:false},
-    regTime : { type:Date, default:Date.now },
-    lastLoginTime : Date,// 为空认为是没有初始化过
-	isOnline: Boolean,
-    temperatureSwitch : String,
-    humiditySwitch : String,
-    qualitySwitch : String,
-    coSwitch : String,
-    pm25Switch : String,
-    curIpAddress : String,
-    curPort : Number,
-	onlineConfirmed : {type:Boolean, default:false}
+    userMobile: String,
+    serialno: String,
+    ssid: String,
+    passwd: String,
+    code: String,
+    hasConnected: {
+        type: Boolean,
+        default: false
+    },
+    regTime: {
+        type: Date,
+        default: Date.now
+    },
+    lastLoginTime: Date, // 为空认为是没有初始化过
+    isOnline: Boolean,
+    temperatureSwitch: String,
+    humiditySwitch: String,
+    qualitySwitch: String,
+    coSwitch: String,
+    pm25Switch: String,
+    curIpAddress: String,
+    curPort: Number,
+    onlineConfirmed: {
+        type: Boolean,
+        default: false
+    }
 });
 var CenterBoxModel = mongoose.model("centerBox", CenterBoxSchema);
 module.exports = CenterBoxModel;

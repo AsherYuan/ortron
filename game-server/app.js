@@ -23,15 +23,15 @@ app.configure('production|development', 'connector|user|home|estate', function()
  * 全局channel，可用于不同服务器之间的互相通信
  * @type {Object}
  */
-app.use(globalChannel, {globalChannel: {
-  host: '127.0.0.1',
-  port: 6379
-}});
-
-app.use(status, {status: {
-  host: '127.0.0.1',
-  port: 6379
-}});
+// app.use(globalChannel, {globalChannel: {
+//   host: '127.0.0.1',
+//   port: 6379
+// }});
+//
+// app.use(status, {status: {
+//   host: '127.0.0.1',
+//   port: 6379
+// }});
 
 
 // start app

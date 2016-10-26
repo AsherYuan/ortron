@@ -6,7 +6,6 @@ var HomeModel = require('../../../mongodb/models/HomeModel');
 var HomeGridModel = require('../../../mongodb/models/HomeGridModel');
 var FloorModel = require('../../../mongodb/models/FloorModel');
 var FloorModelModel = require('../../../mongodb/models/FloorModelModel');
-var DeviceBrandModel = require('../../../mongodb/models/DeviceBrandModel');
 var DeviceModel = require('../../../mongodb/models/DeviceModel');
 var UserEquipmentModel = require('../../../mongodb/models/UserEquipmentModel');
 var HomeWifiModel = require('../../../mongodb/models/HomeWifiModel');
@@ -191,7 +190,7 @@ Handler.prototype.getDeviceList = function (msg, session, next) {
 	var homeId = msg.homeId;
 	var layerName = msg.layerName;
 	var userMobile = session.uid;
-	self.app.rpc.home.homeRemote.queryDevices(session, homeId, layerName, userMobile, function(devices) {
+	self.app.rpc.home.homeRemote.getDeviceList(session, homeId, layerName, userMobile, function(devices) {
 		next(null, ResponseUtil.resp(Code.OK, devices));
 	});
 };
@@ -613,7 +612,7 @@ Handler.prototype.bindCenterBoxToLayer = function (msg, session, next) {
 				if(!!centerBox && !!centerBox.homeId && !!centerBox.layerName) {
 					next(null, ResponseUtil.resp(Code.STRUCTURE.CENTERBOX_OCCUPIED));
 				} else {
-					callback(null, homeId, layerName, serilno);
+					callback(null, serilno, homeId, layerName);
 				}
 			});
 		},
@@ -663,6 +662,7 @@ Handler.prototype.addTerminal = function (msg, session, next) {
 					if(err) {
 						callback(err);
 					} else {
+						console.log(JSON.stringify(terminal));
 						callback(null, terminal._id, homeGridId);
 					}
 				});
@@ -677,11 +677,11 @@ Handler.prototype.addTerminal = function (msg, session, next) {
 					if(err) {
 						callback(err);
 					} else {
-						next(null, ResponseUtil.resp(Code.OK));
+						next(null, ResponseUtil.resp(Code.OK, terminalId));
 					}
 				});
 			} else {
-				next(null, ResponseUtil.resp(Code.OK));
+				next(null, ResponseUtil.resp(Code.OK, terminalId));
 			}
 		}
 	], function(err, result) {
@@ -707,6 +707,14 @@ Handler.prototype.bindTerminalToHomeGrid = function (msg, session, next) {
 			next(null, ResponseUtil.resp(Code.DATABASE));
 		} else {
 			next(null, ResponseUtil.resp(Code.OK));
+		}
+	});
+
+	self.app.rpc.home.homeRemote.bindTerminalToHomeGrid(session, homeGridId, terminalId, function(err) {
+		if(err) {
+			callback(err);
+		} else {
+			next(null, ResponseUtil.resp(Code.OK, terminalId));
 		}
 	});
 };
@@ -751,6 +759,7 @@ Handler.prototype.getDeviceBrands = function (msg, session, next) {
 Handler.prototype.getDeviceModels = function (msg, session, next) {
 	var self = this;
 	var brand = msg.brand;
+	var type = msg.type;
 	self.app.rpc.home.homeRemote.getDeviceModels(session, brand, type, function(err, deviceModels) {
 		if(err) {
 			next(null, ResponseUtil.resp(Code.DATABASE));
@@ -760,7 +769,32 @@ Handler.prototype.getDeviceModels = function (msg, session, next) {
 	});
 };
 
-// TODO 缺少一个测试红外线的接口
+/**
+ * 发送红外码
+ * @param  {[type]}   msg     [description]
+ * @param  {[type]}   session [description]
+ * @param  {Function} next    [description]
+ * @return {[type]}           [description]
+ */
+Handler.prototype.sendTestIrCode = function(msg, session, next) {
+	var self = this;
+	var tid = msg.tid;
+	var type = msg.type;
+	var inst = '100000';
+	if(type === "空调") {
+		inst = '100000';
+	} else if(type === '电视') {
+		inst = 'T_ONOFF';
+	}
+	self.app.rpc.home.homeRemote.getTestIrCode(session, tid, inst, function(err, irCode) {
+		if(err) {
+			next(null, ResponseUtil.resp(Code.DATABASE));
+		} else {
+			console.log("irCode:" + JSON.stringify(irCode));
+			next(null, ResponseUtil.resp(Code.OK));
+		}
+	});
+};
 
 /**
  * 新增电器
@@ -942,11 +976,13 @@ Handler.prototype.userSaySomething = function (msg, session, next) {
 	var self = this;
 	var uid = session.uid;
 	/** 用户经过讯飞解析后的文本 **/
-	var words = msg.word;
+	var words = msg.words;
 	/** 辅助判断 **/
-
 	var ipAddress = msg.ipAddress;
 	var port = msg.port;
+
+	var loccode = msg.loccode;
+	var runtimeinfo_id = msg.runtimeinfo_id;
 
 	var answer = [];
 	var data = {};
@@ -998,27 +1034,46 @@ Handler.prototype.userSaySomething = function (msg, session, next) {
 				// TODO 分析当前操作的home
 				var homeId = homes[0].homeId;
 				// 因为get方式提交，所以进行两次escape转吗防止出现中文乱码
-				words = escape(escape(words));
 				var params = {
-					str:words,
+					str:escape(escape(words)),
 					user_id:userId,
 					home_id:homeId
 				};
-				// 主服务器
-				// var host = "http://122.225.88.66:8180/SpringMongod/main/ao;
-				//  + "&loccode=analyze_findueq&runtimeinfo_id=57fdc4390cf2c6ce2f2d47a0"
-				var host = "http://abc.buiud.bid:8080/main/ao?str=" + words + "&user_id=" + userId + "&home_id=" + homeId;
-				logger.debug('request smart center with params : ' + host + "::" + Moment(new Date()).format('HH:mm:ss'));
-				request(host, function(err, response, body) {
+
+				self.app.rpc.user.userRemote.checkIfChoise(session, user.mobile, words, function(err, list) {
 					if(err) {
-						callback(err);
+						console.log(err);
 					} else {
-						if(response.statusCode === 200) {
-							logger.debug('smart center response :: ' + response.statusCode + "\n" + body);
-							callback(null, body);
-						} else {
-							next(null, Code.NET_FAIL);
+						if(!!list && list.length > 0) {
+							loccode = list[0].loccode;
+							runtimeinfo_id = list[0].runtimeinfo_id;
+							self.app.rpc.user.userRemote.answered(session, list[0]._id, function(err) {
+								if(err) {
+									console.log(err);
+								}
+							});
 						}
+						// 主服务器
+						// var host = "http://122.225.88.66:8180/SpringMongod/main/ao;
+						//  + "&loccode=analyze_findueq&runtimeinfo_id=57fdc4390cf2c6ce2f2d47a0"
+						var host = "http://abc.buiud.bid:8080/main/ao?str=" + params.str + "&user_id=" + params.user_id + "&home_id=" + params.home_id;
+						if(loccode && runtimeinfo_id) {
+							host += "&loccode=analyze_findueq&runtimeinfo_id=" + runtimeinfo_id;
+						}
+						logger.info('request smart center with params : ' + host + "::" + Moment(new Date()).format('HH:mm:ss'));
+						console.log('request smart center with params : ' + host + "::" + Moment(new Date()).format('HH:mm:ss'));
+						request(host, function(err, response, body) {
+							if(err) {
+								callback(err);
+							} else {
+								if(response.statusCode === 200) {
+									logger.debug('smart center response :: ' + response.statusCode + "\n" + body);
+									callback(null, user, homes, body);
+								} else {
+									next(null, Code.NET_FAIL);
+								}
+							}
+						});
 					}
 				});
 			} else {
@@ -1027,9 +1082,10 @@ Handler.prototype.userSaySomething = function (msg, session, next) {
 		},
 
 		/** 第五步, 解析smart center的返回 **/
-		function(body, callback) {
+		function(user, homes, body, callback) {
 			var javaResult = JSON.parse(body);
 			var data = {};
+			console.log("----------------------------------------------------------" + JSON.stringify(javaResult));
 			if (!!javaResult && javaResult.code == 200) {
 				if(!!javaResult.data) {
 					var result = JSON.parse(javaResult.data);
@@ -1043,21 +1099,27 @@ Handler.prototype.userSaySomething = function (msg, session, next) {
 					if(!!result.loccode && result.loccode === 'analyze_findueq') {
 						data.loccode = result.loccode;
 						data.runtimeinfo_id = result.runtimeinfo_id;
-						data.optionList = result.xxxxxx;
+						data.optionList = result.homegrids;
+
+						self.app.rpc.user.userRemote.waitingForUserToChoose(session, data.loccode, data.runtimeinfo_id, data.optionList, user.mobile, function(err) {
+							if(err) {
+								console.log(err);
+							}
+						});
 					}
 
 					if (!!result.orderAndInfrared && result.orderAndInfrared.length > 0) {
 						var targetArray = [];
-					    var devices = [];
-					    var sentence = "";
+						var devices = [];
+						var sentence = "";
 
-					    var render_sendingIrCode = function(orderAndInfrared, targetArray, devices, sentence) {
-					        return new Promise(function (resolve, reject) {
-					            var t = orderAndInfrared;
-					            targetArray.push(SayingUtil.translateStatus(t.order.ueq));
-					            devices.push(t.order.ueq);
-					            if (!!t.infrared && !!t.infrared.infraredcode) {
-					                var ircode = t.infrared.infraredcode;
+						var render_sendingIrCode = function(orderAndInfrared, targetArray, devices, sentence) {
+							return new Promise(function (resolve, reject) {
+								var t = orderAndInfrared;
+								targetArray.push(SayingUtil.translateStatus(t.order.ueq));
+								devices.push(t.order.ueq);
+								if (!!t.infrared && !!t.infrared.infraredcode) {
+									var ircode = t.infrared.infraredcode;
 									self.app.rpc.home.homeRemote.getDeviceById(session, t.order.ueq.id, function(err, userEquipment) {
 										if(err) {
 											reject(err);
@@ -1094,36 +1156,37 @@ Handler.prototype.userSaySomething = function (msg, session, next) {
 											});
 										}
 									});
-					            }
-					        });
-					    };
-					    var toRandering = [];
-					    for (var i = 0; i < result.orderAndInfrared.length; i++) {
-							console.log(render_sendingIrCode(result.orderAndInfrared[i], targetArray, devices, sentence));
-					        toRandering.push(render_sendingIrCode(result.orderAndInfrared[i], targetArray, devices, sentence));
-					    }
+								}
+							});
+						};
+						var toRandering = [];
+						for (var i = 0; i < result.orderAndInfrared.length; i++) {
+							toRandering.push(render_sendingIrCode(result.orderAndInfrared[i], targetArray, devices, sentence));
+						}
 
-					    Promise.all(toRandering).then(function() {
-					        console.log("全部执行完成");
-					    });
+						Promise.all(toRandering).then(function() {
+							console.log("全部执行完成");
+						});
 
-					    // 判断是否延时
-					    if (result.delayOrder === true) {
-					        sentence = result.delayDesc + "将为您" + JSON.stringify(targetArray);
-					    } else {
-					        sentence = "已为您" + JSON.stringify(targetArray);
-					    }
-					    data.answer = sentence;
-					    data.devices = devices;
-					    data.type = "data";
+						// 判断是否延时
+						if (result.delayOrder === true) {
+							sentence = result.delayDesc + "将为您" + JSON.stringify(targetArray);
+						} else {
+							sentence = "已为您" + JSON.stringify(targetArray);
+						}
+						data.answer = sentence;
+						data.devices = devices;
+						data.type = "data";
 						next(null, ResponseUtil.resp(Code.OK, data));
 
 					} else {
 						if (result.status == "turing") {
 							var msgObj = JSON.parse(result.msg);
-							data = {result: msgObj.text, type: "data"};
+							data.result = msgObj.text;
+							data.type = "data";
 						} else {
-							data = {result: result.msg, type: "data"};
+							data.result = result.msg;
+							data.type = "data";
 						}
 						next(null, ResponseUtil.resp(Code.OK, data));
 					}
@@ -1262,6 +1325,9 @@ Handler.prototype.study = function (msg, session, next) {
 	var inputstr_id = msg.lastVoiceId;
 	var devicesString = msg.devices;
 	var devices = JSON.parse(devicesString);
+	console.log("_-------------------------------------------------------------");
+	console.log("devicesString:" + devicesString);
+	console.log("_-------------------------------------------------------------");
 	var postString = {};
 	postString.inputstr_id = inputstr_id;
 	var orderparamlist = [];
@@ -1275,7 +1341,7 @@ Handler.prototype.study = function (msg, session, next) {
 				var d = {};
 				d.ac_temperature = devices[i].ac_temperature;
 				d.ac_windspeed = devices[i].ac_windspeed;
-				d.deviceId = devices[i].id;
+				d.deviceId = devices[i].id || devices[i]._id;
 				d.deviceType = devices[i].e_type;
 				d.model = devices[i].ac_model;
 				d.status = devices[i].status;
@@ -1283,7 +1349,15 @@ Handler.prototype.study = function (msg, session, next) {
 				orderparamlist.push(d);
 			}
 			postString.orderparamlist = orderparamlist;
-			request.post('http://122.225.88.66:8180/SpringMongod/main/learnorder', {form: {learnParam: JSON.stringify(postString)}}, function (error, response, body) {
+			console.log('学习学习学习:::::::::::::::::::::::::::::::::::::::::::::::::::::::');
+			console.log(JSON.stringify(postString));
+			request.post('http://abc.buiud.bid:8080/main/learnorder', {form: {learnParam: JSON.stringify(postString)}}, function (error, response, body) {
+				console.log(error);
+				console.log('学习学习学习:::::::::::::::::::::::::::::::::::::::::::::::::::::::');
+				console.log(response);
+				console.log('学习学习学习:::::::::::::::::::::::::::::::::::::::::::::::::::::::');
+				console.log(body);
+				console.log('学习学习学习:::::::::::::::::::::::::::::::::::::::::::::::::::::::');
 				if (!error && response.statusCode == 200) {
 					var javaResult = JSON.parse(body);
 					if (!!javaResult && javaResult.code == 200) {
@@ -1408,7 +1482,8 @@ Handler.prototype.remoteControll = function (msg, session, next) {
 				data = require('querystring').stringify(data);
 				console.log("参数：" + data);
 				var begin = new Date().getTime();
-				var host = "http://122.225.88.66:8180/SpringMongod/main/getorder?" + data;
+				var host = "http://abc.buiud.bid:8080/main/getorder?" + data;
+				// var host = "http://122.225.88.66:8180/SpringMongod/main/getorder?" + data;
 				request(host, function (error, response, body) {
 					var time = new Date().getTime() - begin;
 					console.log(":::::::::::::::::::::::::::::::延迟::::::::::::::::::::::::::::::::::" + time);

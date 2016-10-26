@@ -11,6 +11,10 @@ var FloorModelModel = require('../../../mongodb/models/FloorModelModel');
 var HomeWifiModel = require('../../../mongodb/models/HomeWifiModel');
 var TerminalModel = require('../../../mongodb/models/TerminalModel');
 var RDeviceModel = require('../../../mongodb/models/RDeviceModel');
+var SensorDataModel = require('../../../mongodb/models/SensorDataModel');
+var TSensorDataModel = require('../../../mongodb/models/TSensorDataModel');
+var RinfraredModel = require('../../../mongodb/models/RinfraredModel');
+
 
 var async = require('async');
 
@@ -231,13 +235,13 @@ HomeRemote.prototype.autoRanderHomeGrid = function(home, cb) {
  * @return {[type]}                     [description]
  */
 HomeRemote.prototype.getHomeGridList = function(homeId, layerName, cb) {
-	HomeGridModel.find({homeId: homeId, layerName: layerName}).populate('terminal').sort({dorder:1}).exec(function (err, grids) {
-		if (err) {
-			logger.error(err);
-		} else {
-			cb(grids);
-		}
-	});
+    HomeGridModel.find({homeId: homeId, layerName: layerName}).populate('terminal').sort({dorder:1}).exec(function (err, grids) {
+        if (err) {
+            logger.error(err);
+        } else {
+            cb(grids);
+        }
+    });
 };
 
 /**
@@ -378,18 +382,18 @@ HomeRemote.prototype.getTerminaListByCenterBoxAndCode = function(serialno, code,
  * @return {[type]}              [description]
  */
 HomeRemote.prototype.getDeviceList = function(homeId, layerName, userMobile, cb) {
-	if (!!homeId && !!layerName) {
-		UserEquipmentModel.find({
-			home_id: homeId,
-			layerName: layerName
-		}).populate('homeGridId').exec(function (err, docs) {
-			if (err) {
-				logger.error(err);
-			} else {
+    if (!!homeId && !!layerName) {
+        UserEquipmentModel.find({
+            home_id: homeId,
+            layerName: layerName
+        }).populate('homeGridId').exec(function (err, docs) {
+            if (err) {
+                logger.error(err);
+            } else {
                 cb(docs);
-			}
-		});
-	} else {
+            }
+        });
+    } else {
         HomeModel.find({userMobile: userMobile}, function (err, homes) {
             var homeIds = [];
             for (var i = 0; i < homes.length; i++) {
@@ -403,7 +407,7 @@ HomeRemote.prototype.getDeviceList = function(homeId, layerName, userMobile, cb)
                 }
             });
         });
-	}
+    }
 };
 
 /**
@@ -413,13 +417,13 @@ HomeRemote.prototype.getDeviceList = function(homeId, layerName, userMobile, cb)
  * @return {[type]}              [description]
  */
 HomeRemote.prototype.getDeviceListByGridId = function(homeGridId, cb) {
-	UserEquipmentModel.find({homeGridId: homeGridId}).populate('homeGridId').exec(function (err, docs) {
-		if (err) {
-			logger.error(err);
-		} else {
-			cb(docs);
-		}
-	});
+    UserEquipmentModel.find({homeGridId: homeGridId}).populate('homeGridId').exec(function (err, docs) {
+        if (err) {
+            logger.error(err);
+        } else {
+            cb(docs);
+        }
+    });
 };
 
 /**
@@ -432,20 +436,20 @@ HomeRemote.prototype.getDeviceListByGridId = function(homeGridId, cb) {
  */
 HomeRemote.prototype.getFloorList = function(area, page, pageSize, cb) {
     if(!page) {
-		page = 1;
-	}
-	if(!pageSize) {
-		pageSize = 10;
-	} else {
+        page = 1;
+    }
+    if(!pageSize) {
+        pageSize = 10;
+    } else {
         pageSize = parseInt(pageSize);
     }
-	var skip = pageSize * (page - 1);
+    var skip = pageSize * (page - 1);
     FloorModel.find({area:area}).skip(skip).limit(pageSize).exec().then(function(floors) {
         cb(null, floors);
-	}).catch(function(err) {
+    }).catch(function(err) {
         logger.error(err);
         cb(Code.DATABASE);
-	});
+    });
 };
 
 /**
@@ -473,14 +477,14 @@ HomeRemote.prototype.getFloorByFloorId = function(floorId, cb) {
  */
 HomeRemote.prototype.getFloorModelList = function(floorUrl, page, pageSize, cb) {
     if(!page) {
-		page = 1;
-	}
-	if(!pageSize) {
-		pageSize = 10;
-	} else {
+        page = 1;
+    }
+    if(!pageSize) {
+        pageSize = 10;
+    } else {
         pageSize = parseInt(pageSize);
     }
-	var skip = pageSize * (page - 1);
+    var skip = pageSize * (page - 1);
     FloorModelModel.find({}).skip(skip).limit(pageSize).exec().then(function(floorModels) {
         cb(null, floorModels);
     }).catch(function(err) {
@@ -531,16 +535,16 @@ HomeRemote.prototype.checkHomeWifi = function(homeId, layerName, cb) {
  */
 HomeRemote.prototype.bindCenterBoxToLayer = function(homeId, layerName, centerBoxSerialno, cb) {
     HomeModel.update({
-		_id: homeId,
-		"layers.name": layerName
-	}, {$set: {"layers.$.centerBoxSerialno": centerBoxSerialno}}, function (err, docs) {
-		if (err) {
-			logger.error(err);
+        _id: homeId,
+        "layers.name": layerName
+    }, {$set: {"layers.$.centerBoxSerialno": centerBoxSerialno}}, function (err, docs) {
+        if (err) {
+            logger.error(err);
             cb(err);
-		} else {
+        } else {
             cb(null);
-		}
-	});
+        }
+    });
 };
 
 /**
@@ -553,14 +557,14 @@ HomeRemote.prototype.bindCenterBoxToLayer = function(homeId, layerName, centerBo
  */
 HomeRemote.prototype.addCenterBox = function(userMobile, ssid, passwd, serialno, cb) {
     var CenterBoxEntity = new CenterBoxModel({userMobile: userMobile, ssid: ssid, passwd: passwd, serialno: serialno});
-	CenterBoxEntity.save(function (err) {
-		if (err) {
-			logger.error(err);
+    CenterBoxEntity.save(function (err) {
+        if (err) {
+            logger.error(err);
             cb(err);
-		} else {
-			cb(null);
-		}
-	});
+        } else {
+            cb(null);
+        }
+    });
 };
 
 /**
@@ -614,14 +618,14 @@ HomeRemote.prototype.addTerminal = function(userMobile, ssid, passwd, serialno, 
         ssid:ssid,
         passwd:passwd
     });
-	terminalEntity.save(function (err, terminal) {
-		if (err) {
-			logger.error(err);
+    terminalEntity.save(function (err, terminal) {
+        if (err) {
+            logger.error(err);
             cb(err);
-		} else {
-			cb(null, terminal);
-		}
-	});
+        } else {
+            cb(null, terminal);
+        }
+    });
 };
 
 /**
@@ -632,21 +636,21 @@ HomeRemote.prototype.addTerminal = function(userMobile, ssid, passwd, serialno, 
  * @return {[type]}           [description]
  */
 HomeRemote.prototype.bindTerminalToHomeGrid = function (homeGridId, terminalId, cb) {
-	HomeGridModel.update({_id: new Object(homeGridId)}, {$set: {"terminalId": terminalId, "terminal":terminalId}}, function (err, docs) {
-		if (err) {
-			logger.error(err);
-			cb(err);
-		} else {
-			TerminalModel.update({_id: new Object(terminalId)}, {$set: {"homeGridId": homeGridId}}, function (err, docs) {
-				if (err) {
+    HomeGridModel.update({_id: new Object(homeGridId)}, {$set: {"terminalId": terminalId, "terminal":terminalId}}, function (err, docs) {
+        if (err) {
+            logger.error(err);
+            cb(err);
+        } else {
+            TerminalModel.update({_id: new Object(terminalId)}, {$set: {"homeGridId": homeGridId}}, function (err, docs) {
+                if (err) {
                     logger.error(err);
-        			cb(err);
-				} else {
+                    cb(err);
+                } else {
                     cb();
-				}
-			});
-		}
-	});
+                }
+            });
+        }
+    });
 };
 
 /**
@@ -657,23 +661,35 @@ HomeRemote.prototype.bindTerminalToHomeGrid = function (homeGridId, terminalId, 
  */
 HomeRemote.prototype.getDeviceBrands = function(type, callback) {
     RDeviceModel.distinct("brand", {devType: type}, function (err, brands) {
-        console.log("........................." + err);
         if(err) {
             logger.error(err);
             callback(err);
         } else {
             callback(null, brands);
         }
-	});
+    });
 };
 
-HomeRemote.prototype.getDeviceModels = function(brand, callback) {
-    RDeviceModel.distinct("typeName", {brand: brand}, function (err, deviceModels) {
+HomeRemote.prototype.getDeviceModels = function(brand, type, callback) {
+    RDeviceModel.find({brand: brand, devType:type}, function (err, deviceModels) {
         if (err) {
             logger.error(err);
             callback(err);
         } else {
             callback(null, deviceModels);
+        }
+    });
+};
+
+/**
+ * 获取红外码
+ */
+HomeRemote.prototype.getTestIrCode = function(tid, inst, callback) {
+    RinfraredModel.findOne({typeID:tid, inst:inst}, function(err, ircode) {
+        if(err) {
+            callback(err);
+        } else {
+            callback(null, ircode);
         }
     });
 };

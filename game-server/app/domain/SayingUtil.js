@@ -23,7 +23,7 @@ SayingUtil.translateStatus = function(equipment) {
         } else {
             if(equipment.e_type == "空调") {
                 ret += "打开,并设置为" + equipment.ac_model + ",";
-                if(equipment.ac_windspeed == 0) {
+                if(equipment.ac_windspeed === 0) {
                     ret += "自动,";
                 } else if(equipment.ac_windspeed == 1) {
                     ret += "小风,";
@@ -47,4 +47,3 @@ SayingUtil.translateStatus = function(equipment) {
 
     return ret;
 };
-

@@ -1,8 +1,10 @@
 var UserModel = require('../../../mongodb/models/UserModel');
 var CenterBoxModel = require('../../../mongodb/models/CenterBoxModel');
+var WaitingUserChoiseModel = require('../../../mongodb/models/WaitingUserChoiseModel');
 var StringUtil = require('../../../util/StringUtil.js');
 var logger = require('pomelo-logger').getLogger('pomelo',  __filename);
 var Promise = require('bluebird');
+var Moment = require('moment');
 
 module.exports = function(app) {
     return new UserRemote(app);
@@ -123,6 +125,13 @@ UserRemote.prototype.userInfoCheck = function(mobile, cb) {
     });
 };
 
+/**
+ * 更新用户信息
+ * @param  {[type]}   mobile [description]
+ * @param  {[type]}   name   [description]
+ * @param  {Function} cb     [description]
+ * @return {[type]}          [description]
+ */
 UserRemote.prototype.updateUserInfo = function(mobile, name, cb) {
     var conditions = {
         mobile: mobile
@@ -137,6 +146,66 @@ UserRemote.prototype.updateUserInfo = function(mobile, name, cb) {
             console.log(error);
         } else {
             cb(0);
+        }
+    });
+};
+
+/**
+ * 等待用户选择
+ * @return {[type]} [description]
+ */
+UserRemote.prototype.waitingForUserToChoose = function(loccode, runtimeinfo_id, optionList, userMobile, cb) {
+    var entity = new WaitingUserChoiseModel({
+        loccode:loccode,
+        runtimeinfo_id:runtimeinfo_id,
+        optionList:optionList,
+        userMobile:userMobile
+    });
+    console.log(JSON.stringify(entity));
+    entity.save(function(err) {
+        if(err) {
+            cb(err);
+        } else {
+            console.log("保存&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+            cb(null);
+        }
+    });
+};
+
+/**
+ * 查找用户10分钟内的所有上下文
+ * @param  {[type]}   userMobile [description]
+ * @param  {[type]}   words      [description]
+ * @param  {Function} cb         [description]
+ * @return {[type]}              [description]
+ */
+UserRemote.prototype.checkIfChoise = function(userMobile, words, cb) {
+    var now = new Date();
+    var min = now.getMinutes();
+    min = min - 1000;
+    now.setMinutes(min);
+    WaitingUserChoiseModel.find({addTime:{"$gte":now}, userMobile:userMobile, optionList:words, answered:false}, function(err, list) {
+        if(err) {
+            cb(err);
+        } else {
+            cb(null, list);
+        }
+    });
+};
+
+/**
+ * 将回答设为已经回答过
+ * @param  {[type]}   userMobile [description]
+ * @param  {[type]}   words      [description]
+ * @param  {Function} cb         [description]
+ * @return {[type]}              [description]
+ */
+UserRemote.prototype.answered = function(id, cb) {
+    WaitingUserChoiseModel.update({_id:new Object(id)}, {$set:{answered:true}}, function(err) {
+        if(err) {
+            cb(err);
+        } else {
+            cb(null);
         }
     });
 };

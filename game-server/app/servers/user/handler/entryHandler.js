@@ -62,9 +62,10 @@ Handler.prototype.auth = function (msg, session, next) {
         }, function(cb) {
             self.app.get('sessionService').kick(uid, cb);
         }, function(cb) {
-            self.app.get('globalChannelService').add('testChannel', uid, 'user-server-1', function() {
-                session.bind(uid, cb);
-            });
+            // self.app.get('globalChannelService').add('testChannel', uid, 'user-server-1', function() {
+            //     session.bind(uid, cb);
+            // });
+            session.bind(uid, cb);
         }, function(cb) {
             session.set('serverId', 'user-server-1');
             session.on('closed', onUserLeave.bind(null, self.app));

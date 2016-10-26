@@ -5,6 +5,8 @@ var TSensorDataModel = require('../../../mongodb/models/TSensorDataModel');
 var UserModel = require('../../../mongodb/models/UserModel');
 var async = require("async");
 var logger = require('pomelo-logger').getLogger('pomelo',  __filename);
+var ResponseUtil = require("../../../util/ResponseUtil");
+var Code = require('../../../domain/code');
 
 
 module.exports = function(app) {
@@ -80,7 +82,7 @@ Handler.prototype.socketMsg = function(msg, session, next) {
     var data = msg.data;
 
     var param = {
-        serailno:serialno,
+		serialno:serialno,
         command:command,
         code:code,
         terminalCode:terminalCode,
@@ -89,7 +91,7 @@ Handler.prototype.socketMsg = function(msg, session, next) {
         data:data
     };
 
-    logger.info("接收到主控信息:command___" + command + ":serailno___" + serailno + ":code___" + code + ":termianlCode___" + terminalCode + ":ipAddress___" + ipAddress + ":port___" + port + ":" + new Date());
+    logger.info("接收到主控信息:command___" + command + ":serailno___" + serialno + ":code___" + code + ":termianlCode___" + terminalCode + ":ipAddress___" + ipAddress + ":port___" + port + ":" + new Date());
 
     async.waterfall([
         /** 第一步, 接收到主控的消息，获取主控的相关数据 **/
@@ -103,23 +105,19 @@ Handler.prototype.socketMsg = function(msg, session, next) {
             });
         },
         function(centerBox, param, callback) {
-            var result = {
-                userMobile:centerBox.userMobile
-            };
+            var result = {};
             if(param.command === '1000') {
                 result = {
                     command: '1000',
                     msg: '控制器上线, 串号:' + param.serialno,
                     serialno : param.serialno
                 };
-                callback(null, result);
             } else if (param.command === '999') {
                 result = {
                     command: '999',
                     msg: '控制器下线, 串号:' + param.serialno,
                     serialno: param.serialno
                 };
-                callback(null, result);
             } else if (param.command === '998') {
                 result = {
                     command:'998',
@@ -127,7 +125,6 @@ Handler.prototype.socketMsg = function(msg, session, next) {
                     terminalCode : param.terminalCode,
                     msg: '终端下线, 终端编码:' + param.terminalCode
                 };
-                callback(null, result);
             } else if(param.command === '1001') {
                 result = {
                     command:'1001',
@@ -135,7 +132,6 @@ Handler.prototype.socketMsg = function(msg, session, next) {
                     centerBoxSerialno:param.serialno,
                     msg: '终端上线, 终端编码:' + param.terminalCode
                 };
-                callback(null, result);
             } else if(param.command == '2000') {
                 result = {
                     command:'2000',
@@ -143,7 +139,6 @@ Handler.prototype.socketMsg = function(msg, session, next) {
                     port : param.port,
                     data:param.data
                 };
-                callback(null, result);
             } else if(param.command == '2001') {
                 result = {
                     command:'2001',
@@ -151,7 +146,6 @@ Handler.prototype.socketMsg = function(msg, session, next) {
                     port : param.port,
                     data: param.data
                 };
-                callback(null, result);
             } else if(param.command == '2002') {
                 result = {
                     command:'2002',
@@ -159,7 +153,6 @@ Handler.prototype.socketMsg = function(msg, session, next) {
                     port : param.port,
                     data:param.data
                 };
-                callback(null, result);
             } else if(param.command == '2005') {
                 var tCode = param.data.substring(0, 2);
                 var humidity = parseInt(param.data.substring(6, 8), 16);
@@ -213,7 +206,7 @@ Handler.prototype.socketMsg = function(msg, session, next) {
                 var centerBoxSensorData = param.data;
                 var temp = centerBoxSensorData.substring(2, 4) + centerBoxSensorData.substring(0, 2);
                 temp = parseInt(temp, 16) / 10;
-                var wet = centerBoxSensorData.substring(6, 8) + sencenterBoxSensorDatasorData.substring(4, 6);
+                var wet = centerBoxSensorData.substring(6, 8) + centerBoxSensorData.substring(4, 6);
                 wet = parseInt(wet, 16) / 10;
                 var co = centerBoxSensorData.substring(10, 12) + centerBoxSensorData.substring(8, 10);
                 co = parseInt(co, 16);
@@ -247,13 +240,13 @@ Handler.prototype.socketMsg = function(msg, session, next) {
             }
 
 
-            callback(null, result);
+            callback(null, result, centerBox.userMobile);
         },
 
-        function(result, callback) {
-            logger.debug("#############推送消息############" + result.userMobile + "\n" + JSON.stringify(result));
+        function(result, userMobile, callback) {
+            logger.debug("#############推送消息############" + userMobile + "\n" + JSON.stringify(result));
             self.app.get('channelService').pushMessageByUids('onMsg', result, [{
-                uid: result.userMobile,
+                uid: userMobile,
                 sid: 'user-server-1'
             }]);
         }
