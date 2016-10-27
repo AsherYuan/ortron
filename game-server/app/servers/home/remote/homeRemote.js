@@ -542,7 +542,13 @@ HomeRemote.prototype.bindCenterBoxToLayer = function(homeId, layerName, centerBo
             logger.error(err);
             cb(err);
         } else {
-            cb(null);
+            CenterBoxModel.update({serialno:centerBoxSerialno}, {$set:{homeId:homeId, layerName:layerName}}, function(err) {
+                if(err) {
+                    cb(err);
+                } else {
+                    cb(null);
+                }
+            });
         }
     });
 };
@@ -597,6 +603,21 @@ HomeRemote.prototype.centerBoxSerailnoExist = function(serialno, cb) {
 HomeRemote.prototype.getCenterBoxBySerailno = function(serialno, cb) {
     CenterBoxModel.findOne({serialno:serialno}).exec().then(function(centerBox) {
         cb(null, centerBox);
+    }).catch(function(err) {
+        logger.error(err);
+        cb(err);
+    });
+};
+
+/**
+ * 根据serialno获取主控信息
+ * @param  {[type]}   serialno [description]
+ * @param  {Function} cb       [description]
+ * @return {[type]}            [description]
+ */
+HomeRemote.prototype.getCenterBoxByUserMobile = function(userMobile, cb) {
+    CenterBoxModel.find({userMobile:userMobile}).exec().then(function(centerBoxs) {
+        cb(null, centerBoxs);
     }).catch(function(err) {
         logger.error(err);
         cb(err);
@@ -757,6 +778,69 @@ HomeRemote.prototype.saveSensorData = function(centerBoxId, temperature, humidit
             callback(err);
         } else {
             callback(null);
+        }
+    });
+};
+
+/**
+ * 获取没有绑定的主控
+ * @param  {[type]}   userMobile [description]
+ * @param  {Function} callback   [description]
+ * @return {[type]}              [description]
+ */
+HomeRemote.prototype.getNotBindedCenterBoxs = function(userMobile, callback) {
+    CenterBoxModel.find({userMobile:userMobile}, function(err, list) {
+        if(err) {
+            callback(err);
+        } else {
+            var centerBoxSerialnos = [];
+            for(var i=0;i<list.length;i++) {
+                centerBoxSerialnos.push(list[i].serialno);
+            }
+            HomeModel.find({"layers.centerBoxSerialno":{$in:centerBoxSerialnos}}, function(err, homes) {
+                if(err) {
+                    console.log(err);
+                } else {
+                    var result = [];
+                    var flag = false;
+                    for(var x=0; x<list.length; x++) {
+                        for(var y=0;y<homes.length; y++) {
+                            if(!!homes[y].layers) {
+                                for(var z=0;z<homes[y].layers.length;z++) {
+                                    if(list[x].serialno === homes[y].layers[z].centerBoxSerialno) {
+                                        flag = true;
+                                    }
+                                }
+                            }
+                        }
+
+                        if(!flag) {
+                            result.push(list[x]);
+                        }
+                    }
+                    callback(null, result);
+                }
+            });
+        }
+    });
+};
+
+HomeRemote.prototype.getAllTerminals = function(userMobile, callback) {
+    CenterBoxModel.find({userMobile:userMobile}, function(err, cbs) {
+        if(err) {
+            callback(err);
+        } else {
+            var serialnos = [];
+            for(var i=0;i<cbs.length;i++) {
+                serialnos.push(cbs[i].serialno);
+            }
+            TerminalModel.find({centerBoxSerialno:{$in:serialnos}}, function(err, terminals) {
+                if(err) {
+                    callback(err);
+                } else {
+                    callback(null, terminals);
+                }
+            });
         }
     });
 };

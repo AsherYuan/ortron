@@ -25,7 +25,9 @@ var CenterBoxSchema = new mongoose.Schema({
     onlineConfirmed: {
         type: Boolean,
         default: false
-    }
+    },
+    homeId:String,
+    layerName:String
 });
 var CenterBoxModel = mongoose.model("centerBox", CenterBoxSchema);
 module.exports = CenterBoxModel;

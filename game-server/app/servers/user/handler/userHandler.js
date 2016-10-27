@@ -86,6 +86,17 @@ Handler.prototype.getUserInfo = function (msg, session, next) {
 					next(null, ResponseUtil.resp(Code.DATABASE));
 				} else {
 					user.homeInfo = homes;
+					cb(null, user);
+				}
+			});
+		},
+		/* 获取用户主控信息 */
+		function(user, cb) {
+			self.app.rpc.home.homeRemote.getCenterBoxByUserMobile(session, userMobile, function(err, centerBoxs) {
+				if(err) {
+					next(null, ResponseUtil.resp(Code.DATABASE));
+				} else {
+					user.centerBox = centerBoxs;
 					next(null, ResponseUtil.resp(Code.OK, user));
 				}
 			});
@@ -526,7 +537,7 @@ Handler.prototype.checkHomeWifi = function(msg, session, next) {
  * @param {[type]}   session [description]
  * @param {Function} next    [description]
  */
-Handler.prototype.addCenterBox = function (msg, session, next) {
+Handler.prototype.x = function (msg, session, next) {
 	var self = this;
 
 	var userMobile = session.uid;
@@ -612,7 +623,7 @@ Handler.prototype.bindCenterBoxToLayer = function (msg, session, next) {
 				if(!!centerBox && !!centerBox.homeId && !!centerBox.layerName) {
 					next(null, ResponseUtil.resp(Code.STRUCTURE.CENTERBOX_OCCUPIED));
 				} else {
-					callback(null, serilno, homeId, layerName);
+					callback(null, serialno, homeId, layerName);
 				}
 			});
 		},
@@ -627,6 +638,57 @@ Handler.prototype.bindCenterBoxToLayer = function (msg, session, next) {
 		}
 	], function(err, result) {
 		next(null, ResponseUtil.resp(Code.DATABASE));
+	});
+};
+
+/**
+ * 获取没有绑定楼层的主控
+ * @param  {[type]}   msg     [description]
+ * @param  {[type]}   session [description]
+ * @param  {Function} next    [description]
+ * @return {[type]}           [description]
+ */
+Handler.prototype.getNotBindedCenterBoxs = function(msg, session, next) {
+	var self = this;
+	var userMobile = session.uid;
+	self.app.rpc.home.homeRemote.getNotBindedCenterBoxs(session, userMobile, function(err, centerBoxs) {
+		if(err) {
+			next(null, ResponseUtil.resp(Code.DATABASE));
+		} else {
+			next(null, ResponseUtil.resp(Code.OK, centerBoxs));
+		}
+	});
+};
+
+/**
+ * 获取没有绑定楼层的终端
+ * @param  {[type]}   msg     [description]
+ * @param  {[type]}   session [description]
+ * @param  {Function} next    [description]
+ * @return {[type]}           [description]
+ */
+Handler.prototype.getTerminals = function(msg, session, next) {
+	var self = this;
+	var centerBoxSerialno = msg.centerBoxSerialno;
+	var userMobile = session.uid;
+	self.app.rpc.home.homeRemote.getNotBindedTerminals(session, centerBoxSerialno, userMobile, function(err, centerBoxs) {
+		if(err) {
+			next(null, ResponseUtil.resp(Code.DATABASE));
+		} else {
+			next(null, ResponseUtil.resp(Code.OK, centerBoxs));
+		}
+	});
+};
+
+Handler.prototype.getAllTerminals = function(msg, session, next) {
+	var self = this;
+	var userMobile = session.uid;
+	self.app.rpc.home.homeRemote.getAllTerminals(session, userMobile, function(err, centerBoxs) {
+		if(err) {
+			next(null, ResponseUtil.resp(Code.DATABASE));
+		} else {
+			next(null, ResponseUtil.resp(Code.OK, centerBoxs));
+		}
 	});
 };
 
@@ -662,7 +724,6 @@ Handler.prototype.addTerminal = function (msg, session, next) {
 					if(err) {
 						callback(err);
 					} else {
-						console.log(JSON.stringify(terminal));
 						callback(null, terminal._id, homeGridId);
 					}
 				});
@@ -989,7 +1050,7 @@ Handler.prototype.userSaySomething = function (msg, session, next) {
 
 	async.waterfall([
 		/** 第一步, 预置操作 图片和链接 **/
-		function(callback) {
+			function(callback) {
 			if(words === '图片') {
 				answer.push("https://timgsa.baidu.com/timg?image&quality=80&size=b10000_10000&sec=1471605536296&di=31deda21579c79876b8adc8a0d0fbf10&imgtype=jpg&src=http%3A%2F%2Fpic65.nipic.com%2Ffile%2F20150503%2F7487939_220838368000_2.jpg");
 				data.answer = answer;
@@ -1006,7 +1067,7 @@ Handler.prototype.userSaySomething = function (msg, session, next) {
 		},
 
 		/** 第二步，查找用户具体信息  **/
-		function(userMobile, callback) {
+			function(userMobile, callback) {
 			self.app.rpc.user.userRemote.getUserInfoByMobile(session, userMobile, function(err, user) {
 				if(err) {
 					callback(err);
@@ -1017,7 +1078,7 @@ Handler.prototype.userSaySomething = function (msg, session, next) {
 		},
 
 		/** 第三步，查找对应家庭信息 **/
-		function(user, callback) {
+			function(user, callback) {
 			self.app.rpc.home.homeRemote.getHomeInfoByMobile(session, user.mobile, function(err, homes) {
 				if(err) {
 					callback(err);
@@ -1028,7 +1089,7 @@ Handler.prototype.userSaySomething = function (msg, session, next) {
 		},
 
 		/** 第四步，访问JAVA服务器，获取智能解析结果 **/
-		function(user, homes, callback) {
+			function(user, homes, callback) {
 			if(!!homes) {
 				var userId = user._id;
 				// TODO 分析当前操作的home
@@ -1082,7 +1143,7 @@ Handler.prototype.userSaySomething = function (msg, session, next) {
 		},
 
 		/** 第五步, 解析smart center的返回 **/
-		function(user, homes, body, callback) {
+			function(user, homes, body, callback) {
 			var javaResult = JSON.parse(body);
 			var data = {};
 			console.log("----------------------------------------------------------" + JSON.stringify(javaResult));
