@@ -2,11 +2,11 @@ var Code = require('../../../domain/code');
 
 var AccountModel = require('../../../mongodb/estateModels/AccountModel');
 
-module.exports = function (app) {
+module.exports = function(app) {
     return new Handler(app);
 };
 
-var Handler = function (app) {
+var Handler = function(app) {
     this.app = app;
 };
 
@@ -17,7 +17,7 @@ var Handler = function (app) {
  * @param session
  * @param next
  */
-Handler.prototype.login = function (msg, session, next) {
+Handler.prototype.login = function(msg, session, next) {
     var self = this;
     var username = msg.username;
     var password = msg.password;
@@ -27,10 +27,15 @@ Handler.prototype.login = function (msg, session, next) {
         next(null, ResponseUtil.resp(Code.ESTATE.PASSWORD_IS_BLANK));
     } else {
         self.app.rpc.estate.estateRemote.login(session, username, password, function(err, token) {
-            if(err) {
+            if (err) {
                 next(null, err);
             } else {
-                next(null, {code:200, codetxt:'操作成功', data:manager, token:token});
+                next(null, {
+                    code: 200,
+                    codetxt: '操作成功',
+                    data: manager,
+                    token: token
+                });
             }
         });
     }
@@ -47,7 +52,9 @@ Handler.prototype.tell = function(msg, session, next) {
         console.log("list:" + list);
     });
 
-    statusService.pushByUids('13600000001', 'user.userHandler.toSend', {hello:'haha'}, function(err, fails) {
+    statusService.pushByUids('13600000001', 'user.userHandler.toSend', {
+        hello: 'haha'
+    }, function(err, fails) {
         console.log('111:' + err);
         console.log('222:' + fails);
     });

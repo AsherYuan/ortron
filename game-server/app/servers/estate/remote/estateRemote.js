@@ -1,4 +1,4 @@
-var logger = require('pomelo-logger').getLogger('pomelo',  __filename);
+var logger = require('pomelo-logger').getLogger('pomelo', __filename);
 var AccountModel = require("../../../mongodb/estateModels/AccountModel");
 
 var async = require('async');
@@ -19,15 +19,17 @@ module.exports = function(app) {
  * @return {[type]}          [description]
  */
 EstateRemote.prototype.login = function(username, password, cb) {
-    AccountModel.findOne({username:username}, function(err, manager) {
-        if(err) {
+    AccountModel.findOne({
+        username: username
+    }, function(err, manager) {
+        if (err) {
             logger.error(err);
             cb(Code.DATABASE);
         } else {
             if (!manager) {
                 cb(Code.ESTATE.MANGAER_NOT_EXIST);
             } else {
-                if(manager.passord === password) {
+                if (manager.passord === password) {
                     var token = tokenManager.create(username, authConfig.authSecret);
                     cb(null, token);
                 } else {

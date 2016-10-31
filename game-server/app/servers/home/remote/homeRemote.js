@@ -1,4 +1,4 @@
-var logger = require('pomelo-logger').getLogger('pomelo',  __filename);
+var logger = require('pomelo-logger').getLogger('pomelo', __filename);
 var SayingUtil = require('../../../domain/SayingUtil');
 var HomeModel = require("../../../mongodb/models/HomeModel");
 var HomeWifiModel = require('../../../mongodb/models/HomeWifiModel');
@@ -35,7 +35,7 @@ module.exports = function(app) {
  */
 HomeRemote.prototype.getHomeById = function(homeId, cb) {
     HomeModel.findById(homeId).exec().then(function(home) {
-        cb(home);
+        cb(null, home);
     }).catch(function(err) {
         logger.error(err);
     });
@@ -49,7 +49,9 @@ HomeRemote.prototype.getHomeById = function(homeId, cb) {
  * @return {[type]}              [description]
  */
 HomeRemote.prototype.getHomeListByMobile = function(userMobile, cb) {
-    HomeModel.find({userMobile:userMobile}).exec().then(function(homes) {
+    HomeModel.find({
+        userMobile: userMobile
+    }).exec().then(function(homes) {
         cb(homes);
     }).catch(function(err) {
         logger.error(err);
@@ -64,7 +66,10 @@ HomeRemote.prototype.getHomeListByMobile = function(userMobile, cb) {
  * @return {[type]}              [description]
  */
 HomeRemote.prototype.getHomeByAddress = function(floorId, homeNumber, cb) {
-    HomeModel.findOne({floorId:floorId, homeNumber:homeNumber}).exec().then(function(home) {
+    HomeModel.findOne({
+        floorId: floorId,
+        homeNumber: homeNumber
+    }).exec().then(function(home) {
         cb(home);
     }).catch(function(err) {
         logger.error(err);
@@ -101,8 +106,8 @@ HomeRemote.prototype.insertHome = function(floorId, floorName, userMobile, homeN
         }]
     });
 
-    homeEntity.save(function (err, home) {
-        if(err) {
+    homeEntity.save(function(err, home) {
+        if (err) {
             logger.error(err);
         } else {
             cb(home);
@@ -123,14 +128,20 @@ HomeRemote.prototype.insertHome = function(floorId, floorName, userMobile, homeN
  */
 HomeRemote.prototype.insertLayer = function(homeId, name, room, hall, toilet, kitchen, cb) {
     var layer = {
-        name:name,
-        room:room,
-        hall:hall,
-        toilet:toilet,
-        kitchen:kitchen
+        name: name,
+        room: room,
+        hall: hall,
+        toilet: toilet,
+        kitchen: kitchen
     };
-    HomeModel.update({_id:new Object(homeId)}, {$addToSet:{layers:layer}}, function(err, home) {
-        if(err) {
+    HomeModel.update({
+        _id: new Object(homeId)
+    }, {
+        $addToSet: {
+            layers: layer
+        }
+    }, function(err, home) {
+        if (err) {
             logger.error(err);
         } else {
             cb(home);
@@ -148,8 +159,12 @@ HomeRemote.prototype.insertLayer = function(homeId, name, room, hall, toilet, ki
  * @return {[type]}             [description]
  */
 HomeRemote.prototype.checkHomeGridExist = function(homeId, layerName, name, cb) {
-    HomeGridModel.find({homeId:homeId, layerName:layerName, name:name}).exec().then(function(grids) {
-        if(!!grids && grids.length > 0) {
+    HomeGridModel.find({
+        homeId: homeId,
+        layerName: layerName,
+        name: name
+    }).exec().then(function(grids) {
+        if (!!grids && grids.length > 0) {
             cb(true);
         } else {
             cb(false);
@@ -169,10 +184,10 @@ HomeRemote.prototype.insertHomeGrid = function(homeId, layerName, gridType, dord
         layerName: layerName,
         gridType: 'room',
         dorder: i,
-        name:name
+        name: name
     });
-    homeGridEntity.save(function (err, homeGrid) {
-        if(err) {
+    homeGridEntity.save(function(err, homeGrid) {
+        if (err) {
             logger.error(err);
         } else {
             cb(homeGrid);
@@ -188,16 +203,16 @@ HomeRemote.prototype.insertHomeGrid = function(homeId, layerName, gridType, dord
  */
 HomeRemote.prototype.autoRanderHomeGrid = function(home, cb) {
     var renderHomeGrid = function(homeId, layerName, gridType, dorder, name) {
-        return new Promise(function (resolve, reject) {
+        return new Promise(function(resolve, reject) {
             var homeGridEntity = new HomeGridModel({
                 homeId: homeId,
                 layerName: layerName,
                 gridType: gridType,
                 dorder: dorder,
-                name:name
+                name: name
             });
-            homeGridEntity.save(function (err, homeGrid) {
-                if(err) {
+            homeGridEntity.save(function(err, homeGrid) {
+                if (err) {
                     logger.error(err);
                     reject();
                 } else {
@@ -207,17 +222,17 @@ HomeRemote.prototype.autoRanderHomeGrid = function(home, cb) {
         });
     };
     var toRandering = [];
-    if(!!home) {
-        for(var i=0;i<home.layers[0].room;i++) {
+    if (!!home) {
+        for (var i = 0; i < home.layers[0].room; i++) {
             toRandering.push(renderHomeGrid(home._id, home.layers[0].name, 'room', i, '房间' + i));
         }
-        for(var j=0;j<home.layers[0].hall;j++) {
+        for (var j = 0; j < home.layers[0].hall; j++) {
             toRandering.push(renderHomeGrid(home._id, home.layers[0].name, 'hall', j, '客厅' + j));
         }
-        for(var k=0;k<home.layers[0].toilet;k++) {
+        for (var k = 0; k < home.layers[0].toilet; k++) {
             toRandering.push(renderHomeGrid(home._id, home.layers[0].name, 'toilet', k, '卫生间' + k));
         }
-        for(var l=0;l<home.layers[0].kitchen;l++) {
+        for (var l = 0; l < home.layers[0].kitchen; l++) {
             toRandering.push(renderHomeGrid(home._id, home.layers[0].name, 'kitchen', l, '厨房' + l));
         }
     }
@@ -235,7 +250,12 @@ HomeRemote.prototype.autoRanderHomeGrid = function(home, cb) {
  * @return {[type]}                     [description]
  */
 HomeRemote.prototype.getHomeGridList = function(homeId, layerName, cb) {
-    HomeGridModel.find({homeId: homeId, layerName: layerName}).populate('terminal').sort({dorder:1}).exec(function (err, grids) {
+    HomeGridModel.find({
+        homeId: homeId,
+        layerName: layerName
+    }).populate('terminal').sort({
+        dorder: 1
+    }).exec(function(err, grids) {
         if (err) {
             logger.error(err);
         } else {
@@ -253,8 +273,15 @@ HomeRemote.prototype.getHomeGridList = function(homeId, layerName, cb) {
  * @return {[type]}            [description]
  */
 HomeRemote.prototype.updateGrid = function(gridId, gridType, name, cb) {
-    HomeGridModel.update({_id:new Object(gridId)}, {$set:{gridType:gridType, name:name}}, function(err) {
-        if(err) {
+    HomeGridModel.update({
+        _id: new Object(gridId)
+    }, {
+        $set: {
+            gridType: gridType,
+            name: name
+        }
+    }, function(err) {
+        if (err) {
             logger.error(err);
             cb(err);
         } else {
@@ -271,16 +298,21 @@ HomeRemote.prototype.updateGrid = function(gridId, gridType, name, cb) {
  */
 HomeRemote.prototype.getHomeInfoByMobile = function(userMobile, cb) {
     var renderHomeLayerInfo = function(box) {
-        return new Promise(function (resolve, reject) {
-            HomeWifiModel.find({homeId:box.homeId, layerName:box.layerName}, function(err, homeWifis) {
-                if(err) {
+        return new Promise(function(resolve, reject) {
+            HomeWifiModel.find({
+                homeId: box.homeId,
+                layerName: box.layerName
+            }, function(err, homeWifis) {
+                if (err) {
                     logger.error(err);
                     reject(err);
                 } else {
                     box.homeWifi = homeWifis;
-                    if(!!box.serialno) {
-                        CenterBoxModel.findOne({serialno:new Object(box.serialno)}, function(err, centerBox) {
-                            if(err) {
+                    if (!!box.serialno) {
+                        CenterBoxModel.findOne({
+                            serialno: new Object(box.serialno)
+                        }, function(err, centerBox) {
+                            if (err) {
                                 logger.error(err);
                                 reject(err);
                             } else {
@@ -296,16 +328,18 @@ HomeRemote.prototype.getHomeInfoByMobile = function(userMobile, cb) {
         });
     };
 
-    HomeModel.find({userMobile:userMobile}).exec().then(function(homes) {
+    HomeModel.find({
+        userMobile: userMobile
+    }).exec().then(function(homes) {
         var toRandering = [];
-        if(!!homes) {
-            for(var i=0; i<homes.length; i++) {
-                if(!!homes[i].layers) {
-                    for(var j=0;j<homes[i].layers.length;j++) {
+        if (!!homes) {
+            for (var i = 0; i < homes.length; i++) {
+                if (!!homes[i].layers) {
+                    for (var j = 0; j < homes[i].layers.length; j++) {
                         var box = {
-                            homeId:homes[i]._id,
-                            layerName:homes[i].layers[j].name,
-                            serialno:homes[i].layers[j].centerBoxSerialno
+                            homeId: homes[i]._id,
+                            layerName: homes[i].layers[j].name,
+                            serialno: homes[i].layers[j].centerBoxSerialno
                         };
                         toRandering.push(renderHomeLayerInfo(box));
                     }
@@ -330,8 +364,10 @@ HomeRemote.prototype.getHomeInfoByMobile = function(userMobile, cb) {
  * @return {[type]}              [description]
  */
 HomeRemote.prototype.BoxList = function(userMobile, withFamily, cb) {
-    CenterBoxModel.find({userMobile:userMobile}, function(err, centerBoxs) {
-        if(err) {
+    CenterBoxModel.find({
+        userMobile: userMobile
+    }, function(err, centerBoxs) {
+        if (err) {
             logger.error(err);
         } else {
             cb(centerBoxs);
@@ -346,8 +382,10 @@ HomeRemote.prototype.BoxList = function(userMobile, withFamily, cb) {
  * @return {[type]}            [description]
  */
 HomeRemote.prototype.getTerminaListByCenterBox = function(serialno, cb) {
-    TerminalModel.find({centerBoxSerialno:serialno}, function(err, terminals) {
-        if(err) {
+    TerminalModel.find({
+        centerBoxSerialno: serialno
+    }, function(err, terminals) {
+        if (err) {
             logger.error(err);
             cb(err);
         } else {
@@ -363,8 +401,11 @@ HomeRemote.prototype.getTerminaListByCenterBox = function(serialno, cb) {
  * @return {[type]}            [description]
  */
 HomeRemote.prototype.getTerminaListByCenterBoxAndCode = function(serialno, code, cb) {
-    TerminalModel.find({centerBoxSerialno:serialno, code:code}, function(err, terminals) {
-        if(err) {
+    TerminalModel.find({
+        centerBoxSerialno: serialno,
+        code: code
+    }, function(err, terminals) {
+        if (err) {
             logger.error(err);
             cb(err);
         } else {
@@ -386,7 +427,7 @@ HomeRemote.prototype.getDeviceList = function(homeId, layerName, userMobile, cb)
         UserEquipmentModel.find({
             home_id: homeId,
             layerName: layerName
-        }).populate('homeGridId').exec(function (err, docs) {
+        }).populate('homeGridId').exec(function(err, docs) {
             if (err) {
                 logger.error(err);
             } else {
@@ -394,12 +435,18 @@ HomeRemote.prototype.getDeviceList = function(homeId, layerName, userMobile, cb)
             }
         });
     } else {
-        HomeModel.find({userMobile: userMobile}, function (err, homes) {
+        HomeModel.find({
+            userMobile: userMobile
+        }, function(err, homes) {
             var homeIds = [];
             for (var i = 0; i < homes.length; i++) {
                 homeIds.push(homes[i]._id);
             }
-            UserEquipmentModel.find({home_id: {$in: homeIds}}).populate('homeGridId').exec(function (err, docs) {
+            UserEquipmentModel.find({
+                home_id: {
+                    $in: homeIds
+                }
+            }).populate('homeGridId').exec(function(err, docs) {
                 if (err) {
                     logger.error(err);
                 } else {
@@ -417,7 +464,9 @@ HomeRemote.prototype.getDeviceList = function(homeId, layerName, userMobile, cb)
  * @return {[type]}              [description]
  */
 HomeRemote.prototype.getDeviceListByGridId = function(homeGridId, cb) {
-    UserEquipmentModel.find({homeGridId: homeGridId}).populate('homeGridId').exec(function (err, docs) {
+    UserEquipmentModel.find({
+        homeGridId: homeGridId
+    }).populate('homeGridId').exec(function(err, docs) {
         if (err) {
             logger.error(err);
         } else {
@@ -435,16 +484,18 @@ HomeRemote.prototype.getDeviceListByGridId = function(homeGridId, cb) {
  * @return {[type]}            [description]
  */
 HomeRemote.prototype.getFloorList = function(area, page, pageSize, cb) {
-    if(!page) {
+    if (!page) {
         page = 1;
     }
-    if(!pageSize) {
+    if (!pageSize) {
         pageSize = 10;
     } else {
         pageSize = parseInt(pageSize);
     }
     var skip = pageSize * (page - 1);
-    FloorModel.find({area:area}).skip(skip).limit(pageSize).exec().then(function(floors) {
+    FloorModel.find({
+        area: area
+    }).skip(skip).limit(pageSize).exec().then(function(floors) {
         cb(null, floors);
     }).catch(function(err) {
         logger.error(err);
@@ -460,7 +511,7 @@ HomeRemote.prototype.getFloorList = function(area, page, pageSize, cb) {
  */
 HomeRemote.prototype.getFloorByFloorId = function(floorId, cb) {
     FloorModel.findById(floorId, function(err, floor) {
-        if(err) {
+        if (err) {
             logger.error(err);
             cb(err);
         } else {
@@ -476,10 +527,10 @@ HomeRemote.prototype.getFloorByFloorId = function(floorId, cb) {
  * @return {[type]}            [description]
  */
 HomeRemote.prototype.getFloorModelList = function(floorUrl, page, pageSize, cb) {
-    if(!page) {
+    if (!page) {
         page = 1;
     }
-    if(!pageSize) {
+    if (!pageSize) {
         pageSize = 10;
     } else {
         pageSize = parseInt(pageSize);
@@ -497,15 +548,20 @@ HomeRemote.prototype.getFloorModelList = function(floorUrl, page, pageSize, cb) 
  */
 HomeRemote.prototype.setHomeWifi = function(userMobile, ssid, passwd, homeId, layerName, cb) {
     var wifi = {
-        ssid:ssid,
-        passwd:passwd,
-        userMobile:userMobile,
-        homeId:homeId,
-        layerName:layerName,
-        checked:false
+        ssid: ssid,
+        passwd: passwd,
+        userMobile: userMobile,
+        homeId: homeId,
+        layerName: layerName,
+        checked: false
     };
-    HomeWifiModel.update({homeId:homeId, layerName:layerName}, wifi, {upsert:true}, function(err, wifi) {
-        if(err) {
+    HomeWifiModel.update({
+        homeId: homeId,
+        layerName: layerName
+    }, wifi, {
+        upsert: true
+    }, function(err, wifi) {
+        if (err) {
             logger.error(err);
             cb(err);
         } else {
@@ -515,8 +571,15 @@ HomeRemote.prototype.setHomeWifi = function(userMobile, ssid, passwd, homeId, la
 };
 
 HomeRemote.prototype.checkHomeWifi = function(homeId, layerName, cb) {
-    HomeWifiModel.update({homeId:homeId, layerName:layerName}, {$set:{checked:true}}, function(err) {
-        if(err) {
+    HomeWifiModel.update({
+        homeId: homeId,
+        layerName: layerName
+    }, {
+        $set: {
+            checked: true
+        }
+    }, function(err) {
+        if (err) {
             logger.error(err);
             cb(err);
         } else {
@@ -537,13 +600,26 @@ HomeRemote.prototype.bindCenterBoxToLayer = function(homeId, layerName, centerBo
     HomeModel.update({
         _id: homeId,
         "layers.name": layerName
-    }, {$set: {"layers.$.centerBoxSerialno": centerBoxSerialno}}, function (err, docs) {
+    }, {
+        $set: {
+            "layers.$.centerBoxSerialno": centerBoxSerialno
+        }
+    }, function(err, docs) {
         if (err) {
             logger.error(err);
             cb(err);
         } else {
-            CenterBoxModel.update({serialno:centerBoxSerialno}, {$set:{homeId:homeId, layerName:layerName}}, function(err) {
-                if(err) {
+            console.log("homeID:" + homeId);
+            console.log("layerName:" + layerName);
+            CenterBoxModel.update({
+                serialno: centerBoxSerialno
+            }, {
+                $set: {
+                    homeId: homeId,
+                    layerName: layerName
+                }
+            }, function(err) {
+                if (err) {
                     cb(err);
                 } else {
                     cb(null);
@@ -562,8 +638,13 @@ HomeRemote.prototype.bindCenterBoxToLayer = function(homeId, layerName, centerBo
  * @param {Function} cb         [description]
  */
 HomeRemote.prototype.addCenterBox = function(userMobile, ssid, passwd, serialno, cb) {
-    var CenterBoxEntity = new CenterBoxModel({userMobile: userMobile, ssid: ssid, passwd: passwd, serialno: serialno});
-    CenterBoxEntity.save(function (err) {
+    var CenterBoxEntity = new CenterBoxModel({
+        userMobile: userMobile,
+        ssid: ssid,
+        passwd: passwd,
+        serialno: serialno
+    });
+    CenterBoxEntity.save(function(err) {
         if (err) {
             logger.error(err);
             cb(err);
@@ -580,12 +661,14 @@ HomeRemote.prototype.addCenterBox = function(userMobile, ssid, passwd, serialno,
  * @return {[type]}            [description]
  */
 HomeRemote.prototype.centerBoxSerailnoExist = function(serialno, cb) {
-    CenterBoxModel.count({serialno:serialno}, function(err, count) {
-        if(err) {
+    CenterBoxModel.count({
+        serialno: serialno
+    }, function(err, count) {
+        if (err) {
             logger.error(err);
             cb(err);
         } else {
-            if(count > 0) {
+            if (count > 0) {
                 cb(null, true);
             } else {
                 cb(null, false);
@@ -601,7 +684,10 @@ HomeRemote.prototype.centerBoxSerailnoExist = function(serialno, cb) {
  * @return {[type]}            [description]
  */
 HomeRemote.prototype.getCenterBoxBySerailno = function(serialno, cb) {
-    CenterBoxModel.findOne({serialno:serialno}).exec().then(function(centerBox) {
+    CenterBoxModel.findOne({
+        serialno: serialno
+    }).exec().then(function(centerBox) {
+        console.log("jsdfsdfsdflkasjdflajsdladlfja::::::::::::::::::" + JSON.stringify(centerBox));
         cb(null, centerBox);
     }).catch(function(err) {
         logger.error(err);
@@ -616,7 +702,9 @@ HomeRemote.prototype.getCenterBoxBySerailno = function(serialno, cb) {
  * @return {[type]}            [description]
  */
 HomeRemote.prototype.getCenterBoxByUserMobile = function(userMobile, cb) {
-    CenterBoxModel.find({userMobile:userMobile}).exec().then(function(centerBoxs) {
+    CenterBoxModel.find({
+        userMobile: userMobile
+    }).exec().then(function(centerBoxs) {
         cb(null, centerBoxs);
     }).catch(function(err) {
         logger.error(err);
@@ -635,11 +723,11 @@ HomeRemote.prototype.getCenterBoxByUserMobile = function(userMobile, cb) {
  */
 HomeRemote.prototype.addTerminal = function(userMobile, ssid, passwd, serialno, cb) {
     var terminalEntity = new TerminalModel({
-        centerBoxSerialno:serialno,
-        ssid:ssid,
-        passwd:passwd
+        centerBoxSerialno: serialno,
+        ssid: ssid,
+        passwd: passwd
     });
-    terminalEntity.save(function (err, terminal) {
+    terminalEntity.save(function(err, terminal) {
         if (err) {
             logger.error(err);
             cb(err);
@@ -656,13 +744,26 @@ HomeRemote.prototype.addTerminal = function(userMobile, ssid, passwd, serialno, 
  * @param  {Function} next    [description]
  * @return {[type]}           [description]
  */
-HomeRemote.prototype.bindTerminalToHomeGrid = function (homeGridId, terminalId, cb) {
-    HomeGridModel.update({_id: new Object(homeGridId)}, {$set: {"terminalId": terminalId, "terminal":terminalId}}, function (err, docs) {
+HomeRemote.prototype.bindTerminalToHomeGrid = function(homeGridId, terminalId, cb) {
+    HomeGridModel.update({
+        _id: new Object(homeGridId)
+    }, {
+        $set: {
+            "terminalId": terminalId,
+            "terminal": terminalId
+        }
+    }, function(err, docs) {
         if (err) {
             logger.error(err);
             cb(err);
         } else {
-            TerminalModel.update({_id: new Object(terminalId)}, {$set: {"homeGridId": homeGridId}}, function (err, docs) {
+            TerminalModel.update({
+                _id: new Object(terminalId)
+            }, {
+                $set: {
+                    "homeGridId": homeGridId
+                }
+            }, function(err, docs) {
                 if (err) {
                     logger.error(err);
                     cb(err);
@@ -681,8 +782,10 @@ HomeRemote.prototype.bindTerminalToHomeGrid = function (homeGridId, terminalId, 
  * @return {[type]}            [description]
  */
 HomeRemote.prototype.getDeviceBrands = function(type, callback) {
-    RDeviceModel.distinct("brand", {devType: type}, function (err, brands) {
-        if(err) {
+    RDeviceModel.distinct("brand", {
+        devType: type
+    }, function(err, brands) {
+        if (err) {
             logger.error(err);
             callback(err);
         } else {
@@ -692,7 +795,10 @@ HomeRemote.prototype.getDeviceBrands = function(type, callback) {
 };
 
 HomeRemote.prototype.getDeviceModels = function(brand, type, callback) {
-    RDeviceModel.find({brand: brand, devType:type}, function (err, deviceModels) {
+    RDeviceModel.find({
+        brand: brand,
+        devType: type
+    }, function(err, deviceModels) {
         if (err) {
             logger.error(err);
             callback(err);
@@ -706,8 +812,11 @@ HomeRemote.prototype.getDeviceModels = function(brand, type, callback) {
  * 获取红外码
  */
 HomeRemote.prototype.getTestIrCode = function(tid, inst, callback) {
-    RinfraredModel.findOne({typeID:tid, inst:inst}, function(err, ircode) {
-        if(err) {
+    RinfraredModel.findOne({
+        typeID: tid,
+        inst: inst
+    }, function(err, ircode) {
+        if (err) {
             callback(err);
         } else {
             callback(null, ircode);
@@ -720,7 +829,7 @@ HomeRemote.prototype.getTestIrCode = function(tid, inst, callback) {
  */
 HomeRemote.prototype.getDeviceById = function(id, callback) {
     UserEquipmentModel.findById(id, function(err, device) {
-        if(err) {
+        if (err) {
             callback(err);
         } else {
             callback(null, device);
@@ -733,7 +842,7 @@ HomeRemote.prototype.getDeviceById = function(id, callback) {
  */
 HomeRemote.prototype.getTerminalById = function(id, callback) {
     TerminalModel.findById(id, function(err, terminal) {
-        if(err) {
+        if (err) {
             callback(err);
         } else {
             callback(null, terminal);
@@ -750,9 +859,13 @@ HomeRemote.prototype.getTerminalById = function(id, callback) {
  * @return {[type]}               [description]
  */
 HomeRemote.prototype.saveTSensorData = function(terminalId, temperature, humidity, callback) {
-    var tSensorEntity = new TSensorDataModel({terminalId:terminalId, temperature:temperature, humidity:humidity});
+    var tSensorEntity = new TSensorDataModel({
+        terminalId: terminalId,
+        temperature: temperature,
+        humidity: humidity
+    });
     tSensorEntity.save(function(err) {
-        if(err) {
+        if (err) {
             callback(err);
         } else {
             callback(null);
@@ -772,9 +885,16 @@ HomeRemote.prototype.saveTSensorData = function(terminalId, temperature, humidit
  * @return {[type]}               [description]
  */
 HomeRemote.prototype.saveSensorData = function(centerBoxId, temperature, humidity, co, quality, pm25, callback) {
-    var entity = new SensorDataModel({centerBoxId:centerBoxId, temperature:temperature, humidity:humidity, co:co, quality:quality, pm25:pm25});
+    var entity = new SensorDataModel({
+        centerBoxId: centerBoxId,
+        temperature: temperature,
+        humidity: humidity,
+        co: co,
+        quality: quality,
+        pm25: pm25
+    });
     entity.save(function(err, docs) {
-        if(err) {
+        if (err) {
             callback(err);
         } else {
             callback(null);
@@ -789,32 +909,38 @@ HomeRemote.prototype.saveSensorData = function(centerBoxId, temperature, humidit
  * @return {[type]}              [description]
  */
 HomeRemote.prototype.getNotBindedCenterBoxs = function(userMobile, callback) {
-    CenterBoxModel.find({userMobile:userMobile}, function(err, list) {
-        if(err) {
+    CenterBoxModel.find({
+        userMobile: userMobile
+    }, function(err, list) {
+        if (err) {
             callback(err);
         } else {
             var centerBoxSerialnos = [];
-            for(var i=0;i<list.length;i++) {
+            for (var i = 0; i < list.length; i++) {
                 centerBoxSerialnos.push(list[i].serialno);
             }
-            HomeModel.find({"layers.centerBoxSerialno":{$in:centerBoxSerialnos}}, function(err, homes) {
-                if(err) {
+            HomeModel.find({
+                "layers.centerBoxSerialno": {
+                    $in: centerBoxSerialnos
+                }
+            }, function(err, homes) {
+                if (err) {
                     console.log(err);
                 } else {
                     var result = [];
                     var flag = false;
-                    for(var x=0; x<list.length; x++) {
-                        for(var y=0;y<homes.length; y++) {
-                            if(!!homes[y].layers) {
-                                for(var z=0;z<homes[y].layers.length;z++) {
-                                    if(list[x].serialno === homes[y].layers[z].centerBoxSerialno) {
+                    for (var x = 0; x < list.length; x++) {
+                        for (var y = 0; y < homes.length; y++) {
+                            if (!!homes[y].layers) {
+                                for (var z = 0; z < homes[y].layers.length; z++) {
+                                    if (list[x].serialno === homes[y].layers[z].centerBoxSerialno) {
                                         flag = true;
                                     }
                                 }
                             }
                         }
 
-                        if(!flag) {
+                        if (!flag) {
                             result.push(list[x]);
                         }
                     }
@@ -826,16 +952,22 @@ HomeRemote.prototype.getNotBindedCenterBoxs = function(userMobile, callback) {
 };
 
 HomeRemote.prototype.getAllTerminals = function(userMobile, callback) {
-    CenterBoxModel.find({userMobile:userMobile}, function(err, cbs) {
-        if(err) {
+    CenterBoxModel.find({
+        userMobile: userMobile
+    }, function(err, cbs) {
+        if (err) {
             callback(err);
         } else {
             var serialnos = [];
-            for(var i=0;i<cbs.length;i++) {
+            for (var i = 0; i < cbs.length; i++) {
                 serialnos.push(cbs[i].serialno);
             }
-            TerminalModel.find({centerBoxSerialno:{$in:serialnos}}, function(err, terminals) {
-                if(err) {
+            TerminalModel.find({
+                centerBoxSerialno: {
+                    $in: serialnos
+                }
+            }, function(err, terminals) {
+                if (err) {
                     callback(err);
                 } else {
                     callback(null, terminals);

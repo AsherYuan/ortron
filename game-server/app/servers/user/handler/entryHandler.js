@@ -14,11 +14,11 @@ var UserVerifyModel = require("../../../mongodb/models/UserVerifyModel");
 var ResponseUtil = require("../../../util/ResponseUtil");
 
 
-module.exports = function (app) {
+module.exports = function(app) {
     return new Handler(app);
 };
 
-var Handler = function (app) {
+var Handler = function(app) {
     this.app = app;
 };
 
@@ -30,7 +30,7 @@ var Handler = function (app) {
  * @param  {Function} next    next step callback
  * @return {Void}
  */
-Handler.prototype.auth = function (msg, session, next) {
+Handler.prototype.auth = function(msg, session, next) {
     var self = this;
     var token = msg.token;
 
@@ -45,8 +45,10 @@ Handler.prototype.auth = function (msg, session, next) {
             } else {
                 uid = res.uid;
                 console.log('用户：：' + uid);
-                UserModel.find({'mobile':uid}, function(err, userDoc) {
-                    if(err) {
+                UserModel.find({
+                    'mobile': uid
+                }, function(err, userDoc) {
+                    if (err) {
                         console.log(err);
                         next(null, ResponseUtil.resp(Code.DATABASE));
                     } else {
@@ -59,26 +61,35 @@ Handler.prototype.auth = function (msg, session, next) {
                     }
                 });
             }
-        }, function(cb) {
+        },
+        function(cb) {
             self.app.get('sessionService').kick(uid, cb);
-        }, function(cb) {
+        },
+        function(cb) {
             // self.app.get('globalChannelService').add('testChannel', uid, 'user-server-1', function() {
             //     session.bind(uid, cb);
             // });
             session.bind(uid, cb);
-        }, function(cb) {
+        },
+        function(cb) {
             session.set('serverId', 'user-server-1');
             session.on('closed', onUserLeave.bind(null, self.app));
             session.pushAll(cb);
-        }, function() {
+        },
+        function() {
             self.app.rpc.home.homeRemote.getHomeInfoByMobile(session, uid, function(homes) {
                 userGlobal.homeInfo = homes;
                 var token = tokenManager.create(uid, authConfig.authSecret);
-                next(null, {code:200, codetxt:'操作成功', data:userGlobal, token:token});
+                next(null, {
+                    code: 200,
+                    codetxt: '操作成功',
+                    data: userGlobal,
+                    token: token
+                });
             });
         }
     ], function(err) {
-        if(err) {
+        if (err) {
             console.log("auth错误::");
             next(null, Code.FAIL);
             return null;
@@ -93,7 +104,7 @@ Handler.prototype.auth = function (msg, session, next) {
  * @param session
  * @param next
  */
-Handler.prototype.login = function (msg, session, next) {
+Handler.prototype.login = function(msg, session, next) {
     var self = this;
     var sessionService = self.app.get('sessionService');
     var channelService = self.app.get('channelService');
@@ -109,8 +120,10 @@ Handler.prototype.login = function (msg, session, next) {
         next(null, ResponseUtil.resp(Code.ACCOUNT.PASSWORD_IS_BLANK));
     } else {
         async.waterfall([
-            function (cb) {
-                UserModel.findOne({'mobile': mobile}, function (err, userDoc) {
+            function(cb) {
+                UserModel.findOne({
+                    'mobile': mobile
+                }, function(err, userDoc) {
                     if (err) {
                         console.log(err);
                         next(null, ResponseUtil.resp(Code.DATABASE));
@@ -123,22 +136,31 @@ Handler.prototype.login = function (msg, session, next) {
                         }
                     }
                 });
-            }, function (cb) {
+            },
+            function(cb) {
                 self.app.get('sessionService').kick(uid, cb);
-            }, function (cb) {
+            },
+            function(cb) {
                 session.bind(uid, cb);
-            }, function (cb) {
+            },
+            function(cb) {
                 session.set('serverId', 'user-server-1');
                 session.on('closed', onUserLeave.bind(null, self.app));
                 session.pushAll(cb);
-            }, function () {
+            },
+            function() {
                 self.app.rpc.home.homeRemote.getHomeInfoByMobile(session, uid, function(homes) {
                     userGlobal.homeInfo = homes;
                     var token = tokenManager.create(uid, authConfig.authSecret);
-                    next(null, {code:200, codetxt:'操作成功', data:userGlobal, token:token});
+                    next(null, {
+                        code: 200,
+                        codetxt: '操作成功',
+                        data: userGlobal,
+                        token: token
+                    });
                 });
             }
-        ], function (err) {
+        ], function(err) {
             if (err) {
                 console.log("login错误::");
                 next(null, Code.FAIL);
@@ -148,7 +170,52 @@ Handler.prototype.login = function (msg, session, next) {
     }
 };
 
-Handler.prototype.manageLogin = function (msg, session, next) {
+/**
+ * 注册用户信息
+ *
+ * @param  {Object}   msg     request message-
+ * @param  {Object}   session current session object
+ * @param  {Function} next    next step callback
+ * @return {Void}
+ */
+Handler.prototype.register = function (msg, session, next) {
+    var self = this;
+    var mobile = msg.mobile;
+    var username = msg.username;
+    var verifyCode = msg.verifyCode;
+    var password = msg.password;
+
+    UserVerifyModel.findOne({userMobile:mobile}, function(err, verify) {
+        if(err) {
+            console.log(err);
+        } else {
+            if(!verify) {
+                if(1 < 2) {
+                    if (StringUtil.isBlank(mobile)) {
+                        next(null, ResponseUtil.resp(Code.ACCOUNT.MOBILE_IS_BLANK));
+                    } else if (StringUtil.isBlank(username)) {
+                        next(null, Code.ACCOUNT.USERNAME_IS_BLANK);
+                        next(null, ResponseUtil.resp(Code.ACCOUNT.USERNAME_IS_BLANK));
+                    } else if (StringUtil.isBlank(password)) {
+                        next(null, Code.ACCOUNT.PASSWORD_IS_BLANK);
+                        next(null, ResponseUtil.resp(Code.ACCOUNT.PASSWORD_IS_BLANK));
+                    } else if (!RegexUtil.checkPhone(mobile)) {
+                        next(null, ResponseUtil.resp(Code.ACCOUNT.MOBILE_FORMAT_ERROR));
+                    } else {
+                        // 用户注册
+                        self.app.rpc.user.userRemote.register(session, mobile, username, password, function (msg) {
+                            next(null, ResponseUtil.resp(Code.OK, msg));
+                        });
+                    }
+                }
+            } else {
+                next(null, ResponseUtil.resp(Code.ACCOUNT.VERIFY_ERROR));
+            }
+        }
+    });
+};
+
+Handler.prototype.manageLogin = function(msg, session, next) {
     var self = this;
     var username = msg.username;
     var password = msg.password;
@@ -156,7 +223,7 @@ Handler.prototype.manageLogin = function (msg, session, next) {
     var channelService = self.app.get('channelService');
     console.log(username);
     console.log(password);
-    if(username == "admin" && password == "orz123") {
+    if (username == "admin" && password == "orz123") {
         // 登录验证成功，处理session
         session.on('closed', onUserLeave.bind(null, self.app));
         session.bind(username);
@@ -180,7 +247,7 @@ Handler.prototype.manageLogin = function (msg, session, next) {
  * @param {Object} session current session object
  *
  */
-var onUserLeave = function (app, session) {
+var onUserLeave = function(app, session) {
     if (!session || !session.uid) {
         return;
     }

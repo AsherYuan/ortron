@@ -6,7 +6,7 @@ var utils = module.exports;
  * Check and invoke callback function
  */
 utils.invokeCallback = function(cb) {
-    if(!!cb && typeof cb === 'function') {
+    if (!!cb && typeof cb === 'function') {
         cb.apply(null, Array.prototype.slice.call(arguments, 1));
     }
 };
@@ -21,11 +21,10 @@ utils.invokeCallback = function(cb) {
  *
  * @returns {*}
  */
-utils.invokeError = function (err){
-    if (err && err.errcode){
+utils.invokeError = function(err) {
+    if (err && err.errcode) {
         return err;
-    }
-    else{
+    } else {
         return Code.COMMON;
     }
 };
@@ -34,13 +33,13 @@ utils.invokeError = function (err){
  * clone an object
  */
 utils.clone = function(origin) {
-    if(!origin) {
+    if (!origin) {
         return;
     }
 
     var obj = {};
-    for(var f in origin) {
-        if(origin.hasOwnProperty(f)) {
+    for (var f in origin) {
+        if (origin.hasOwnProperty(f)) {
             obj[f] = origin[f];
         }
     }
@@ -48,19 +47,18 @@ utils.clone = function(origin) {
 };
 
 utils.deepClone = function(origin) {
-    if(!origin || typeof (origin) != 'object') {
+    if (!origin || typeof(origin) != 'object') {
         return origin;
     }
 
     var obj;
-    if (origin instanceof Array){
+    if (origin instanceof Array) {
         obj = [];
-    }
-    else{
+    } else {
         obj = {};
     }
-    for(var f in origin) {
-        if(origin.hasOwnProperty(f)) {
+    for (var f in origin) {
+        if (origin.hasOwnProperty(f)) {
             obj[f] = utils.deepClone(origin[f]);
         }
     }
@@ -68,13 +66,13 @@ utils.deepClone = function(origin) {
 };
 
 utils.size = function(obj) {
-    if(!obj) {
+    if (!obj) {
         return 0;
     }
 
     var size = 0;
-    for(var f in obj) {
-        if(obj.hasOwnProperty(f)) {
+    for (var f in obj) {
+        if (obj.hasOwnProperty(f)) {
             size++;
         }
     }
@@ -83,16 +81,15 @@ utils.size = function(obj) {
 };
 
 utils.isEmpty = function(obj) {
-    for(var i in obj)
-    {
+    for (var i in obj) {
         return false;
     }
     return true;
 };
 
 utils.copyTo = function(fromObj, toObj) {
-    for(var f in fromObj) {
-        if(fromObj.hasOwnProperty(f)) {
+    for (var f in fromObj) {
+        if (fromObj.hasOwnProperty(f)) {
             toObj[f] = fromObj[f];
         }
     }
@@ -118,7 +115,7 @@ utils.StringFormat = function() {
  * @param name
  * @returns {Function}
  */
-utils.sortby = function(name){
+utils.sortby = function(name) {
     return function(o, p) {
         var a, b;
         if (typeof o === "object" && typeof p === "object" && o && p) {
@@ -131,38 +128,36 @@ utils.sortby = function(name){
                 return b - a;
             }
             return typeof a < typeof b ? 1 : -1;
-        }
-        else {
-            throw ("error");
-        }
-    }
-};
-
-utils.sortbyAsc = function(name){
-    return function(o, p) {
-        var a, b;
-        if (typeof o === "object" && typeof p === "object" && o && p) {
-            a = o[name];
-            b = p[name];
-            if (a === b) {
-                return 0;
-            }
-            if (typeof a === typeof b) {
-                return a - b;
-            }
-            return typeof a > typeof b ? 1 : -1;
-        }
-        else {
+        } else {
             throw ("error");
         }
     };
-}
-/**
- *
- * @param array
- * @param obj
- * @returns {boolean}
- */
+};
+
+utils.sortbyAsc = function(name) {
+        return function(o, p) {
+            var a, b;
+            if (typeof o === "object" && typeof p === "object" && o && p) {
+                a = o[name];
+                b = p[name];
+                if (a === b) {
+                    return 0;
+                }
+                if (typeof a === typeof b) {
+                    return a - b;
+                }
+                return typeof a > typeof b ? 1 : -1;
+            } else {
+                throw ("error");
+            }
+        };
+    };
+    /**
+     *
+     * @param array
+     * @param obj
+     * @returns {boolean}
+     */
 utils.contains = function(array, obj) {
     var i = array.length;
     while (i--) {
@@ -198,24 +193,4 @@ utils.isServerWANGGUOZHIBI = function() {
 
 utils.isServerNANHU = function() {
     return (this.getServerId() == 3);
-};
-
-/**
- * 判断日期有效性
- * @param year
- * @param month
- * @param date
- * @param destMonth 目标月
- * @param destDate   目标日
- * @returns {boolean}
- */
-utils.isDateValidWithDest = function(year, startMonth , startDate, destMonth, destDate){
-    var date = new Date();
-    var startDate = new Date(year + '/' + startMonth + '/' + startDate);
-    var destDate = new Date(year + '/' + destMonth + '/' + destDate);
-    if(date >= startDate && date <= destDate) {
-        return true;
-    } else {
-        return false;
-    }
 };

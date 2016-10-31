@@ -2,7 +2,7 @@ var UserModel = require('../../../mongodb/models/UserModel');
 var CenterBoxModel = require('../../../mongodb/models/CenterBoxModel');
 var WaitingUserChoiseModel = require('../../../mongodb/models/WaitingUserChoiseModel');
 var StringUtil = require('../../../util/StringUtil.js');
-var logger = require('pomelo-logger').getLogger('pomelo',  __filename);
+var logger = require('pomelo-logger').getLogger('pomelo', __filename);
 var Promise = require('bluebird');
 var Moment = require('moment');
 
@@ -22,8 +22,10 @@ var UserRemote = function(app) {
  * @return {[type]}              [description]
  */
 UserRemote.prototype.getUserInfoByMobile = function(userMobile, cb) {
-    UserModel.findOne({mobile:userMobile}, function(err, user) {
-        if(err) {
+    UserModel.findOne({
+        mobile: userMobile
+    }, function(err, user) {
+        if (err) {
             logger.error(err);
             cb(err);
         } else {
@@ -156,14 +158,14 @@ UserRemote.prototype.updateUserInfo = function(mobile, name, cb) {
  */
 UserRemote.prototype.waitingForUserToChoose = function(loccode, runtimeinfo_id, optionList, userMobile, cb) {
     var entity = new WaitingUserChoiseModel({
-        loccode:loccode,
-        runtimeinfo_id:runtimeinfo_id,
-        optionList:optionList,
-        userMobile:userMobile
+        loccode: loccode,
+        runtimeinfo_id: runtimeinfo_id,
+        optionList: optionList,
+        userMobile: userMobile
     });
     console.log(JSON.stringify(entity));
     entity.save(function(err) {
-        if(err) {
+        if (err) {
             cb(err);
         } else {
             console.log("保存&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
@@ -184,8 +186,15 @@ UserRemote.prototype.checkIfChoise = function(userMobile, words, cb) {
     var min = now.getMinutes();
     min = min - 1000;
     now.setMinutes(min);
-    WaitingUserChoiseModel.find({addTime:{"$gte":now}, userMobile:userMobile, optionList:words, answered:false}, function(err, list) {
-        if(err) {
+    WaitingUserChoiseModel.find({
+        addTime: {
+            "$gte": now
+        },
+        userMobile: userMobile,
+        optionList: words,
+        answered: false
+    }, function(err, list) {
+        if (err) {
             cb(err);
         } else {
             cb(null, list);
@@ -201,8 +210,14 @@ UserRemote.prototype.checkIfChoise = function(userMobile, words, cb) {
  * @return {[type]}              [description]
  */
 UserRemote.prototype.answered = function(id, cb) {
-    WaitingUserChoiseModel.update({_id:new Object(id)}, {$set:{answered:true}}, function(err) {
-        if(err) {
+    WaitingUserChoiseModel.update({
+        _id: new Object(id)
+    }, {
+        $set: {
+            answered: true
+        }
+    }, function(err) {
+        if (err) {
             cb(err);
         } else {
             cb(null);

@@ -2,7 +2,7 @@ var exp = module.exports;
 var utils = require('./utils');
 var dispatcher = require('./dispatcher');
 
-exp.user = function(session, msg, app, cb){
+exp.user = function(session, msg, app, cb) {
 
     console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
     console.log("session:" + session);
@@ -13,16 +13,16 @@ exp.user = function(session, msg, app, cb){
 
 
     var servers = app.getServersByType('user');
-    if(!servers || servers.length === 0) {
+    if (!servers || servers.length === 0) {
         cb(new Error('can not find main servers.'));
         return;
     }
 
     var serverid = session.get('serverid');
-    if (!serverid){
+    if (!serverid) {
         serverid = utils.getServerId();
     }
-    if (!serverid){
+    if (!serverid) {
         serverid = 1;
     }
 

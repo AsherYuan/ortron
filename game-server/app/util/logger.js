@@ -10,11 +10,11 @@ var mylogger = module.exports;
 
 log4js.configure(LoggerConfig, {});
 
-mylogger.setLevel = function (level) {
-    if(level === 'production') {
+mylogger.setLevel = function(level) {
+    if (level === 'production') {
         log4js.getLogger('GAMEDEBUG').setLevel('ERROR');
         log4js.getLogger('HANDLERTIME').setLevel('DEBUG');
-    } else if(level === 'development') {
+    } else if (level === 'development') {
         log4js.getLogger('GAMEDEBUG').setLevel('DEBUG');
         log4js.getLogger('HANDLERTIME').setLevel('DEBUG');
     }
@@ -22,10 +22,10 @@ mylogger.setLevel = function (level) {
 
 mylogger.logCoinChange = function(uid, change, after, reason) {
     var obj = {
-        uid:uid,
-        change:change,
-        after:after,
-        reason:reason
+        uid: uid,
+        change: change,
+        after: after,
+        reason: reason
     };
     var serverId = pomelo.app.get('LordCard_Serverid');
     var objJsonStr = 'Lkey:coin - server' + serverId + ' - ' + JSON.stringify(obj);

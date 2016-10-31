@@ -19,7 +19,7 @@ SayingUtil.translateStatus = function(equipment) {
         }
 
         if(equipment.status == "关") {
-            ret = "关闭电源";
+            ret += "关闭电源";
         } else {
             if(equipment.e_type == "空调") {
                 ret += "打开,并设置为" + equipment.ac_model + ",";
@@ -36,9 +36,9 @@ SayingUtil.translateStatus = function(equipment) {
             } else if(equipment.e_type == "电视") {
                 ret += "打开";
             } else if(equipment.e_type == "电灯") {
-                ret = "打开";
+                ret += "打开";
             } else if(equipment.e_type == "窗帘") {
-                ret = "打开";
+                ret += "打开";
             }
         }
     } else {

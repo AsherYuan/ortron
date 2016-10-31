@@ -12,16 +12,16 @@ var left = 20000;
  * 刷新红外数据
  * @type {Number}
  */
-RinfraredModel.count({infrared:null}, function(err, count) {
+RinfraredModel.count({fixed:null}, function(err, count) {
     console.log("还有 " + count + " 条记录");
 });
-RinfraredModel.find({infrared:null}).limit(20000).exec().then(function(list) {
+RinfraredModel.find({fixed:null}).limit(20000).exec().then(function(list) {
     for(var i=0;i<list.length;i++) {
         var ir = list[i];
         var e = ir.eLevel;
         if(e.indexOf(",") > -1) {
             var r = trans(e);
-            RinfraredModel.update({_id:ir._id}, {$set:{infrared:r}}, function(err, docs) {
+            RinfraredModel.update({_id:ir._id}, {$set:{infrared:r, fixed:true}}, function(err, docs) {
                 console.log((left--) + "____docs:" + JSON.stringify(docs));
             });
         }
@@ -60,6 +60,7 @@ var trans = function(waveInfo) {
         }
         finalString += hex.toUpperCase() + " ";
     }
+    finalString = circleTimes.toString(16) + " " + finalString;
     return finalString;
 };
 

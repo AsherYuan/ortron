@@ -5,27 +5,37 @@ var cheerio = require('cheerio');
 var http = require("http");
 var Moment = require('moment');
 
-module.exports = function (app) {
-	return new Cron(app);
+module.exports = function(app) {
+    return new Cron(app);
 };
-var Cron = function (app) {
-	this.app = app;
+var Cron = function(app) {
+    this.app = app;
 };
 
 /**
  * 定时任务，定时给所有用户去推送消息
  */
-Cron.prototype.currentData = function () {
-	var self = this;
+Cron.prototype.currentData = function() {
+    var self = this;
 
     var todayL = Moment(new Date()).format('YYYY-MM-DD') + " 00:00:00";
     var todayH = Moment(new Date()).format('YYYY-MM-DD') + " 23:59:59";
 
-    SuggestionModel.find({$and:[{addTime:{$gt:todayL}}, {addTime:{$lt:todayH}}]}, function(err, docs) {
-        if(err) {
+    SuggestionModel.find({
+        $and: [{
+            addTime: {
+                $gt: todayL
+            }
+        }, {
+            addTime: {
+                $lt: todayH
+            }
+        }]
+    }, function(err, docs) {
+        if (err) {
             console.log(err);
         } else {
-            if(!!docs && docs.length > 0) {
+            if (!!docs && docs.length > 0) {
                 console.log('今日已有数据');
             } else {
                 var options = {
@@ -38,12 +48,12 @@ Cron.prototype.currentData = function () {
                     }
                 };
 
-                var requestCallback = function (response) {
+                var requestCallback = function(response) {
                     response.setEncoding('utf-8');
                     var receiveData = "";
-                    response.on('data', function (chunk) {
+                    response.on('data', function(chunk) {
                         receiveData += chunk;
-                    }).on('end', function () {
+                    }).on('end', function() {
                         var data = JSON.parse(receiveData);
                         var list = data["HeWeather data service 3.0"];
                         if (list[0].suggestion !== undefined && list.length > 0) {
@@ -59,59 +69,62 @@ Cron.prototype.currentData = function () {
                                     flu: flu
                                 });
 
-                                SuggestionEntity.save(function (err) {
+                                SuggestionEntity.save(function(err) {
                                     if (err) console.log(err);
                                     else {
-                                        UserModel.find({}, function (err, users) {
-                                        	if (err) console.log(err);
-                                        	else {
-												var renderNotise = function(userMobile, hasRead, suggest, drsg, flu, noticeType, summary) {
-													return new Promise(function (resolve, reject) {
-														var NoticeEntity = new NoticeModel({
-															userMobile: userMobile,
-															hasRead: hasRead,
-															title: suggest,
-															content: drsg + flu,
-															noticeType: noticeType,
-															summary: summary
-														});
+                                        UserModel.find({}, function(err, users) {
+                                            if (err) console.log(err);
+                                            else {
+                                                var renderNotise = function(userMobile, hasRead, suggest, drsg, flu, noticeType, summary) {
+                                                    return new Promise(function(resolve, reject) {
+                                                        var NoticeEntity = new NoticeModel({
+                                                            userMobile: userMobile,
+                                                            hasRead: hasRead,
+                                                            title: suggest,
+                                                            content: drsg + flu,
+                                                            noticeType: noticeType,
+                                                            summary: summary
+                                                        });
 
-														NoticeEntity.save(function (err) {
-															if (err) console.log(err);
-															else {
-																NoticeModel.count({hasRead: 0, userMobile: userMobile}, function (err, count) {
-																	var param = {
-																		command: '9003',
-																		title: suggest,
-																		content: drsg + flu,
-																		addTime: new Date(),
-																		addTimeLabel: Moment(new Date()).format('HH:mm'),
-																		mobile: userMobile,
-																		notReadCount: count
-																	};
-																	self.app.get('channelService').pushMessageByUids('onMsg', param, [{
-																		uid: userMobile,
-																		sid: 'user-server-1'
-																	}]);
-																	resolve();
-																});
-															}
-														});
-													});
-												};
-												var toRandering = [];
-                                        		for (var i = 0; i < users.length; i++) {
-                                        			var userMobile = users[i].mobile;
-                                        			var hasRead = 0;
-                                        			var noticeType = 3;
-                                        			var summary = (drsg + flu).substring(0, 60);
-													toRandering.push(renderNotise(users[i].mobile, hasRead, suggest, drsg, flu, noticeType, summary));
-                                        		}
+                                                        NoticeEntity.save(function(err) {
+                                                            if (err) console.log(err);
+                                                            else {
+                                                                NoticeModel.count({
+                                                                    hasRead: 0,
+                                                                    userMobile: userMobile
+                                                                }, function(err, count) {
+                                                                    var param = {
+                                                                        command: '9003',
+                                                                        title: suggest,
+                                                                        content: drsg + flu,
+                                                                        addTime: new Date(),
+                                                                        addTimeLabel: Moment(new Date()).format('HH:mm'),
+                                                                        mobile: userMobile,
+                                                                        notReadCount: count
+                                                                    };
+                                                                    self.app.get('channelService').pushMessageByUids('onMsg', param, [{
+                                                                        uid: userMobile,
+                                                                        sid: 'user-server-1'
+                                                                    }]);
+                                                                    resolve();
+                                                                });
+                                                            }
+                                                        });
+                                                    });
+                                                };
+                                                var toRandering = [];
+                                                for (var i = 0; i < users.length; i++) {
+                                                    var userMobile = users[i].mobile;
+                                                    var hasRead = 0;
+                                                    var noticeType = 3;
+                                                    var summary = (drsg + flu).substring(0, 60);
+                                                    toRandering.push(renderNotise(users[i].mobile, hasRead, suggest, drsg, flu, noticeType, summary));
+                                                }
 
-												Promise.all(toRandering).then(function() {
-													logger.info('所有用户消息通知完成');
-												});
-                                        	}
+                                                Promise.all(toRandering).then(function() {
+                                                    logger.info('所有用户消息通知完成');
+                                                });
+                                            }
                                         });
                                     }
                                 });
@@ -120,7 +133,7 @@ Cron.prototype.currentData = function () {
                     });
                 };
 
-                var req = http.request(options, requestCallback).on('error', function (e) {
+                var req = http.request(options, requestCallback).on('error', function(e) {
                     console.log(e.message);
                 });
                 req.end();

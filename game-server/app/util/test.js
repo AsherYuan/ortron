@@ -1,5 +1,4 @@
 var StringUtil = require('./StringUtil');
-
 console.log(StringUtil.trimAll(' a b '));
 
 console.log(StringUtil.str2hex('yijfancy'));
