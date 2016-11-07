@@ -72,6 +72,21 @@ StringUtil.filterHtml = function(str) {
 };
 
 StringUtil.transTemp = function(chnStr) {
+    chnStr = chnStr.replace("一", 1);
+    chnStr = chnStr.replace("二", 2);
+    chnStr = chnStr.replace("三", 3);
+    chnStr = chnStr.replace("四", 4);
+    chnStr = chnStr.replace("五", 5);
+    chnStr = chnStr.replace("六", 6);
+    chnStr = chnStr.replace("七", 7);
+    chnStr = chnStr.replace("八", 8);
+    chnStr = chnStr.replace("九", 9);
+    chnStr = chnStr.replace("十", 10);
+    chnStr = chnStr.replace("十一", 11);
+    chnStr = chnStr.replace("十二", 12);
+    chnStr = chnStr.replace("十三", 13);
+    chnStr = chnStr.replace("十四", 14);
+    chnStr = chnStr.replace("十五", 15);
     chnStr = chnStr.replace("十六", 16);
     chnStr = chnStr.replace("十七", 17);
     chnStr = chnStr.replace("十八", 18);
@@ -88,7 +103,7 @@ StringUtil.transTemp = function(chnStr) {
     chnStr = chnStr.replace("二十九", 29);
     chnStr = chnStr.replace("三十", 30);
     return chnStr;
-}
+};
 
 StringUtil.numberTrans = function(chnStr) {
     var chnNumChar = {零: 0,一: 1,二: 2,三: 3,四: 4,五: 5,六: 6,七: 7,八: 8,九: 9,两:2,十:10, 百:100,千:1000,万:10000,亿:999};
