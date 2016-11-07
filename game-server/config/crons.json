@@ -1,16 +1,70 @@
 {
-    "development": {
-        "connector": [{
-            "id": 4,
-            "time": "0 15 10 * * *",
-            "action": "weatherAlarmDataCron.currentData"
-        }]
-    },
-    "production": {
-        "connector": [{
-            "id": 4,
-            "time": "0 15 10 * * *",
-            "action": "weatherAlarmDataCron.currentData"
-        }]
-    }
+  "development": {
+      "connector": [
+        {
+          "id": 1,
+          "time": "0 0/10 1 * * *",
+          "action": "outdoorDataCron.currentData"
+        },
+        {
+          "id": 2,
+          "time": "3/10 * * * * *",
+          "action": "terminalSensorDataCron.getSensorData"
+        },
+        {
+          "id": 3,
+          "time": "0 0 0/1 1 * *",
+          "action": "newsDataCron.currentData"
+        },
+        {
+          "id": 4,
+          "time": "0 10 0/1 1 * *",
+          "action": "weatherAlarmDataCron.currentData"
+        },
+        {
+          "id": 5,
+          "time": "0 20 0/3 1 * *",
+          "action": "weatherSuggestDataCron.currentData"
+        },
+        {
+          "id": 6,
+          "time": "0/20 * * 1 * *",
+          "action": "DeviceStatusDataCron.currentData"
+        }
+      ]
+  },
+  "production": {
+    "connector": [
+      {
+        "id": 1,
+        "time": "0 0/10 1 * * *",
+        "action": "outdoorDataCron.currentData"
+      },
+      {
+        "id": 2,
+        "time": "3/10 * * * * *",
+        "action": "terminalSensorDataCron.getSensorData"
+      },
+      {
+        "id": 3,
+        "time": "0 0 0/1 1 * *",
+        "action": "newsDataCron.currentData"
+      },
+      {
+        "id": 4,
+        "time": "0 10 0/1 1 * *",
+        "action": "weatherAlarmDataCron.currentData"
+      },
+      {
+        "id": 5,
+        "time": "0 20 0/3 1 * *",
+        "action": "weatherSuggestDataCron.currentData"
+      },
+      {
+        "id": 6,
+        "time": "0/20 * * 1 * *",
+        "action": "DeviceStatusDataCron.currentData"
+      }
+    ]
+  }
 }

@@ -41,7 +41,9 @@ module.exports = {
         CENTERBOX_OCCUPIED : {'code':3005, 'codetxt':Lang.error.STRUCTURE.CENTERBOX_OCCUPIED},
         CENTERBOX_INITED : {'code':3006, 'codetxt':Lang.error.STRUCTURE.CENTERBOX_INITED},
         CENTERBOX_NOT_EXIST : {'code':3007, 'codetxt':Lang.error.STRUCTURE.CENTERBOX_NOT_EXIST},
-        LAYER_EXIST: {'code':3008, 'codetxt': Lang.error.STRUCTURE.LAYER_EXIST}
+        LAYER_EXIST: {'code':3008, 'codetxt': Lang.error.STRUCTURE.LAYER_EXIST},
+        LAYER_NOT_EXIST: {'code':3009, 'codetxt': Lang.error.STRUCTURE.LAYER_NOT_EXIST},
+        LAYER_NOT_BINDED: {'code':3010, 'codetxt': Lang.error.STRUCTURE.LAYER_NOT_BINDED}
     },
 
     REMOTECONTROLL : {

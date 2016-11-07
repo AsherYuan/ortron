@@ -687,7 +687,6 @@ HomeRemote.prototype.getCenterBoxBySerailno = function(serialno, cb) {
     CenterBoxModel.findOne({
         serialno: serialno
     }).exec().then(function(centerBox) {
-        console.log("jsdfsdfsdflkasjdflajsdladlfja::::::::::::::::::" + JSON.stringify(centerBox));
         cb(null, centerBox);
     }).catch(function(err) {
         logger.error(err);
@@ -750,7 +749,7 @@ HomeRemote.prototype.bindTerminalToHomeGrid = function(homeGridId, terminalId, c
     }, {
         $set: {
             "terminalId": terminalId,
-            "terminal": terminalId
+            "terminal": new Object(terminalId)
         }
     }, function(err, docs) {
         if (err) {
@@ -899,6 +898,15 @@ HomeRemote.prototype.saveSensorData = function(centerBoxId, temperature, humidit
         } else {
             callback(null);
         }
+    });
+};
+
+
+HomeRemote.prototype.getLastSensorData = function(centerBoxId, callback) {
+    SensorDataModel.find({centerBoxId:new Object(centerBoxId)}).sort({addTime:-1}).limit(1).exec().then(function(data) {
+        callback(null, data);
+    }).catch(function(err) {
+        callbacck(err);
     });
 };
 

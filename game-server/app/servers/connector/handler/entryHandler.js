@@ -26,7 +26,7 @@ var Handler = function(app) {
  * @return {Void}
  */
 Handler.prototype.entry = function(msg, session, next) {
-    console.log("################msg" + JSON.stringify(msg));
+    console.log("####################################################################msg" + JSON.stringify(msg));
     var self = this;
     var rid = 'otron'; // 暂时全部统一m
     var uid = msg.uid + "*" + rid;
@@ -107,17 +107,26 @@ Handler.prototype.socketMsg = function(msg, session, next) {
         function(centerBox, param, callback) {
             var result = {};
             if (param.command === '1000') {
-                result = {
-                    command: '1000',
-                    msg: '控制器上线, 串号:' + param.serialno,
-                    serialno: param.serialno
-                };
+                TerminalModel.count({centerBoxSerialno:param.serialno}, function(err, count) {
+                    if(err) {
+                        callback(err);
+                    } else {
+                        result = {
+                            command: '1000',
+                            msg: '控制器上线, 串号:' + param.serialno,
+                            serialno: param.serialno,
+                            hasTerminal : count > 0
+                        };
+                        callback(null, result, centerBox.userMobile);
+                    }
+                });
             } else if (param.command === '999') {
                 result = {
                     command: '999',
                     msg: '控制器下线, 串号:' + param.serialno,
                     serialno: param.serialno
                 };
+                callback(null, result, centerBox.userMobile);
             } else if (param.command === '998') {
                 result = {
                     command: '998',
@@ -125,6 +134,7 @@ Handler.prototype.socketMsg = function(msg, session, next) {
                     terminalCode: param.terminalCode,
                     msg: '终端下线, 终端编码:' + param.terminalCode
                 };
+                callback(null, result, centerBox.userMobile);
             } else if (param.command === '1001') {
                 result = {
                     command: '1001',
@@ -132,6 +142,7 @@ Handler.prototype.socketMsg = function(msg, session, next) {
                     centerBoxSerialno: param.serialno,
                     msg: '终端上线, 终端编码:' + param.terminalCode
                 };
+                callback(null, result, centerBox.userMobile);
             } else if (param.command == '2000') {
                 result = {
                     command: '2000',
@@ -139,6 +150,7 @@ Handler.prototype.socketMsg = function(msg, session, next) {
                     port: param.port,
                     data: param.data
                 };
+                callback(null, result, centerBox.userMobile);
             } else if (param.command == '2001') {
                 result = {
                     command: '2001',
@@ -146,6 +158,7 @@ Handler.prototype.socketMsg = function(msg, session, next) {
                     port: param.port,
                     data: param.data
                 };
+                callback(null, result, centerBox.userMobile);
             } else if (param.command == '2002') {
                 result = {
                     command: '2002',
@@ -153,6 +166,7 @@ Handler.prototype.socketMsg = function(msg, session, next) {
                     port: param.port,
                     data: param.data
                 };
+                callback(null, result, centerBox.userMobile);
             } else if (param.command == '2005') {
                 var tCode = param.data.substring(0, 2);
                 var humidity = parseInt(param.data.substring(6, 8), 16);
@@ -178,6 +192,9 @@ Handler.prototype.socketMsg = function(msg, session, next) {
                                         terminalId: terminal._id,
                                         homeGridId: terminal.homeGridId
                                     };
+                                    console.log(JSON.stringify(result));
+                                    console.log("------------------------------------------------------------------------");
+                                    callback(null, result, centerBox.userMobile);
                                 }
                             });
                         }
@@ -190,6 +207,7 @@ Handler.prototype.socketMsg = function(msg, session, next) {
                     port: param.port,
                     data: param.data
                 };
+                callback(null, result, centerBox.userMobile);
             } else if (param.command == '3007') {
                 result = {
                     command: '3007',
@@ -197,11 +215,13 @@ Handler.prototype.socketMsg = function(msg, session, next) {
                     port: param.port,
                     data: param.data
                 };
+                callback(null, result, centerBox.userMobile);
             } else if (param.command == '7001') {
                 result = {
                     command: '7001',
                     data: param.data
                 };
+                callback(null, result, centerBox.userMobile);
             } else if (param.command == '4000') {
                 var centerBoxSensorData = param.data;
                 var temp = centerBoxSensorData.substring(2, 4) + centerBoxSensorData.substring(0, 2);
@@ -233,14 +253,13 @@ Handler.prototype.socketMsg = function(msg, session, next) {
                         self.app.rpc.home.homeRemote.saveSensorData(session, centerBox._id, result.temperature, result.humidity, result.co, result.quality, result.pm25, function(err) {
                             if (err) {
                                 callback(err);
+                            } else {
+                                callback(null, result, centerBox.userMobile);
                             }
                         });
                     }
                 });
             }
-
-
-            callback(null, result, centerBox.userMobile);
         },
 
         function(result, userMobile, callback) {

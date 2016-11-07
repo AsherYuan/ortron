@@ -1075,7 +1075,9 @@ Handler.prototype.userSaySomething = function (msg, session, next) {
 	var uid = session.uid;
 	/** 用户经过讯飞解析后的文本 **/
 	var words = msg.words;
-	words = StringUtil.numberTrans(words);
+	words = StringUtil.transTemp(words);
+	// TODO 算法重写
+	// words = StringUtil.numberTrans(words);
 	/** 辅助判断 **/
 	var ipAddress = msg.ipAddress;
 	var port = msg.port;
@@ -1088,7 +1090,7 @@ Handler.prototype.userSaySomething = function (msg, session, next) {
 
 	async.waterfall([
 		/** 第一步, 预置操作 图片和链接 **/
-		function(callback) {
+			function(callback) {
 			if(words === '图片') {
 				answer.push("https://timgsa.baidu.com/timg?image&quality=80&size=b10000_10000&sec=1471605536296&di=31deda21579c79876b8adc8a0d0fbf10&imgtype=jpg&src=http%3A%2F%2Fpic65.nipic.com%2Ffile%2F20150503%2F7487939_220838368000_2.jpg");
 				data.answer = answer;
@@ -1105,7 +1107,7 @@ Handler.prototype.userSaySomething = function (msg, session, next) {
 		},
 
 		/** 第二步，查找用户具体信息  **/
-		function(userMobile, callback) {
+			function(userMobile, callback) {
 			self.app.rpc.user.userRemote.getUserInfoByMobile(session, userMobile, function(err, user) {
 				if(err) {
 					callback(err);
@@ -1116,18 +1118,19 @@ Handler.prototype.userSaySomething = function (msg, session, next) {
 		},
 
 		/** 第三步，查找对应家庭信息 **/
-		function(user, callback) {
+			function(user, callback) {
 			self.app.rpc.home.homeRemote.getHomeInfoByMobile(session, user.mobile, function(err, homes) {
 				if(err) {
 					callback(err);
 				} else {
 					callback(null, user, homes);
+
 				}
 			});
 		},
 
 		/** 第四步，访问JAVA服务器，获取智能解析结果 **/
-		function(user, homes, callback) {
+			function(user, homes, callback) {
 			if(!!homes) {
 				var userId = user._id;
 				// TODO 分析当前操作的home
@@ -1155,7 +1158,7 @@ Handler.prototype.userSaySomething = function (msg, session, next) {
 						// 主服务器
 						// var host = "http://122.225.88.66:8180/SpringMongod/main/ao;
 						//  + "&loccode=analyze_findueq&runtimeinfo_id=57fdc4390cf2c6ce2f2d47a0"
-						var host = "http://abc.buiud.bid:8080/main/ao?str=" + params.str + "&user_id=" + params.user_id + "&home_id=" + params.home_id;
+						var host = "http://abc.buiud.bid:8080/main/ao?str=" + params.str + "&user_id=" + params.user_id + "&home_id=" + params.home_id + "&nd=" + new Date().getTime();
 						if(loccode && runtimeinfo_id) {
 							host += "&loccode=analyze_findueq&runtimeinfo_id=" + runtimeinfo_id;
 						}
@@ -1181,7 +1184,7 @@ Handler.prototype.userSaySomething = function (msg, session, next) {
 		},
 
 		/** 第五步, 解析smart center的返回 **/
-		function(user, homes, body, callback) {
+			function(user, homes, body, callback) {
 			var javaResult = JSON.parse(body);
 			var data = {};
 			console.log("----------------------------------------------------------" + JSON.stringify(javaResult));
@@ -1545,7 +1548,7 @@ Handler.prototype.remoteControll = function (msg, session, next) {
 
 	async.waterfall([
 		/** 第一步, 获得设备详情 **/
-		function(callback) {
+			function(callback) {
 			self.app.rpc.home.homeRemote.getDeviceById(session, deviceId, function(err, device) {
 				if(err) {callback(err);}
 				else {
@@ -1559,7 +1562,7 @@ Handler.prototype.remoteControll = function (msg, session, next) {
 		},
 
 		/** 第二步, 发送给smart center服务器，获取红外数据 **/
-		function(device, callback) {
+			function(device, callback) {
 			var deviceType = msg.deviceType === undefined ? '' : msg.deviceType;
 			var status = msg.status === undefined ? '' : msg.status;
 			var model = msg.model === undefined ? '' : msg.model;
@@ -1605,7 +1608,7 @@ Handler.prototype.remoteControll = function (msg, session, next) {
 		},
 
 		/** 第三步, 解析smart home的返回 **/
-		function(javaResult) {
+			function(javaResult) {
 			var result = JSON.parse(javaResult.data);
 			var data = {};
 			if (!!result.orderAndInfrared && result.orderAndInfrared.length > 0) {
@@ -1652,7 +1655,7 @@ Handler.prototype.remoteControll = function (msg, session, next) {
 													if(err) {
 														reject(err);
 													} else {
-														sendNotice(users[i].mobile, self);
+														sendNotice(user.mobile, self);
 														resolve();
 													}
 												});
@@ -1778,63 +1781,62 @@ Handler.prototype.getSensorDatas = function (msg, session, next) {
 };
 
 Handler.prototype.getLastSensorDatas = function (msg, session, next) {
+	var self = this;
 	var uid = session.uid;
 	var layerName = msg.layerName;
 	var homeId = msg.homeId;
-	HomeModel.findOne({_id: homeId}, function (err, home) {
-		if (err) {
-			logger.error(err);
-			next(null, Code.DATABASE);
+
+	self.app.rpc.home.homeRemote.getHomeById(session, homeId, function(err, home) {
+		if(err) {
+			console.log(JSON.stringify(err));
+			next(null, ResponseUtil.resp(Code.DATABASE));
 		} else {
-			var render_getLastSensorDatas = function(serialno) {
-				return new Promise(function (resolve, reject) {
-					CenterBoxModel.findOne({serialno: serialno}, function (err, cbox) {
-						if (err) {
-							console.log(err);
-							reject(err);
-						} else {
-							var centerBoxId = cbox._id;
-							SensorDataModel.findOne({centerBoxId: centerBoxId}).select('-_id -centerBoxId').sort({addTime: -1}).exec(function (err, data) {
-								if (err) {
-									console.log(err);
-									reject(err);
+			if(!!home) {
+				if(!!home.layers) {
+					var flag = false;
+					var centerBoxSerialno = "";
+					for(var i=0;i<home.layers.length;i++) {
+						if(layerName === home.layers[i].name) {
+							flag = true;
+							if(!!home.layers[i].centerBoxSerialno) {
+								centerBoxSerialno = home.layers[i].centerBoxSerialno;
+							}
+						}
+					}
+					if(flag) {
+						if(centerBoxSerialno !== "") {
+							self.app.rpc.home.homeRemote.getCenterBoxBySerailno(session, centerBoxSerialno, function(err, cBox) {
+								if(err) {
+									next(null, ResponseUtil.resp(Code.DATABASE));
 								} else {
-									resolve(null, data);
+									self.app.rpc.home.homeRemote.getLastSensorData(session, cBox._id, function(err, sData) {
+										if(err) {
+											next(null, ResponseUtil.resp(Code.DATABASE));
+										} else {
+											if(sData && sData.length > 0) {
+												next(null, ResponseUtil.resp(Code.OK, sData[0]));
+											} else {
+												next(null, ResponseUtil.resp(Code.OK));
+											}
+										}
+									});
 								}
 							});
+						} else {
+							next(null, ResponseUtil.resp(Code.STRUCTURE.LAYER_NOT_BINDED));
 						}
-					});
-				});
-			};
-
-
-
-			var layers = home.layers;
-			if (!!layers && layers.length > 0) {
-
-				var toRandering = [];
-				for (var i = 0; i < layers.length; i++) {
-					if (layers[i].name == layerName) {
-						var serialno = layers[i].centerBoxSerialno;
-						if (!!serialno) {
-							toRandering.push(render_getLastSensorDatas(serialno));
-						}
-					}
-				}
-
-				Promise.all(toRandering).then(function(err, data) {
-					if(err) {
-						logger.error(err);
-						next(null, ResponseUtil.resp(Code.DATABASE));
 					} else {
-						next(null, ResponseUtil.resp(Code.OK, data));
+						next(null, ResponseUtil.resp(Code.STRUCTURE.LAYER_NOT_EXIST));
 					}
-				});
+				} else {
+					next(null, ResponseUtil.resp(Code.STRUCTURE.LAYER_NOT_EXIST));
+				}
 			} else {
-				next(null, ResponseUtil.resp(Code.DATABASE));
+				next(null, ResponseUtil.resp(Code.STRUCTURE.HOME_NOT_EXIST));
 			}
 		}
 	});
+
 };
 
 Handler.prototype.getLastOutDoorSensorDatas = function (msg, session, next) {

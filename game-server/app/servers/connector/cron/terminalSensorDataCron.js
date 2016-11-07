@@ -22,22 +22,25 @@ var sendQuery = function(curIpAddress, curPort, centerBoxSerialno, channelServic
             } else {
                 if (!!terminals) {
                     for (var i = 0; i < terminals.length; i++) {
-                        var homeGridId = terminals[i].homeGridId;
-                        var param = {
-                            command: '2005',
-                            ipAddress: curIpAddress,
-                            data: homeGridId,
-                            port: curPort
-                        };
-                        channelService.pushMessageByUids('onMsg', param, [{
-                            uid: 'socketServer*otron',
-                            sid: 'connector-server-1'
-                        }]);
+
+                        sendMsg(curIpAddress, curPort, terminals[i].code, channelService);
                     }
                 }
             }
         });
     }
+};
+
+var sendMsg = function(curIpAddress, curPort, code, channelService) {
+    channelService.pushMessageByUids('onMsg', {
+        command: '2005',
+        ipAddress: curIpAddress,
+        data: code,
+        port: curPort
+    }, [{
+        uid: 'socketServer*otron',
+        sid: 'connector-server-1'
+    }]);
 };
 
 /**
