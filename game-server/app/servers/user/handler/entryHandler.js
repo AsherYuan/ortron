@@ -22,6 +22,42 @@ var Handler = function(app) {
     this.app = app;
 };
 
+Handler.prototype.observer = function(msg, session, next) {
+    var self = this;
+    var uid = 'observer';
+    async.waterfall([
+        function(cb) {
+            session.bind(uid, cb);
+        },
+        function(cb) {
+            session.set('serverId', 'user-server-1');
+            session.on('closed', onUserLeave.bind(null, self.app));
+            var sessionService = self.app.get('sessionService');
+            var sessionId = session.id;
+            var x = sessionService.getClientAddressBySessionId(sessionId);
+            console.log("client address:" + JSON.stringify(x));
+            console.log("=======================================================================================");
+            var xa = sessionService.service;
+            console.log(xa);
+            console.log("=======================================================================================");
+            console.log(xa.sessions);
+            console.log("=======================================================================================");
+            console.log(xa.uidMap);
+            console.log("=======================================================================================");
+            console.log(JSON.stringify(sessionService.create));
+            next(null, {
+                code: 200,
+                codetxt: '登录成功'
+            });
+        }
+    ], function(err, result) {
+        next(null, {
+            code: 101,
+            codetxt: '登录失败'
+        });
+    });
+};
+
 /**
  * 账户验证
  *
