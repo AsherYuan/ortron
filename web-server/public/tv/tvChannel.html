@@ -28,29 +28,28 @@
         var uid = '';
 
         $(document).ready(function() {
-            pomelo.on('onMsg', function (data) {
-//                alert(JSON.stringify(data));
-            });
             pomelo.init({host:host, port:port, log:true}, function() {
-                var route = 'user.entryHandler.observer';
-                pomelo.request(route, function(data) {
-                    if(!!data) {
-                        if(data.code === 200) {
-                            getOnlineUsers();
-                        }
+                pomelo.request('user.userHandler.tvChannelList', function(data) {
+                    for(var i=0;i<data.data.length;i++) {
+                        var html = "<tr><td>" + data.data[i]._id + "</td>";
+                        html += "<td>" + data.data[i].channel + "</td>";
+                        html += "<td>" + data.data[i].channelNum + "</td></tr>";
+                        $("#headLine").append(html);
                     }
                 });
             });
         });
-
-        var getOnlineUsers = function() {
-            var route = 'user.entryHandler.getOnlineUsers';
-            pomelo.request(route, function(data) {
-                layer.alert(JSON.stringify(data));
-            });
-        };
     </script>
 </head>
 <body>
+<div id="container">
+    <table id='headLine'>
+        <tr>
+            <td>id</td>
+            <td>名称</td>
+            <td>频道号</td>
+        </tr>
+    </table>
+</div>
 </body>
 </html>

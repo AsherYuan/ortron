@@ -32,6 +32,8 @@ var RepairModel = require('../../../mongodb/estateModels/RepairModel');
 var ResponseUtil = require('../../../util/ResponseUtil');
 var logger = require('pomelo-logger').getLogger('pomelo',  __filename);
 
+var TvChannel = require('../../../mongodb/tv/TvChannelModel');
+
 module.exports = function (app) {
 	return new Handler(app);
 };
@@ -1090,7 +1092,7 @@ Handler.prototype.userSaySomething = function (msg, session, next) {
 
 	async.waterfall([
 		/** 第一步, 预置操作 图片和链接 **/
-			function(callback) {
+		function(callback) {
 			if(words === '图片') {
 				answer.push("https://timgsa.baidu.com/timg?image&quality=80&size=b10000_10000&sec=1471605536296&di=31deda21579c79876b8adc8a0d0fbf10&imgtype=jpg&src=http%3A%2F%2Fpic65.nipic.com%2Ffile%2F20150503%2F7487939_220838368000_2.jpg");
 				data.answer = answer;
@@ -1107,7 +1109,7 @@ Handler.prototype.userSaySomething = function (msg, session, next) {
 		},
 
 		/** 第二步，查找用户具体信息  **/
-			function(userMobile, callback) {
+		function(userMobile, callback) {
 			self.app.rpc.user.userRemote.getUserInfoByMobile(session, userMobile, function(err, user) {
 				if(err) {
 					callback(err);
@@ -1118,7 +1120,7 @@ Handler.prototype.userSaySomething = function (msg, session, next) {
 		},
 
 		/** 第三步，查找对应家庭信息 **/
-			function(user, callback) {
+		function(user, callback) {
 			self.app.rpc.home.homeRemote.getHomeInfoByMobile(session, user.mobile, function(err, homes) {
 				if(err) {
 					callback(err);
@@ -1130,7 +1132,7 @@ Handler.prototype.userSaySomething = function (msg, session, next) {
 		},
 
 		/** 第四步，访问JAVA服务器，获取智能解析结果 **/
-			function(user, homes, callback) {
+		function(user, homes, callback) {
 			if(!!homes) {
 				var userId = user._id;
 				// TODO 分析当前操作的home
@@ -1184,7 +1186,7 @@ Handler.prototype.userSaySomething = function (msg, session, next) {
 		},
 
 		/** 第五步, 解析smart center的返回 **/
-			function(user, homes, body, callback) {
+		function(user, homes, body, callback) {
 			var javaResult = JSON.parse(body);
 			var data = {};
 			console.log("----------------------------------------------------------" + JSON.stringify(javaResult));
@@ -1215,60 +1217,124 @@ Handler.prototype.userSaySomething = function (msg, session, next) {
 						var devices = [];
 						var sentence = "";
 
-						var render_sendingIrCode = function(orderAndInfrared, targetArray, devices, sentence) {
-							return new Promise(function (resolve, reject) {
-								var t = orderAndInfrared;
-								targetArray.push(SayingUtil.translateStatus(t.order.ueq));
-								devices.push(t.order.ueq);
-								if (!!t.infrared && !!t.infrared.infraredcode) {
-									var ircode = t.infrared.infraredcode;
-									self.app.rpc.home.homeRemote.getDeviceById(session, t.order.ueq.id, function(err, userEquipment) {
-										if(err) {
-											reject(err);
-										} else {
-											self.app.rpc.home.homeRemote.getTerminalById(session, userEquipment.terminalId, function(err, terminal) {
+						if(result.inputstr.indexOf('我要看') === 0) {
+							targetArray.push(SayingUtil.translateTv(result.inputstr));
+							if(!!result.orderAndInfrared) {
+								var render_tv = function(orderAndInfrared) {
+									return new Promise(function(resolve, reject) {
+										var t = orderAndInfrared;
+										console.log("*******************************" + JSON.stringify(t));
+										if (!!t.infrared && !!t.infrared.infraredcode) {
+											var ircode = t.infrared.infraredcode;
+											self.app.rpc.home.homeRemote.getDeviceById(session, t.order.ueq.id, function(err, userEquipment) {
 												if(err) {
 													reject(err);
 												} else {
-													var serialno = terminal.centerBoxSerialno;
-													var terminalCode = terminal.code;
-													self.app.rpc.home.homeRemote.getCenterBoxBySerailno(session, serialno, function(err, centerBox) {
+													console.log("*******************************2222222222222222222");
+													self.app.rpc.home.homeRemote.getTerminalById(session, userEquipment.terminalId, function(err, terminal) {
 														if(err) {
 															reject(err);
 														} else {
-															var curPort = centerBox.curPort;
-															var curIpAddress = centerBox.curIpAddress;
-															console.log("---------------------寻找当前主控信信息---------------------");
-															console.log("curIpAddress : " + curIpAddress + "___curPort : " + curPort);
-															var param = {
-																command: '3000',
-																ipAddress: curIpAddress,
-																serialNo: serialno,
-																data: terminalCode + " " + ircode,
-																port: curPort
-															};
-															console.log("向ots推送消息:" + JSON.stringify(param));
-															self.app.get('channelService').pushMessageByUids('onMsg', param, [{
-																uid: 'socketServer*otron',
-																sid: 'connector-server-1'
-															}]);
+															console.log("*******************************333333333333333");
+															var serialno = terminal.centerBoxSerialno;
+															var terminalCode = terminal.code;
+															self.app.rpc.home.homeRemote.getCenterBoxBySerailno(session, serialno, function(err, centerBox) {
+																if(err) {
+																	reject(err);
+																} else {
+																	console.log("*******************************5555555555555");
+																	var curPort = centerBox.curPort;
+																	var curIpAddress = centerBox.curIpAddress;
+																	console.log("---------------------寻找当前主控信信息---------------------");
+																	console.log("curIpAddress : " + curIpAddress + "___curPort : " + curPort);
+																	var param = {
+																		command: '3000',
+																		ipAddress: curIpAddress,
+																		serialNo: serialno,
+																		data: terminalCode + " " + ircode,
+																		port: curPort
+																	};
+																	console.log("向ots推送消息:" + JSON.stringify(param));
+																	self.app.get('channelService').pushMessageByUids('onMsg', param, [{
+																		uid: 'socketServer*otron',
+																		sid: 'connector-server-1'
+																	}]);
+																}
+															});
 														}
 													});
 												}
 											});
 										}
 									});
-								}
-							});
-						};
-						var toRandering = [];
-						for (var i = 0; i < result.orderAndInfrared.length; i++) {
-							toRandering.push(render_sendingIrCode(result.orderAndInfrared[i], targetArray, devices, sentence));
-						}
+								};
 
-						Promise.all(toRandering).then(function() {
-							console.log("全部执行完成");
-						});
+
+								var tvRandering = [];
+								for (var j = 0; j < result.orderAndInfrared.length; j++) {
+									tvRandering.push(render_tv(result.orderAndInfrared[j]));
+								}
+console.log(JSON.stringify(tvRandering));
+								Promise.all(tvRandering).then(function() {
+									console.log("全部执行完成");
+								});
+							}
+						} else {
+							var render_sendingIrCode = function(orderAndInfrared, targetArray, devices, sentence) {
+								return new Promise(function (resolve, reject) {
+									var t = orderAndInfrared;
+									targetArray.push(SayingUtil.translateStatus(t.order.ueq));
+									devices.push(t.order.ueq);
+									if (!!t.infrared && !!t.infrared.infraredcode) {
+										var ircode = t.infrared.infraredcode;
+										self.app.rpc.home.homeRemote.getDeviceById(session, t.order.ueq.id, function(err, userEquipment) {
+											if(err) {
+												reject(err);
+											} else {
+												self.app.rpc.home.homeRemote.getTerminalById(session, userEquipment.terminalId, function(err, terminal) {
+													if(err) {
+														reject(err);
+													} else {
+														var serialno = terminal.centerBoxSerialno;
+														var terminalCode = terminal.code;
+														self.app.rpc.home.homeRemote.getCenterBoxBySerailno(session, serialno, function(err, centerBox) {
+															if(err) {
+																reject(err);
+															} else {
+																var curPort = centerBox.curPort;
+																var curIpAddress = centerBox.curIpAddress;
+																console.log("---------------------寻找当前主控信信息---------------------");
+																console.log("curIpAddress : " + curIpAddress + "___curPort : " + curPort);
+																var param = {
+																	command: '3000',
+																	ipAddress: curIpAddress,
+																	serialNo: serialno,
+																	data: terminalCode + " " + ircode,
+																	port: curPort
+																};
+																console.log("向ots推送消息:" + JSON.stringify(param));
+																self.app.get('channelService').pushMessageByUids('onMsg', param, [{
+																	uid: 'socketServer*otron',
+																	sid: 'connector-server-1'
+																}]);
+															}
+														});
+													}
+												});
+											}
+										});
+									}
+								});
+							};
+							var toRandering = [];
+							for (var i = 0; i < result.orderAndInfrared.length; i++) {
+								toRandering.push(render_sendingIrCode(result.orderAndInfrared[i], targetArray, devices, sentence));
+							}
+
+							Promise.all(toRandering).then(function() {
+								console.log("全部执行完成");
+							});
+						}
 
 						// 判断是否延时
 						if (result.delayOrder === true) {
@@ -2508,3 +2574,42 @@ Handler.prototype.addNewComplaint = function(msg, session, next) {
 Handler.prototype.toSend = function(msg, session, next) {
 	console.log("toSend...." + JSON.stringify(msg));
 };
+
+/******************************  临时测试  结束  ************************************/
+Handler.prototype.controllerList = function(msg, session, next) {
+	CenterBoxModel.find({}, function(err, docs) {
+		if(err) {
+			next(null, Code.DATABASE);
+		} else {
+			next(null, docs);
+		}
+	});
+};
+
+Handler.prototype.deleteCtrl = function(msg, session, next) {
+	var serialno = msg.serialno;
+	CenterBoxModel.remove({serialno:serialno}, function(err) {
+        if(err) {
+            console.log(err);
+            cb(-1);
+        } else {
+            cb(0);
+        }
+    });
+};
+
+Handler.prototype.tvChannelList = function(msg, session, next) {
+	var page = msg.page;
+	if(!page) page = 1;
+	var pageSize = msg.pageSize;
+	if(!pageSize) pageSize = 15;
+	var skip = pageSize * (page - 1);
+	TvChannel.find({}).limit(pageSize).skip(skip).exec().then(function(channels) {
+		next(null, ResponseUtil.resp(Code.OK, channels));
+	}).catch(function(err) {
+		console.log(err);
+		next(null, ReponseUtil.resp(Code.DATABASE));
+	});
+};
+
+/******************************  临时测试  结束  ************************************/

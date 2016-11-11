@@ -9,15 +9,20 @@ var app = pomelo.createApp();
 app.set('name', 'ortron');
 
 // app configuration
-app.configure('production|development', 'connector|user|home|estate', function(){
-  app.set('connectorConfig',
-    {
-      connector : pomelo.connectors.hybridconnector,
-      heartbeat : 30,
-      useDict : false,
-      useProtobuf : false
+app.configure('production|development', 'connector|user|home|estate', function() {
+    app.set('connectorConfig', {
+        connector: pomelo.connectors.hybridconnector,
+        heartbeat: 30,
+        useDict: false,
+        useProtobuf: false
     });
 });
+
+// app.configure('production|development', 'user|master', function () {
+//     app.enable('systemMonitor');
+//     var onlineUser = require("./monitor/onlineUser");
+//     app.registerAdmin(onlineUser, {app: app});
+// });
 
 /**
  * 全局channel，可用于不同服务器之间的互相通信
@@ -37,6 +42,6 @@ app.configure('production|development', 'connector|user|home|estate', function()
 // start app
 app.start();
 
-process.on('uncaughtException', function (err) {
-  console.error(' Caught exception: ' + err.stack);
+process.on('uncaughtException', function(err) {
+    console.error(' Caught exception: ' + err.stack);
 });

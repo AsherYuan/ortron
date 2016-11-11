@@ -7,6 +7,11 @@
 
 var SayingUtil = module.exports;
 
+// 准备电视机的返回
+SayingUtil.translateTv = function(inputStr) {
+    return inputStr.replace("我要看", "切换到");
+};
+
 // 根据状态调整返回给用户的语句
 SayingUtil.translateStatus = function(equipment) {
     var ret ="";
