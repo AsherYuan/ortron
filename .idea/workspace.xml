@@ -8,11 +8,7 @@
       <change type="DELETED" beforePath="$PROJECT_DIR$/game-server/logs/rpc-debug-${opts:serverId}.log" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/game-server/logs/rpc-log-${opts:serverId}.log" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/game-server/app/graber/tv/TvProgramTimePatch.js" afterPath="$PROJECT_DIR$/game-server/app/graber/tv/TvProgramTimePatch.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/game-server/app/servers/user/handler/userHandler.js" afterPath="$PROJECT_DIR$/game-server/app/servers/user/handler/userHandler.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/game-server/config/crons.json" afterPath="$PROJECT_DIR$/game-server/config/crons.json" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/game-server/node_modules/pomelo-protobuf/test/rootMsg.json" afterPath="$PROJECT_DIR$/game-server/node_modules/pomelo-protobuf/test/rootMsg.json" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web-server/app.js" afterPath="$PROJECT_DIR$/web-server/app.js" />
     </list>
     <ignored path="ortron.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -36,8 +32,8 @@
       <file leaf-file-name="userHandler.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/game-server/app/servers/user/handler/userHandler.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="278">
-              <caret line="1981" column="18" selection-start-line="1981" selection-start-column="18" selection-end-line="1981" selection-end-column="18" />
+            <state relative-caret-position="488">
+              <caret line="2036" column="54" selection-start-line="2036" selection-start-column="54" selection-end-line="2036" selection-end-column="54" />
               <folding />
             </state>
           </provider>
@@ -76,8 +72,18 @@
       <file leaf-file-name="crons.json" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/game-server/config/crons.json">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="882">
-              <caret line="42" column="0" selection-start-line="42" selection-start-column="0" selection-end-line="42" selection-end-column="0" />
+            <state relative-caret-position="-291">
+              <caret line="11" column="28" selection-start-line="11" selection-start-column="28" selection-end-line="11" selection-end-column="28" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="crons.json.bak" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/game-server/config/crons.json.bak">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1470">
+              <caret line="70" column="0" selection-start-line="70" selection-start-column="0" selection-end-line="70" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -104,11 +110,11 @@
         <option value="$PROJECT_DIR$/game-server/app/servers/user/handler/entryHandler.js" />
         <option value="$PROJECT_DIR$/game-server/app/servers/home/remote/homeRemote.js" />
         <option value="$PROJECT_DIR$/web-server/mongodb/models/rinfraredModel.js" />
-        <option value="$PROJECT_DIR$/game-server/app/servers/user/handler/userHandler.js" />
         <option value="$PROJECT_DIR$/game-server/config/crons.json.bak" />
         <option value="$PROJECT_DIR$/game-server/config/crons.json" />
         <option value="$PROJECT_DIR$/game-server/app/graber/tv/TvProgramTimePatch.js" />
         <option value="$PROJECT_DIR$/web-server/app.js" />
+        <option value="$PROJECT_DIR$/game-server/app/servers/user/handler/userHandler.js" />
       </list>
     </option>
   </component>
@@ -597,15 +603,15 @@
       <workItem from="1476843015557" duration="9947000" />
       <workItem from="1478851403266" duration="2787000" />
       <workItem from="1478917133729" duration="1323000" />
-      <workItem from="1479083886386" duration="3779000" />
+      <workItem from="1479083886386" duration="5317000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="29528000" />
+    <option name="totallyTimeSpent" value="31066000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="7" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.15542677" sideWeight="0.5" order="1" side_tool="false" content_ui="combo" />
@@ -962,21 +968,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/game-server/config/crons.json.bak">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="852">
-          <caret line="70" column="0" selection-start-line="70" selection-start-column="0" selection-end-line="70" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/game-server/config/crons.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="882">
-          <caret line="42" column="0" selection-start-line="42" selection-start-column="0" selection-end-line="42" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/game-server/app/graber/tv/TvProgramTimePatch.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="315">
@@ -1001,10 +992,26 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/game-server/config/crons.json.bak">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1470">
+          <caret line="70" column="0" selection-start-line="70" selection-start-column="0" selection-end-line="70" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/game-server/config/crons.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-291">
+          <caret line="11" column="28" selection-start-line="11" selection-start-column="28" selection-end-line="11" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/game-server/app/servers/user/handler/userHandler.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="278">
-          <caret line="1981" column="18" selection-start-line="1981" selection-start-column="18" selection-end-line="1981" selection-end-column="18" />
+        <state relative-caret-position="488">
+          <caret line="2036" column="54" selection-start-line="2036" selection-start-column="54" selection-end-line="2036" selection-end-column="54" />
           <folding />
         </state>
       </provider>

@@ -2002,27 +2002,22 @@ Handler.prototype.delayNotify = function (msg, session, next) {
 				var t = orderAndInfrared;
 				targetArray.push(SayingUtil.translateStatus(t.order.ueq));
 				devices.push(t.order.ueq);
-				console.log("***********************************111");
 				if (!!t.infrared && !!t.infrared.infraredcode) {
 					var ircode = t.infrared.infraredcode;
-					console.log("***********************************222");
 					self.app.rpc.home.homeRemote.getDeviceById(session, t.order.ueq.id, function(err, userEquipment) {
 						if(err) {
 							reject(err);
 						} else {
-							console.log("***********************************333");
 							self.app.rpc.home.homeRemote.getTerminalById(session, userEquipment.terminalId, function(err, terminal) {
 								if(err) {
 									reject(err);
 								} else {
-									console.log("***********************************444");
 									var serialno = terminal.centerBoxSerialno;
 									var terminalCode = terminal.code;
 									self.app.rpc.home.homeRemote.getCenterBoxBySerailno(session, serialno, function(err, centerBox) {
 										if(err) {
 											reject(err);
 										} else {
-											console.log("***********************************555");
 											var curPort = centerBox.curPort;
 											var curIpAddress = centerBox.curIpAddress;
 											console.log("---------------------寻找当前主控信信息---------------------");
@@ -2034,11 +2029,12 @@ Handler.prototype.delayNotify = function (msg, session, next) {
 												data: terminalCode + " " + ircode,
 												port: curPort
 											};
-											console.log("向ots推送消息:" + JSON.stringify(param));
+											console.log("(延时)向ots推送消息:" + JSON.stringify(param));
 											self.app.get('channelService').pushMessageByUids('onMsg', param, [{
 												uid: 'socketServer*otron',
 												sid: 'connector-server-1'
 											}]);
+											resolve();
 										}
 									});
 								}
@@ -2055,18 +2051,20 @@ Handler.prototype.delayNotify = function (msg, session, next) {
 
 		Promise.all(toRandering).then(function() {
 			console.log("全部执行完成");
+
+			sentence = "已为您" + JSON.stringify(targetArray);
+			data.answer = sentence;
+			data.devices = devices;
+			data.type = "data";
+			console.log("--------------------------推送定时----------------------------------------");
+			param.data = data;
+			console.log(JSON.stringify(param));
+			self.app.get('channelService').pushMessageByUids('onMsg', param, [{
+				uid: uid,
+				sid: 'user-server-1'
+			}]);
 		});
-
-		sentence = "已为您" + JSON.stringify(targetArray);
-		data.answer = sentence;
-		data.devices = devices;
-		data.type = "data";
 	}
-
-	self.app.get('channelService').pushMessageByUids('onMsg', data, [{
-		uid: uid,
-		sid: 'user-server-1'
-	}]);
 };
 
 Handler.prototype.tempMsgList = function (msg, session, next) {
