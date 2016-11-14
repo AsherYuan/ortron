@@ -1274,7 +1274,6 @@ Handler.prototype.userSaySomething = function (msg, session, next) {
 								for (var j = 0; j < result.orderAndInfrared.length; j++) {
 									tvRandering.push(render_tv(result.orderAndInfrared[j]));
 								}
-console.log(JSON.stringify(tvRandering));
 								Promise.all(tvRandering).then(function() {
 									console.log("全部执行完成");
 								});
@@ -1285,44 +1284,46 @@ console.log(JSON.stringify(tvRandering));
 									var t = orderAndInfrared;
 									targetArray.push(SayingUtil.translateStatus(t.order.ueq));
 									devices.push(t.order.ueq);
-									if (!!t.infrared && !!t.infrared.infraredcode) {
-										var ircode = t.infrared.infraredcode;
-										self.app.rpc.home.homeRemote.getDeviceById(session, t.order.ueq.id, function(err, userEquipment) {
-											if(err) {
-												reject(err);
-											} else {
-												self.app.rpc.home.homeRemote.getTerminalById(session, userEquipment.terminalId, function(err, terminal) {
-													if(err) {
-														reject(err);
-													} else {
-														var serialno = terminal.centerBoxSerialno;
-														var terminalCode = terminal.code;
-														self.app.rpc.home.homeRemote.getCenterBoxBySerailno(session, serialno, function(err, centerBox) {
-															if(err) {
-																reject(err);
-															} else {
-																var curPort = centerBox.curPort;
-																var curIpAddress = centerBox.curIpAddress;
-																console.log("---------------------寻找当前主控信信息---------------------");
-																console.log("curIpAddress : " + curIpAddress + "___curPort : " + curPort);
-																var param = {
-																	command: '3000',
-																	ipAddress: curIpAddress,
-																	serialNo: serialno,
-																	data: terminalCode + " " + ircode,
-																	port: curPort
-																};
-																console.log("向ots推送消息:" + JSON.stringify(param));
-																self.app.get('channelService').pushMessageByUids('onMsg', param, [{
-																	uid: 'socketServer*otron',
-																	sid: 'connector-server-1'
-																}]);
-															}
-														});
-													}
-												});
-											}
-										});
+									if (result.delayOrder !== true) {
+										if (!!t.infrared && !!t.infrared.infraredcode) {
+											var ircode = t.infrared.infraredcode;
+											self.app.rpc.home.homeRemote.getDeviceById(session, t.order.ueq.id, function(err, userEquipment) {
+												if(err) {
+													reject(err);
+												} else {
+													self.app.rpc.home.homeRemote.getTerminalById(session, userEquipment.terminalId, function(err, terminal) {
+														if(err) {
+															reject(err);
+														} else {
+															var serialno = terminal.centerBoxSerialno;
+															var terminalCode = terminal.code;
+															self.app.rpc.home.homeRemote.getCenterBoxBySerailno(session, serialno, function(err, centerBox) {
+																if(err) {
+																	reject(err);
+																} else {
+																	var curPort = centerBox.curPort;
+																	var curIpAddress = centerBox.curIpAddress;
+																	console.log("---------------------寻找当前主控信信息---------------------");
+																	console.log("curIpAddress : " + curIpAddress + "___curPort : " + curPort);
+																	var param = {
+																		command: '3000',
+																		ipAddress: curIpAddress,
+																		serialNo: serialno,
+																		data: terminalCode + " " + ircode,
+																		port: curPort
+																	};
+																	console.log("向ots推送消息:" + JSON.stringify(param));
+																	self.app.get('channelService').pushMessageByUids('onMsg', param, [{
+																		uid: 'socketServer*otron',
+																		sid: 'connector-server-1'
+																	}]);
+																}
+															});
+														}
+													});
+												}
+											});
+										}
 									}
 								});
 							};
@@ -1981,18 +1982,91 @@ Handler.prototype.sendNotice = function (msg, session, next) {
 Handler.prototype.delayNotify = function (msg, session, next) {
 	var self = this;
 	var uid = msg.uid;
-	var content = msg.content;
+	var p = JSON.parse(msg);
 	var param = {
-		command: '6000',
-		content: content
+		command: '6001',
 	};
 	console.log("延时命令：" + JSON.stringify(msg));
-	self.app.get('channelService').pushMessageByUids('onMsg', param, [{
+	var data = {};
+	data.voiceId = p.inputstr_id;
+	data.isDelayOrder = p.delayOrder;
+	data.isCanLearn = p.iscanlearn;
+	data.from = p.status;
+	if (!!p.orderAndInfrared && p.orderAndInfrared.length > 0) {
+		var targetArray = [];
+		var devices = [];
+		var sentence = "";
+
+		var render_sendingIrCode = function(orderAndInfrared, targetArray, devices, sentence) {
+			return new Promise(function (resolve, reject) {
+				var t = orderAndInfrared;
+				targetArray.push(SayingUtil.translateStatus(t.order.ueq));
+				devices.push(t.order.ueq);
+				console.log("***********************************111");
+				if (!!t.infrared && !!t.infrared.infraredcode) {
+					var ircode = t.infrared.infraredcode;
+					console.log("***********************************222");
+					self.app.rpc.home.homeRemote.getDeviceById(session, t.order.ueq.id, function(err, userEquipment) {
+						if(err) {
+							reject(err);
+						} else {
+							console.log("***********************************333");
+							self.app.rpc.home.homeRemote.getTerminalById(session, userEquipment.terminalId, function(err, terminal) {
+								if(err) {
+									reject(err);
+								} else {
+									console.log("***********************************444");
+									var serialno = terminal.centerBoxSerialno;
+									var terminalCode = terminal.code;
+									self.app.rpc.home.homeRemote.getCenterBoxBySerailno(session, serialno, function(err, centerBox) {
+										if(err) {
+											reject(err);
+										} else {
+											console.log("***********************************555");
+											var curPort = centerBox.curPort;
+											var curIpAddress = centerBox.curIpAddress;
+											console.log("---------------------寻找当前主控信信息---------------------");
+											console.log("curIpAddress : " + curIpAddress + "___curPort : " + curPort);
+											var param = {
+												command: '3000',
+												ipAddress: curIpAddress,
+												serialNo: serialno,
+												data: terminalCode + " " + ircode,
+												port: curPort
+											};
+											console.log("向ots推送消息:" + JSON.stringify(param));
+											self.app.get('channelService').pushMessageByUids('onMsg', param, [{
+												uid: 'socketServer*otron',
+												sid: 'connector-server-1'
+											}]);
+										}
+									});
+								}
+							});
+						}
+					});
+				}
+			});
+		};
+		var toRandering = [];
+		for (var i = 0; i < p.orderAndInfrared.length; i++) {
+			toRandering.push(render_sendingIrCode(p.orderAndInfrared[i], targetArray, devices, sentence));
+		}
+
+		Promise.all(toRandering).then(function() {
+			console.log("全部执行完成");
+		});
+
+		sentence = "已为您" + JSON.stringify(targetArray);
+		data.answer = sentence;
+		data.devices = devices;
+		data.type = "data";
+	}
+
+	self.app.get('channelService').pushMessageByUids('onMsg', data, [{
 		uid: uid,
 		sid: 'user-server-1'
 	}]);
-
-	next(null, ResponseUtil.resp(Code.OK));
 };
 
 Handler.prototype.tempMsgList = function (msg, session, next) {

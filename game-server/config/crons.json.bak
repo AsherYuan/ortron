@@ -12,6 +12,11 @@
           "action": "terminalSensorDataCron.getSensorData"
         },
         {
+          "id": 3,
+          "time": "0 0 0/1 1 * *",
+          "action": "newsDataCron.currentData"
+        },
+        {
           "id": 4,
           "time": "0 10 0/1 1 * *",
           "action": "weatherAlarmDataCron.currentData"
@@ -39,6 +44,11 @@
         "id": 2,
         "time": "3/10 * * * * *",
         "action": "terminalSensorDataCron.getSensorData"
+      },
+      {
+        "id": 3,
+        "time": "0 0 0/1 1 * *",
+        "action": "newsDataCron.currentData"
       },
       {
         "id": 4,
