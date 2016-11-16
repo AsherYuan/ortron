@@ -250,7 +250,7 @@ Handler.prototype.socketMsg = function(msg, session, next) {
                     if (err) {
                         callback(err);
                     } else {
-                        self.app.rpc.home.homeRemote.saveSensorData(session, centerBox._id, result.temperature, result.humidity, result.co, result.quality, result.pm25, function(err) {
+                        self.app.rpc.home.homeRemote.saveSensorData(session, centerBox._id + "", result.temperature, result.humidity, result.co, result.quality, result.pm25, function(err) {
                             if (err) {
                                 callback(err);
                             } else {

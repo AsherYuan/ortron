@@ -7,7 +7,9 @@ var FloorModelModel = require('./mongodb/models/FloorModelModel');
 var rinfraredModel = require('./mongodb/models/rinfraredModel');
 var NoticeModel = require('./mongodb/models/NoticeModel');
 var Moment = require('moment');
-var StringUtil = require('../../../util/StringUtil.js');
+var StringUtil = require('./mongodb/StringUtil.js');
+var SensorDataModel = require('./mongodb/models/SensorDataModel');
+var TSensorDataModel = require('./mongodb/models/TSensorDataModel');
 
 app.configure(function () {
 	app.use(express.methodOverride());
@@ -183,6 +185,7 @@ app.get('/ircode', function (req, res) {
 /****************************************** 消息相关接口 开始 ************************************************/
 /** 消息通知 **/
 app.get('/getNoticeList', function (req, res) {
+	res.set("Access-Control-Allow-Origin", "*");
 	var page = req.query.page;
 	if (page === undefined || page < 1) {
 		page = 1;
@@ -235,6 +238,7 @@ app.get('/getNoticeList', function (req, res) {
  消息详情
  **/
 app.get('/getNoticeDetail', function (req, res) {
+	res.set("Access-Control-Allow-Origin", "*");
 	var id = req.query.noticeId;
 	var userMobile = req.query.userMobile;
 	NoticeModel.findOne({_id: new Object(id)}, function (err, notice) {
@@ -246,8 +250,6 @@ app.get('/getNoticeDetail', function (req, res) {
 			NoticeModel.update({_id: id}, {$set: {hasRead: 1}}, function (err, docs) {
 				if (err) console.log(err);
 			});
-			var ret = Code.OK;
-
 			var n = {};
 			n._id = notice._id;
 			n.title = notice.title;
@@ -271,14 +273,12 @@ app.get('/getNoticeDetail', function (req, res) {
 					n.addTime = Moment(notice.addTime).format('MM-DD HH:mm');
 				}
 			}
-			ret.data = n;
-
 			NoticeModel.count({hasRead: 0, userMobile: userMobile}, function (err, count) {
 				if (err) {
 					console.log(err);
 					res.send("{\"code\":101, \"codetxt\":\"数据库错误\"}");
 				} else {
-					res.send("{\"code\":200, \"codetxt\":\"操作成功\", \"count\":" + count + "}");
+					res.send("{\"code\":200, \"codetxt\":\"操作成功\", \"count\":" + count + ", \"data\":" + JSON.stringify(n) + "}");
 				}
 			});
 		}
@@ -289,6 +289,7 @@ app.get('/getNoticeDetail', function (req, res) {
  * 删除消息
  */
 app.get('/deleteNotice', function (req, res) {
+	res.set("Access-Control-Allow-Origin", "*");
 	var userMobile = req.query.userMobile;
 	var noticeId = req.query.noticeId;
 	if (!!noticeId) {
@@ -319,6 +320,7 @@ app.get('/deleteNotice', function (req, res) {
  设置消息为已读
  **/
 app.get('/setNoticeRead', function (req, res) {
+	res.set("Access-Control-Allow-Origin", "*");
 	var userMobile = req.query.userMobile;
 	var all = req.query.all;
 	var noticeId = req.query.noticeId;
@@ -360,6 +362,7 @@ app.get('/setNoticeRead', function (req, res) {
 });
 
 app.get('/getNoticeNotReadCount', function (req, res) {
+	res.set("Access-Control-Allow-Origin", "*");
 	var userMobile = req.query.userMobile;
 	NoticeModel.count({hasRead: 0, userMobile: userMobile}, function (err, count) {
 		if (err) {
@@ -406,24 +409,27 @@ app.get('/getNoticeNotReadCount', function (req, res) {
 
 
 
+/****************************************** 传感器温度曲线 开始 ************************************************/
+app.get('/getSensorDataHistory', function (req, res) {
+	res.set("Access-Control-Allow-Origin", "*");
+	var centerBoxId = req.query.centerBoxId;
+	SensorDataModel.find({centerBoxId:centerBoxId}).limit(200).sort({addTime:-1}).exec().then(function(data) {
+		res.send("{\"code\":200, \"codetxt\":\"操作成功\", \"data\":" + JSON.stringify(data) + "}");
+	}).catch(function(err) {
+		res.send("{\"code\":101, \"codetxt\":\"数据库错误\"}");
+	});
+});
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+app.get('/getTSensorDataHistory', function (req, res) {
+	res.set("Access-Control-Allow-Origin", "*");
+	var terminalId = req.query.terminalId;
+	TSensorDataModel.find({terminalId:terminalId}).limit(200).sort({addTime:-1}).exec().then(function(data) {
+		res.send("{\"code\":200, \"codetxt\":\"操作成功\", \"data\":" + JSON.stringify(data) + "}");
+	}).catch(function(err) {
+		res.send("{\"code\":101, \"codetxt\":\"数据库错误\"}");
+	});
+});
+/****************************************** 传感器温度曲线 结束 ************************************************/
 
 
 

@@ -28,6 +28,7 @@ var CourierModel = require('../../../mongodb/estateModels/CourierModel');
 var HouseKeepingModel = require('../../../mongodb/estateModels/HousekeepingModel');
 var PayModel = require('../../../mongodb/estateModels/PayModel');
 var RepairModel = require('../../../mongodb/estateModels/RepairModel');
+var WordsPreparer = require('../../../domain/WordsPreparer');
 
 var ResponseUtil = require('../../../util/ResponseUtil');
 var logger = require('pomelo-logger').getLogger('pomelo',  __filename);
@@ -1091,6 +1092,13 @@ Handler.prototype.userSaySomething = function (msg, session, next) {
 	var data = {};
 
 	async.waterfall([
+		/** 第零步, 处理文本 **/
+		function(callback) {
+			WordsPreparer.translateKeywords(words, uid, function(r) {
+				words = r;
+				callback();
+			});
+		},
 		/** 第一步, 预置操作 图片和链接 **/
 		function(callback) {
 			if(words === '图片') {
@@ -1199,7 +1207,6 @@ Handler.prototype.userSaySomething = function (msg, session, next) {
 					data.from = result.status;
 
 					// 处理是否返回 TODO
-					console.log("----------------------------------------------------------");
 					if(!!result.loccode && result.loccode === 'analyze_findueq') {
 						data.loccode = result.loccode;
 						data.runtimeinfo_id = result.runtimeinfo_id;
@@ -1223,26 +1230,22 @@ Handler.prototype.userSaySomething = function (msg, session, next) {
 								var render_tv = function(orderAndInfrared) {
 									return new Promise(function(resolve, reject) {
 										var t = orderAndInfrared;
-										console.log("*******************************" + JSON.stringify(t));
 										if (!!t.infrared && !!t.infrared.infraredcode) {
 											var ircode = t.infrared.infraredcode;
 											self.app.rpc.home.homeRemote.getDeviceById(session, t.order.ueq.id, function(err, userEquipment) {
 												if(err) {
 													reject(err);
 												} else {
-													console.log("*******************************2222222222222222222");
 													self.app.rpc.home.homeRemote.getTerminalById(session, userEquipment.terminalId, function(err, terminal) {
 														if(err) {
 															reject(err);
 														} else {
-															console.log("*******************************333333333333333");
 															var serialno = terminal.centerBoxSerialno;
 															var terminalCode = terminal.code;
 															self.app.rpc.home.homeRemote.getCenterBoxBySerailno(session, serialno, function(err, centerBox) {
 																if(err) {
 																	reject(err);
 																} else {
-																	console.log("*******************************5555555555555");
 																	var curPort = centerBox.curPort;
 																	var curIpAddress = centerBox.curIpAddress;
 																	console.log("---------------------寻找当前主控信信息---------------------");
