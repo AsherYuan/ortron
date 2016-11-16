@@ -10,6 +10,7 @@ var Moment = require('moment');
 var StringUtil = require('./mongodb/StringUtil.js');
 var SensorDataModel = require('./mongodb/models/SensorDataModel');
 var TSensorDataModel = require('./mongodb/models/TSensorDataModel');
+var TvChannelModel = require('./mongodb/models/TvChannelModel');
 
 app.configure(function () {
 	app.use(express.methodOverride());
@@ -180,7 +181,33 @@ app.get('/ircode', function (req, res) {
 	}
 });
 
+/** 获取电视台列表 **/
+app.get('/getChannelList', function (req, res) {
+	TvChannelModel.find({}, function(err, channels) {
+		if(err) {
+			console.log(err);
+			res.send("{\"code\":101, \"codetxt\":\"数据库错误\"}");
+		} else {
+			res.send("{\"code\":200, \"codetxt\":\"操作成功\", \"data\":" + JSON.stringify(channels) + "}");
+		}
+	});
+});
 
+app.post("/setChannelAlias", function(req, res) {
+	var cid = req.body.cid;
+	var alias = req.body.alias;
+	if(!!cid && !!alias) {
+		TvChannelModel.update({_id:new Object(cid)}, {$set:{alias:alias}}, function(err, updateInfo) {
+			if(err) {
+				res.send("{\"code\":101, \"codetxt\":\"数据库错误\"}");
+			} else {
+				res.send("{\"code\":200, \"codetxt\":\"操作成功\"}");
+			}
+		});
+	} else {
+		res.send("{\"code\":200, \"codetxt\":\"操作成功\"}");
+	}
+});
 
 /****************************************** 消息相关接口 开始 ************************************************/
 /** 消息通知 **/

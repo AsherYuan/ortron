@@ -7,8 +7,21 @@
 var SayingUtil = module.exports;
 
 // 准备电视机的返回
-SayingUtil.translateTv = function(inputStr) {
-    return inputStr.replace("我要看", "切换到");
+SayingUtil.translateTv = function(result) {
+    var channel = "";
+    if(!!result.orderAndInfrared) {
+        for(var i=0;i<result.orderAndInfrared.length;i++) {
+            var order = result.orderAndInfrared[i].order;
+            var c_tv = order.c_tv;
+            console.log(JSON.stringify(c_tv));
+            if(c_tv.num) {
+                channel += c_tv.num;
+            }
+        }
+        return result.inputstr.replace("我要看", "切换到") + "," + channel + "频道";
+    } else {
+        return result.inputstr.replace("我要看", "切换到");
+    }
 };
 
 // 根据状态调整返回给用户的语句

@@ -72,7 +72,6 @@ StringUtil.filterHtml = function(str) {
 };
 
 StringUtil.transTemp = function(chnStr) {
-    chnStr = chnStr.replace("二十", 20);
     chnStr = chnStr.replace("二十一", 21);
     chnStr = chnStr.replace("二十二", 22);
     chnStr = chnStr.replace("二十三", 23);
@@ -82,6 +81,7 @@ StringUtil.transTemp = function(chnStr) {
     chnStr = chnStr.replace("二十七", 27);
     chnStr = chnStr.replace("二十八", 28);
     chnStr = chnStr.replace("二十九", 29);
+    chnStr = chnStr.replace("二十", 20);
     chnStr = chnStr.replace("三十", 30);
     chnStr = chnStr.replace("十一", 11);
     chnStr = chnStr.replace("十二", 12);

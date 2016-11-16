@@ -1078,7 +1078,9 @@ Handler.prototype.userSaySomething = function (msg, session, next) {
 	var uid = session.uid;
 	/** 用户经过讯飞解析后的文本 **/
 	var words = msg.words;
-	words = StringUtil.transTemp(words);
+	if(words !== undefined && words !== "") {
+		words = StringUtil.transTemp(words);
+	}
 	// TODO 算法重写
 	// words = StringUtil.numberTrans(words);
 	/** 辅助判断 **/
@@ -1225,7 +1227,7 @@ Handler.prototype.userSaySomething = function (msg, session, next) {
 						var sentence = "";
 
 						if(result.inputstr.indexOf('我要看') === 0) {
-							targetArray.push(SayingUtil.translateTv(result.inputstr));
+							targetArray.push(SayingUtil.translateTv(result));
 							if(!!result.orderAndInfrared) {
 								var render_tv = function(orderAndInfrared) {
 									return new Promise(function(resolve, reject) {

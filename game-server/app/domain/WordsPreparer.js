@@ -6,6 +6,7 @@
 var UserEquipmentModel = require('../mongodb/models/UserEquipmentModel');
 var HomeModel = require('../mongodb/models/HomeModel');
 var async = require("async");
+var WasterWordFilter = require('./WasterWordFilter');
 
 var WordsPreparer = module.exports;
 
@@ -61,6 +62,11 @@ var keywords = {
 };
 
 WordsPreparer.translateKeywords = function(input, userMobile, callback) {
+    /** 处理语句 过滤掉设置为等 **/
+	if(input !== undefined && input !== "") {
+		input = WasterWordFilter.filter(input);
+	}
+
 	var isPatternFlag = false;
 	// 判断是否完全是温度指令
 	for(var k in keywords) {
@@ -69,7 +75,7 @@ WordsPreparer.translateKeywords = function(input, userMobile, callback) {
 			for(var kk in item) {
 				var subItem = item[kk];
 				for(var i=0;i<subItem.length;i++) {
-					if(input === subItem[i]) {
+					if(input === subItem[i] || input.replace('温度', "") === subItem[i]) {
 						isPatternFlag = true;
 					}
 				}
@@ -77,15 +83,15 @@ WordsPreparer.translateKeywords = function(input, userMobile, callback) {
 		}
 	}
 	// 判断是否包含模式和风速调整
-	for(var k in keywords) {
-		if(k === "温度") {
+	for(var k1 in keywords) {
+		if(k1 === "温度") {
 			continue;
 		} else {
-			var item = keywords[k];
-			for(var kk in item) {
-				var subItem = item[kk];
-				for(var i=0;i<subItem.length;i++) {
-					if(input.indexOf(subItem[i]) > -1) {
+			var item1 = keywords[k1];
+			for(var kk1 in item1) {
+				var subItem1 = item1[kk1];
+				for(var i1=0;i1<subItem1.length;i1++) {
+					if(input.indexOf(subItem1[i1]) > -1) {
 						isPatternFlag = true;
 					}
 				}

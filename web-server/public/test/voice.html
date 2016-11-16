@@ -22,9 +22,9 @@
     </script>
     <script type="text/javascript">
         var pomelo = window.pomelo;
-        // var host = "127.0.0.1";
+        var host = "127.0.0.1";
         // var host = "121.40.172.233";
-        var host = "121.40.53.201";
+        // var host = "121.40.53.201";
         var port = "3015";
         var uid = '';
 
@@ -50,7 +50,7 @@
         });
 
         function testRouteStr() {
-            var w = $("param").val();
+            var w = $("#param").val();
             pomelo.request("user.userHandler.userSaySomething", {words:w}, function(data) {
                 $("#answer").html(JSON.stringify(data));
             });
