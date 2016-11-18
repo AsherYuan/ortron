@@ -1148,6 +1148,7 @@ Handler.prototype.userSaySomething = function (msg, session, next) {
 				// TODO 分析当前操作的home
 				var homeId = homes[0].homeId;
 				// 因为get方式提交，所以进行两次escape转吗防止出现中文乱码
+				console.log("*************************************************************经过处理之后words:" + words);
 				var params = {
 					str:escape(escape(words)),
 					user_id:userId,
