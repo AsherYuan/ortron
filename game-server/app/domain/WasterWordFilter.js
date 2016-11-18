@@ -6,11 +6,15 @@
 var WasterWordFilter = module.exports;
 
 var verbs = [
-    '设置','设定','调节','调整'
+    '设置','设定','调节','调整','开'
 ];
 
 var preps = [
     '为','成','到'
+];
+
+var particles = [
+    '啊','了','呢','哦','。'
 ];
 
 var combines = [];
