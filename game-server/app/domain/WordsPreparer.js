@@ -64,10 +64,11 @@ var keywords = {
 WordsPreparer.translateKeywords = function(input, userMobile, callback) {
 
     /** 处理语句 过滤掉设置为等 **/
+    console.log("##################################" + input);
 	if(input !== undefined && input !== "") {
 		input = WasterWordFilter.filter(input);
+        console.log("##################################" + input);
 	}
-    console.log('input:' + input);
 	var isPatternFlag = false;
 	// 判断是否完全是温度指令
 	for(var k in keywords) {
@@ -83,7 +84,6 @@ WordsPreparer.translateKeywords = function(input, userMobile, callback) {
 			}
 		}
 	}
-    console.log('input:' + input);
 	// 判断是否包含模式和风速调整
 	for(var k1 in keywords) {
 		if(k1 === "温度") {
@@ -93,7 +93,6 @@ WordsPreparer.translateKeywords = function(input, userMobile, callback) {
 			for(var kk1 in item1) {
 				var subItem1 = item1[kk1];
 				for(var i1=0;i1<subItem1.length;i1++) {
-                    console.log(isPatternFlag + "....." + subItem1[i1]);
 					if(input.indexOf(subItem1[i1]) > -1) {
 						isPatternFlag = true;
 					}
@@ -101,7 +100,6 @@ WordsPreparer.translateKeywords = function(input, userMobile, callback) {
 			}
 		}
 	}
-console.log('input:' + input);
 	if(!isPatternFlag) {
 		callback(input);
 	} else {
@@ -136,7 +134,6 @@ console.log('input:' + input);
 									wind = "大风";
 								}
 								temp = temp + "度";
-console.log('input:' + input);
 								var m_items = keywords["模式"];
 								for(var m_k in m_items) {
 									var m_subItems = m_items[m_k];
@@ -156,7 +153,6 @@ console.log('input:' + input);
 										}
 									}
 								}
-console.log('input:' + input);
 								var t_items = keywords["温度"];
 								for(var t_k in t_items) {
 									var t_subItems = t_items[t_k];
@@ -175,17 +171,14 @@ console.log('input:' + input);
 										}
 									}
 								}
-console.log('input:' + input);
 								var ret = '空调' + model + wind + temp;
 								callback(ret);
 							} else {
-                                console.log("-------------11111" + input);
 								callback(input);
 							}
 						}
 					});
 				} else {
-                    console.log("-------------22222" + input);
 					callback(input);
 				}
 			}

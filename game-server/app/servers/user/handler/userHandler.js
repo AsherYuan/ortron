@@ -1104,7 +1104,7 @@ Handler.prototype.userSaySomething = function (msg, session, next) {
 		/** 第一步, 预置操作 图片和链接 **/
 		function(callback) {
 			if(words === '图片') {
-				answer.push("https://timgsa.baidu.com/timg?image&quality=80&size=b10000_10000&sec=1471605536296&di=31deda21579c79876b8adc8a0d0fbf10&imgtype=jpg&src=http%3A%2F%2Fpic65.nipic.com%2Ffile%2F20150503%2F7487939_220838368000_2.jpg");
+				answer.push("http://tupian.enterdesk.com/2015/gha/12/0803/08.jpg");
 				data.answer = answer;
 				data.type = 'pic';
 				next(null, ResponseUtil.resp(Code.OK, data));
@@ -1148,7 +1148,6 @@ Handler.prototype.userSaySomething = function (msg, session, next) {
 				// TODO 分析当前操作的home
 				var homeId = homes[0].homeId;
 				// 因为get方式提交，所以进行两次escape转吗防止出现中文乱码
-				console.log("*************************************************************经过处理之后words:" + words);
 				var params = {
 					str:escape(escape(words)),
 					user_id:userId,
@@ -1211,7 +1210,7 @@ Handler.prototype.userSaySomething = function (msg, session, next) {
 					data.from = result.status;
 
 					// 处理是否返回 TODO
-					if(!!result.loccode && result.loccode === 'analyze_findueq') {
+					if(!!result.loccode) {
 						data.loccode = result.loccode;
 						data.runtimeinfo_id = result.runtimeinfo_id;
 						data.optionList = result.homegrids;
