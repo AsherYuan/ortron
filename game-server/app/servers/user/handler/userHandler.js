@@ -1171,7 +1171,8 @@ Handler.prototype.userSaySomething = function (msg, session, next) {
 						// 主服务器
 						// var host = "http://122.225.88.66:8180/SpringMongod/main/ao;
 						//  + "&loccode=analyze_findueq&runtimeinfo_id=57fdc4390cf2c6ce2f2d47a0"
-						var host = "http://abc.buiud.bid:8080/main/ao?str=" + params.str + "&user_id=" + params.user_id + "&home_id=" + params.home_id + "&nd=" + new Date().getTime();
+						// var host = "http://abc.buiud.bid:8080/main/ao?str=" + params.str + "&user_id=" + params.user_id + "&home_id=" + params.home_id + "&nd=" + new Date().getTime();
+						var host = "http://122.225.88.66:8084/main/ao?str=" + params.str + "&user_id=" + params.user_id + "&home_id=" + params.home_id + "&nd=" + new Date().getTime();
 						if(loccode && runtimeinfo_id) {
 							host += "&loccode=analyze_findueq&runtimeinfo_id=" + runtimeinfo_id;
 						}
@@ -1526,7 +1527,8 @@ Handler.prototype.study = function (msg, session, next) {
 			postString.orderparamlist = orderparamlist;
 			console.log('学习学习学习:::::::::::::::::::::::::::::::::::::::::::::::::::::::');
 			console.log(JSON.stringify(postString));
-			request.post('http://abc.buiud.bid:8080/main/learnorder', {form: {learnParam: JSON.stringify(postString)}}, function (error, response, body) {
+			// request.post('http://abc.buiud.bid:8080/main/learnorder', {form: {learnParam: JSON.stringify(postString)}}, function (error, response, body) {
+			request.post('http://122.225.88.66:8084/main/learnorder', {form: {learnParam: JSON.stringify(postString)}}, function (error, response, body) {
 				console.log(error);
 				console.log('学习学习学习:::::::::::::::::::::::::::::::::::::::::::::::::::::::');
 				console.log(response);
@@ -1661,7 +1663,8 @@ Handler.prototype.remoteControll = function (msg, session, next) {
 				inst: inst
 			};
 			data = require('querystring').stringify(data);
-			var host = "http://abc.buiud.bid:8080/main/getorder?" + data;
+			// var host = "http://abc.buiud.bid:8080/main/getorder?" + data;
+			var host = "http://122.225.88.66:8084/main/getorder?" + data;
 			// var host = "http://122.225.88.66:8180/SpringMongod/main/getorder?" + data;
 			console.log("直接遥控发送，参数为:" + data);
 			request(host, function (error, response, body) {
@@ -2146,7 +2149,7 @@ Handler.prototype.getNoticeList = function (msg, session, next) {
 		.sort({addTime: -1}).skip(skip).limit(pageSize).exec(function (err, notices) {
 		if (err) {
 			console.log(err);
-			next(null, Code.DATABASE);
+			next(null, ResponseUtil.resp(Code.DATABASE));
 		} else {
 			var news = [];
 			var today = new Date();
@@ -2183,21 +2186,17 @@ Handler.prototype.getNoticeList = function (msg, session, next) {
  消息详情
  **/
 Handler.prototype.getNoticeDetail = function (msg, session, next) {
-	console.log(JSON.stringify(msg));
-	console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 	var id = msg.noticeId;
 	var userMobile = session.uid;
 	NoticeModel.findOne({_id: new Object(id)}, function (err, notice) {
 		if (err) {
 			console.log(err);
-			next(null, Code.DATABASE);
+			next(null, ResponseUtil.resp(Code.DATABASE));
 		} else {
 			// 设置为已读
 			NoticeModel.update({_id: id}, {$set: {hasRead: 1}}, function (err, docs) {
 				if (err) console.log(err);
 			});
-			var ret = Code.OK;
-
 			var n = {};
 			n._id = notice._id;
 			n.title = notice.title;
@@ -2221,15 +2220,10 @@ Handler.prototype.getNoticeDetail = function (msg, session, next) {
 					n.addTime = Moment(notice.addTime).format('MM-DD HH:mm');
 				}
 			}
-			ret.data = n;
-			console.log("最终返回：：：：" + JSON.stringify(ret));
-
 			NoticeModel.count({hasRead: 0, userMobile: userMobile}, function (err, count) {
 				if (err) console.log(err);
 				else {
-					var ret = Code.OK;
-					ret.count = count;
-					next(null, ret);
+					next(null, {"code":200,"codetxt":"操作成功","count":count, data:n});
 				}
 			});
 		}
@@ -2249,14 +2243,14 @@ Handler.prototype.deleteNotice = function (msg, session, next) {
 		}
 
 		NoticeModel.remove({_id: {$in: ids}}, function (err, docs) {
-			if (err) console.log(err);
-			else {
+			if (err) {
+				next(null, ResponseUtil.resp(Code.DATABASE));
+			} else {
 				NoticeModel.count({hasRead: 0, userMobile: userMobile}, function (err, count) {
-					if (err) console.log(err);
-					else {
-						var ret = Code.OK;
-						ret.count = count;
-						next(null, ret);
+					if (err) {
+						next(null, ResponseUtil.resp(Code.DATABASE));
+					} else {
+						next(null, {"code":200,"codetxt":"操作成功","count":count});
 					}
 				});
 			}
@@ -2276,11 +2270,9 @@ Handler.prototype.setNoticeRead = function (msg, session, next) {
 		NoticeModel.update({userMobile:userMobile}, {$set: {hasRead:1}},  { multi: true }, function(err) {
 			if(err) {
 				console.log(err);
-				next(null, Code.DATABASE);
+				next(null, ResponseUtil.resp(Code.DATABASE));
 			} else {
-				var ret = Code.OK;
-				ret.all = 1;
-				next(null, ret);
+				next(null, {"code":200,"codetxt":"操作成功","all":1});
 			}
 		});
 	} else {
@@ -2292,22 +2284,22 @@ Handler.prototype.setNoticeRead = function (msg, session, next) {
 			}
 
 			NoticeModel.update({_id: {$in: ids}}, {$set: {hasRead: 1}}, function (err, docs) {
-				if (err) console.log(err);
+				if (err) {
+					next(null, ResponseUtil.resp(Code.DATABASE));
+				}
 				else {
 					NoticeModel.count({hasRead: 0, userMobile: userMobile}, function (err, count) {
-						if (err) console.log(err);
+						if (err) {
+							next(null, ResponseUtil.resp(Code.DATABASE));
+						}
 						else {
-							var ret = Code.OK;
-							ret.count = count;
-							next(null, ret);
+							next(null, {"code":200,"codetxt":"操作成功","count":count});
 						}
 					});
 				}
 			});
 		} else {
-			var ret = Code.OK;
-			ret.msg = "没有ID，没有操作";
-			next(null, ret);
+			next(null, {"code":200,"codetxt":"操作成功","msg":"没有ID，没有操作"});
 		}
 	}
 };
@@ -2319,8 +2311,9 @@ Handler.prototype.getNoticeNotReadCount = function (msg, session, next) {
 		else {
 			NoticeModel.findOne({userMobile: userMobile, hasRead:0}).sort({addTime: -1}).exec(function (err, lastNotice) {
 				if(err) {
-					console.log(err);
+					next(null, ResponseUtil.resp(Code.DATABASE));
 				} else {
+					console.log("----------------------------------------------lastnotice::" + JSON.stringify(lastNotice));
 					if(!!lastNotice) {
 						var n = {};
 						var today = new Date();
@@ -2341,11 +2334,10 @@ Handler.prototype.getNoticeNotReadCount = function (msg, session, next) {
 						var d = {};
 						d.notice = n;
 						d.count = count;
-						var ret = Code.OK;
-						ret.data = d;
-						next(null, ret);
+						console.log(d);
+						next(null, ResponseUtil.resp(Code.OK, d));
 					} else {
-						next(null, Code.OK);
+						next(null, ResponseUtil.resp(Code.OK));
 					}
 				}
 			});
@@ -2364,11 +2356,9 @@ Handler.prototype.getSubUserList = function (msg, session, next) {
 	UserModel.find({parentUser: parentUser}, function (err, subUsers) {
 		if (err) {
 			console.log(err);
-			next(null, Code.DATABASE);
+			next(null, ResponseUtil.resp(Code.DATABASE));
 		} else {
-			var ret = Code.OK;
-			ret.data = subUsers;
-			next(null, ret);
+			next(null, ResponseUtil.resp(Code.OK, subUsers));
 		}
 	});
 };
@@ -2382,9 +2372,9 @@ Handler.prototype.setSubUser = function (msg, session, next) {
 	UserModel.update({mobile: targetMobile}, {$set: {parentUser: selfMobile}}, function (err, docs) {
 		if (err) {
 			console.log(err);
-			next(null, Code.DATABASE);
+			next(null, ResponseUtil.resp(Code.DATABASE));
 		} else {
-			next(null, Code.OK);
+			next(null, ResponseUtil.resp(Code.OK));
 		}
 	});
 };
@@ -2395,23 +2385,20 @@ Handler.prototype.getLastTerminalStatus = function (msg, session, next) {
 	TSensorDataModel.findOne({terminalId: {$in: terminalId}}).sort({addTime: -1}).exec(function (err, sensorDatas) {
 		if (err) {
 			console.log(err);
-			next(null, Code.DATABASE);
+			next(null, ResponseUtil.resp(Code.DATABASE));
 		} else {
 			TerminalModel.findOne({_id:new Object(terminalId)}, function(err, terminal) {
 				if(err) {
 					console.log(err);
-					next(null, Code.DATABASE);
+					next(null, ResponseUtil.resp(Code.DATABASE));
 				} else {
 					var homeGridId = terminal.homeGridId;
 					UserEquipmentModel.count({terminalId: terminalId, status:'开', e_type:{$ne:'窗帘'}}, function (err, count) {
 						if (err) {
 							console.log(err);
+							next(null, ResponseUtil.resp(Code.DATABASE));
 						} else {
-							var ret = Code.OK;
-							ret.data = sensorDatas;
-							ret.count = count;
-							ret.homeGridId = homeGridId;
-							next(null, ret);
+							next(null, {"code":200,"codetxt":"操作成功","count":count, "data":sensorDatas, "homeGridId":homeGridId});
 						}
 					});
 				}
@@ -2440,9 +2427,9 @@ Handler.prototype.reverseTvStatus = function(msg, session, next) {
 			UserEquipmentModel.update({_id:new Object(deviceId)}, {$set:{status:s}}, function(updateErr, tv) {
 				if(updateErr) {
 					console.log(updateErr);
-					next(null, Code.DATABASE);
+					next(null, ResponseUtil.resp(Code.DATABASE));
 				} else {
-					next(null, Code.OK);
+					next(null, ResponseUtil.resp(Code.OK));
 				}
 			});
 		}
@@ -2469,11 +2456,9 @@ Handler.prototype.getCourierList = function (msg, session, next) {
 	CourierModel.find({userMobile:userMobile}).sort({time:-1}).exec(function(err, docs) {
 		if(err) {
 			console.log(err);
-			next(null, Code.DATABASE);
+			next(null, ResponseUtil.resp(Code.DATABASE));
 		} else {
-			var ret = Code.OK;
-			ret.data = docs;
-			next(null, ret);
+			next(null, ResponseUtil.resp(Code.OK, docs));
 		}
 	});
 };
@@ -2506,11 +2491,9 @@ Handler.prototype.getPayList = function(msg, session, next) {
 	PayModel.find({userMobile:userMobile}).sort({time:-1}).exec(function(err, docs) {
 		if(err) {
 			console.log(err);
-			next(null, Code.DATABASE);
+			next(null, ResponseUtil.resp(Code.DATABASE));
 		} else {
-			var ret = Code.OK;
-			ret.data = docs;
-			next(null, ret);
+			next(null, ResponseUtil.resp(Code.OK, docs));
 		}
 	});
 };
@@ -2562,7 +2545,7 @@ Handler.prototype.addNewHouseKeeping = function(msg, session, next) {
 		sid: 'user-server-1'
 	}]);
 
-	next(null, Code.OK);
+	next(null, ResponseUtil.resp(Code.OK));
 };
 
 /**
@@ -2606,7 +2589,7 @@ Handler.prototype.addNewRepair = function(msg, session, next) {
 		sid: 'user-server-1'
 	}]);
 
-	next(null, Code.OK);
+	next(null, ResponseUtil.resp(Code.OK));
 };
 
 Handler.prototype.addNewComplaint = function(msg, session, next) {
@@ -2643,7 +2626,7 @@ Handler.prototype.addNewComplaint = function(msg, session, next) {
 		sid: 'user-server-1'
 	}]);
 
-	next(null, Code.OK);
+	next(null, ResponseUtil.resp(Code.OK));
 };
 
 /******************************  物业方法  结束  ************************************/
@@ -2657,9 +2640,9 @@ Handler.prototype.toSend = function(msg, session, next) {
 Handler.prototype.controllerList = function(msg, session, next) {
 	CenterBoxModel.find({}, function(err, docs) {
 		if(err) {
-			next(null, Code.DATABASE);
+			next(null, ResponseUtil.resp(Code.DATABASE));
 		} else {
-			next(null, docs);
+			next(null, ResponseUtil.resp(Code.OK, docs));
 		}
 	});
 };

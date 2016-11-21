@@ -128,11 +128,11 @@ Handler.prototype.login = function(msg, session, next) {
                         console.log(err);
                         next(null, ResponseUtil.resp(Code.DATABASE));
                     } else {
-                        if (userDoc.length === 0) {
-                            next(null, Code.ACCOUNT.USER_NOT_EXIST);
-                        } else {
+                        if (!!userDoc) {
                             userGlobal = userDoc;
                             cb();
+                        } else {
+                            next(null, Code.ACCOUNT.USER_NOT_EXIST);
                         }
                     }
                 });
