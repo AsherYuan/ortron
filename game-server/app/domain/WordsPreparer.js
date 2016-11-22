@@ -64,10 +64,8 @@ var keywords = {
 WordsPreparer.translateKeywords = function(input, userMobile, callback) {
 
     /** 处理语句 过滤掉设置为等 **/
-    console.log("##################################" + input);
 	if(input !== undefined && input !== "") {
 		input = WasterWordFilter.filter(input);
-        console.log("##################################" + input);
 	}
 	var isPatternFlag = false;
 	// 判断是否完全是温度指令

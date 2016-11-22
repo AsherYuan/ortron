@@ -17,6 +17,8 @@ var particles = [
     '啊','了','呢','哦','。'
 ];
 
+var punctuation = ["，",'。','；','：','“','”','？','！'];
+
 var combines = [];
 
 for(var v in verbs) {
@@ -32,5 +34,15 @@ WasterWordFilter.filter = function(words) {
     for(var v in verbs) {
         words = words.replace(verbs[v], "");
     }
+    for(p in punctuation) {
+        words = words.replace(punctuation[p], "");
+    }
     return words;
+};
+
+WasterWordFilter.filterPunctuation = function(str) {
+    for(p in punctuation) {
+        str = str.replace(punctuation[p], "");
+    }
+    return str;
 };

@@ -66,19 +66,30 @@ StructureFilter.filter = function(input, userMobile, callback) {
 					break;
 				}
 			}
-			if(layer === "") {
-				callback(null, input, "", "");
-			} else {
-				for(var i=0;i<structure[layer].length;i++) {
-					var gridName = structure[layer][i];
-					if(input.indexOf(gridName) > -1) {
-						grid = gridName;
-						input = input.replace(gridName, "");
-						break;
-					}
-				}
-				callback(null, input, layer, grid);
-			}
+			// if(layer === "") {
+			// 	callback(null, input, "", "");
+			// } else {
+			// 	for(var i=0;i<structure[layer].length;i++) {
+			// 		var gridName = structure[layer][i];
+			// 		if(input.indexOf(gridName) > -1) {
+			// 			grid = gridName;
+			// 			input = input.replace(gridName, "");
+			// 			break;
+			// 		}
+			// 	}
+			// 	callback(null, input, layer, grid);
+			// }
+			for(var x in structure) {
+                for(var i=0;i<structure[x].length;i++) {
+                    var gridName = structure[x][i];
+                    if(input.indexOf(gridName) > -1) {
+                        grid = gridName;
+                        input = input.replace(gridName, "");
+                        break;
+                    }
+                }
+            }
+            callback(null, input, layer, grid);
 		}
 	], function(err, result) {
 		callback(err, result);

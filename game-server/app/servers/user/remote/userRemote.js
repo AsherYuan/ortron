@@ -209,14 +209,14 @@ UserRemote.prototype.checkIfChoise = function(userMobile, words, cb) {
  * @param  {Function} cb         [description]
  * @return {[type]}              [description]
  */
-UserRemote.prototype.answered = function(id, cb) {
+UserRemote.prototype.answered = function(userMobile, cb) {
     WaitingUserChoiseModel.update({
-        _id: new Object(id)
+        userMobile:userMobile
     }, {
         $set: {
             answered: true
         }
-    }, function(err) {
+    }, {multi : true}, function(err) {
         if (err) {
             cb(err);
         } else {

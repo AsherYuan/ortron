@@ -1031,7 +1031,7 @@ HomeRemote.prototype.saveUserRecentLocation = function(userMobile, answer, cb) {
                         } else {
                             cb(null, docs);
                         }
-                    })
+                    });
                 }
             });
         }
@@ -1041,17 +1041,17 @@ HomeRemote.prototype.saveUserRecentLocation = function(userMobile, answer, cb) {
 
 HomeRemote.prototype.checkRecentLocation = function(uid, words, structure, cb) {
     if(!!structure && structure !== undefined && structure.length > 0) {
-        cb(null, words);
+        cb(null, structure);
     } else {
         RecentLocationModel.findOne({userMobile:uid}).sort({addTime:-1}).exec().then(function(recent) {
             if(!!recent) {
-                if(new Date().getTime() - recent.addTime <= 10 * 60 * 1000) {
-                    cb(null, recent.location + "" + words);
+                if(new Date().getTime() - recent.addTime <= 3 * 60 * 1000) {
+                    cb(null, recent.location);
                 } else {
-                    cb(null, words);
+                    cb(null, null);
                 }
             } else {
-                cb(null, words);
+                cb(null, null);
             }
         }).catch(function(err) {
             cb(err);
