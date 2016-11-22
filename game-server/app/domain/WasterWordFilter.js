@@ -6,7 +6,7 @@
 var WasterWordFilter = module.exports;
 
 var verbs = [
-    '设置','设定','调节','调整'
+    '设置','设定','调节','调整','帮我把','调到','设为','设成','设到','调成','调为','为我把'
 ];
 
 var preps = [

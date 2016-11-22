@@ -34,6 +34,8 @@ var ResponseUtil = require('../../../util/ResponseUtil');
 var logger = require('pomelo-logger').getLogger('pomelo',  __filename);
 
 var TvChannel = require('../../../mongodb/tv/TvChannelModel');
+var StructureFilter = require("../../../domain/StructureFilter");
+
 
 module.exports = function (app) {
 	return new Handler(app);
@@ -1078,11 +1080,6 @@ Handler.prototype.userSaySomething = function (msg, session, next) {
 	var uid = session.uid;
 	/** 用户经过讯飞解析后的文本 **/
 	var words = msg.words;
-	if(words !== undefined && words !== "") {
-		words = StringUtil.transTemp(words);
-	}
-	// TODO 算法重写
-	// words = StringUtil.numberTrans(words);
 	/** 辅助判断 **/
 	var ipAddress = msg.ipAddress;
 	var port = msg.port;
@@ -1096,13 +1093,41 @@ Handler.prototype.userSaySomething = function (msg, session, next) {
 	async.waterfall([
 		/** 第零步, 处理文本 **/
 		function(callback) {
-			WordsPreparer.translateKeywords(words, uid, function(r) {
-				words = r;
-				callback();
+			var structure = "";
+			/** 用户房型结构识别 **/
+			StructureFilter.filter(words, uid, function(err, input, layer, grid) {
+				words = input;
+				structure = layer + grid;
+				if(words !== undefined && words !== "") {
+					words = StringUtil.transTemp(words);
+				}
+				// TODO 算法重写
+				// words = StringUtil.numberTrans(words);
+
+				/** 如果没有结构语句，10分钟内有过回答，则自动跟上用户的结构 **/
+				self.app.rpc.home.homeRemote.checkRecentLocation(session, uid, words, structure, function(err, result) {
+					if(err) {
+						console.log(err);
+					} else {
+						WordsPreparer.translateKeywords(words, uid, function(r) {
+							if(!!structure && structure !== "") {
+								words = structure + "" + r;
+							} else {
+								structure = result;
+								if(structure === words) {
+									words = r;
+								} else {
+									words = structure + "" + r;
+								}
+							}
+							callback();
+						});
+					}
+				});
 			});
 		},
 		/** 第一步, 预置操作 图片和链接 **/
-		function(callback) {
+			function(callback) {
 			if(words === '图片') {
 				answer.push("http://tupian.enterdesk.com/2015/gha/12/0803/08.jpg");
 				data.answer = answer;
@@ -1119,7 +1144,7 @@ Handler.prototype.userSaySomething = function (msg, session, next) {
 		},
 
 		/** 第二步，查找用户具体信息  **/
-		function(userMobile, callback) {
+			function(userMobile, callback) {
 			self.app.rpc.user.userRemote.getUserInfoByMobile(session, userMobile, function(err, user) {
 				if(err) {
 					callback(err);
@@ -1130,7 +1155,7 @@ Handler.prototype.userSaySomething = function (msg, session, next) {
 		},
 
 		/** 第三步，查找对应家庭信息 **/
-		function(user, callback) {
+			function(user, callback) {
 			self.app.rpc.home.homeRemote.getHomeInfoByMobile(session, user.mobile, function(err, homes) {
 				if(err) {
 					callback(err);
@@ -1142,7 +1167,7 @@ Handler.prototype.userSaySomething = function (msg, session, next) {
 		},
 
 		/** 第四步，访问JAVA服务器，获取智能解析结果 **/
-		function(user, homes, callback) {
+			function(user, homes, callback) {
 			if(!!homes) {
 				var userId = user._id;
 				// TODO 分析当前操作的home
@@ -1162,6 +1187,14 @@ Handler.prototype.userSaySomething = function (msg, session, next) {
 							loccode = list[0].loccode;
 							runtimeinfo_id = list[0].runtimeinfo_id;
 							self.app.rpc.user.userRemote.answered(session, list[0]._id, function(err) {
+								if(err) {
+									console.log(err);
+								}
+							});
+
+							/********** 这里代表用户进行了回答，那么可以确定用户最近都在使用这个位置的电器，所以后续时间段内仍然默认使用该位置 *********/
+							/********** 时间暂定10分钟 *********/
+							self.app.rpc.home.homeRemote.saveUserRecentLocation(session, uid, words, function(err) {
 								if(err) {
 									console.log(err);
 								}
@@ -1197,7 +1230,7 @@ Handler.prototype.userSaySomething = function (msg, session, next) {
 		},
 
 		/** 第五步, 解析smart center的返回 **/
-		function(user, homes, body, callback) {
+			function(user, homes, body, callback) {
 			var javaResult = JSON.parse(body);
 			var data = {};
 			console.log("----------------------------------------------------------" + JSON.stringify(javaResult));
@@ -1221,7 +1254,6 @@ Handler.prototype.userSaySomething = function (msg, session, next) {
 							}
 						});
 					}
-
 					if (!!result.orderAndInfrared && result.orderAndInfrared.length > 0) {
 						var targetArray = [];
 						var devices = [];
@@ -1342,7 +1374,6 @@ Handler.prototype.userSaySomething = function (msg, session, next) {
 								console.log("全部执行完成");
 							});
 						}
-
 						// 判断是否延时
 						if (result.delayOrder === true) {
 							sentence = result.delayDesc + "将为您" + JSON.stringify(targetArray);
@@ -1360,7 +1391,15 @@ Handler.prototype.userSaySomething = function (msg, session, next) {
 							data.result = msgObj.text;
 							data.type = "data";
 						} else {
-							data.result = result.msg;
+							var msg = result.msg;
+							if(result.homegrids) {
+								for(var hkey in result.homegrids) {
+									var h = result.homegrids[hkey];
+									var html = "<a href='" + h + "'>" + h + "</a>";
+									msg = msg.replace(h, html);
+								}
+							}
+							data.result = msg;
 							data.type = "data";
 						}
 						next(null, ResponseUtil.resp(Code.OK, data));
@@ -2649,13 +2688,13 @@ Handler.prototype.controllerList = function(msg, session, next) {
 Handler.prototype.deleteCtrl = function(msg, session, next) {
 	var serialno = msg.serialno;
 	CenterBoxModel.remove({serialno:serialno}, function(err) {
-        if(err) {
-            console.log(err);
-            cb(-1);
-        } else {
-            cb(0);
-        }
-    });
+		if(err) {
+			console.log(err);
+			cb(-1);
+		} else {
+			cb(0);
+		}
+	});
 };
 
 Handler.prototype.tvChannelList = function(msg, session, next) {

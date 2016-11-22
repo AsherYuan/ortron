@@ -14,6 +14,7 @@ var RDeviceModel = require('../../../mongodb/models/RDeviceModel');
 var SensorDataModel = require('../../../mongodb/models/SensorDataModel');
 var TSensorDataModel = require('../../../mongodb/models/TSensorDataModel');
 var RinfraredModel = require('../../../mongodb/models/RinfraredModel');
+var RecentLocationModel = require('../../../mongodb/RecentLocationModel');
 
 
 var async = require('async');
@@ -983,4 +984,77 @@ HomeRemote.prototype.getAllTerminals = function(userMobile, callback) {
             });
         }
     });
+};
+
+/********** 这里代表用户进行了回答，那么可以确定用户最近都在使用这个位置的电器，所以后续时间段内仍然默认使用该位置 *********/
+/********** 时间暂定10分钟 *********/
+HomeRemote.prototype.saveUserRecentLocation = function(userMobile, answer, cb) {
+    HomeModel.find({userMobile:userMobile}, function(err, homes) {
+        if(err || !homes || homes.length === 0) {
+            cb(err);
+        } else {
+            var layers = homes[0].layers;
+            HomeGridModel.find({homeId:homes[0]._id}, function(err, grids) {
+                if(err || !grids || grids.length === 0) {
+                    cb(err);
+                } else {
+                    var layerNames = [];
+                    for(var l=0;l<layers.length;l++) {
+                        layerNames.push(layers[l].name);
+                    }
+
+                    var structure = {};
+                    for(var i=0;i<layerNames.length;i++) {
+                        structure[layerNames[i]] = [];
+                        for(var j=0;j<grids.length;j++) {
+                            if(grids[j].layerName === layerNames[i]) {
+                                structure[layerNames[i]].push(grids[j].name);
+                            }
+                        }
+                    }
+                    var location = "";
+                    for(var x in structure) {
+                        for(var y in structure[x]) {
+                            if(answer === structure[x][y]) {
+                                location = x + "" + structure[x][y];
+                                break;
+                            }
+                        }
+                    }
+                    var recent = new RecentLocationModel({
+                        userMobile:userMobile,
+                        location:location
+                    });
+                    recent.save(function(err, docs) {
+                        if(err) {
+                            cb(err);
+                        } else {
+                            cb(null, docs);
+                        }
+                    })
+                }
+            });
+        }
+    });
+};
+
+
+HomeRemote.prototype.checkRecentLocation = function(uid, words, structure, cb) {
+    if(!!structure && structure !== undefined && structure.length > 0) {
+        cb(null, words);
+    } else {
+        RecentLocationModel.findOne({userMobile:uid}).sort({addTime:-1}).exec().then(function(recent) {
+            if(!!recent) {
+                if(new Date().getTime() - recent.addTime <= 10 * 60 * 1000) {
+                    cb(null, recent.location + "" + words);
+                } else {
+                    cb(null, words);
+                }
+            } else {
+                cb(null, words);
+            }
+        }).catch(function(err) {
+            cb(err);
+        });
+    }
 };
