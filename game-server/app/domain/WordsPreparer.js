@@ -62,11 +62,12 @@ var keywords = {
 };
 
 WordsPreparer.translateKeywords = function(input, userMobile, callback) {
-
+console.log("@@1111:" + input);
     /** 处理语句 过滤掉设置为等 **/
 	if(input !== undefined && input !== "") {
 		input = WasterWordFilter.filter(input);
 	}
+    console.log("@@2222:" + input);
 	var isPatternFlag = false;
 	// 判断是否完全是温度指令
 	for(var k in keywords) {
@@ -82,6 +83,7 @@ WordsPreparer.translateKeywords = function(input, userMobile, callback) {
 			}
 		}
 	}
+    console.log("@@3333:" + input);
 	// 判断是否包含模式和风速调整
 	for(var k1 in keywords) {
 		if(k1 === "温度") {
@@ -98,6 +100,7 @@ WordsPreparer.translateKeywords = function(input, userMobile, callback) {
 			}
 		}
 	}
+    console.log("@@4444:" + input);
 	if(!isPatternFlag) {
 		callback(input);
 	} else {
@@ -170,6 +173,7 @@ WordsPreparer.translateKeywords = function(input, userMobile, callback) {
 									}
 								}
 								var ret = '空调' + model + wind + temp;
+                                console.log("@@5555:" + input);
 								callback(ret);
 							} else {
 								callback(input);
