@@ -1045,7 +1045,7 @@ HomeRemote.prototype.checkRecentLocation = function(uid, words, structure, cb) {
     } else {
         RecentLocationModel.findOne({userMobile:uid}).sort({addTime:-1}).exec().then(function(recent) {
             if(!!recent) {
-                if(new Date().getTime() - recent.addTime <= 20 * 60 * 1000) {
+                if(new Date().getTime() - recent.addTime <= 5 * 60 * 1000) {
                     cb(null, recent.location);
                 } else {
                     cb(null, null);

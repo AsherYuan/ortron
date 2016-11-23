@@ -3,24 +3,30 @@
  * Date: 15-11-15
  * Time: 上午11:22
  */
-
+var TvChannelModel = require("../mongodb/tv/TvChannelModel");
 var SayingUtil = module.exports;
 
 // 准备电视机的返回
-SayingUtil.translateTv = function(result) {
+SayingUtil.translateTv = function(result, cb) {
     var channel = "";
     if(!!result.orderAndInfrared) {
         for(var i=0;i<result.orderAndInfrared.length;i++) {
             var order = result.orderAndInfrared[i].order;
             var c_tv = order.c_tv;
-            console.log(JSON.stringify(c_tv));
             if(c_tv.num) {
                 channel += c_tv.num;
             }
         }
-        return result.inputstr.replace("我要看", "切换到") + "," + channel + "频道";
+        TvChannelModel.findOne({channelNum:parseInt(channel)}, function(err, c) {
+            if(err || (!c)) {
+                console.log(err);
+                cb(result.inputstr.replace("我要看", "切换到") + "," + channel + "频道");
+            } else {
+                cb(result.inputstr.replace("我要看", "切换到") + "," + c.channel + "," + channel + "频道");
+            }
+        });
     } else {
-        return result.inputstr.replace("我要看", "切换到");
+        cb(result.inputstr.replace("我要看", "切换到"));
     }
 };
 

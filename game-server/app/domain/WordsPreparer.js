@@ -62,12 +62,11 @@ var keywords = {
 };
 
 WordsPreparer.translateKeywords = function(input, userMobile, callback) {
-console.log("@@1111:" + input);
     /** 处理语句 过滤掉设置为等 **/
 	if(input !== undefined && input !== "") {
 		input = WasterWordFilter.filter(input);
 	}
-    console.log("@@2222:" + input);
+    console.log("*****************111*****************" + input);
 	var isPatternFlag = false;
 	// 判断是否完全是温度指令
 	for(var k in keywords) {
@@ -76,14 +75,14 @@ console.log("@@1111:" + input);
 			for(var kk in item) {
 				var subItem = item[kk];
 				for(var i=0;i<subItem.length;i++) {
-					if(input === subItem[i] || input.replace('温度', "") === subItem[i]) {
+					if(input === subItem[i] || input.replace('温度', "") === subItem[i] || input.replace('空调', "") === subItem[i]) {
 						isPatternFlag = true;
 					}
 				}
 			}
 		}
 	}
-    console.log("@@3333:" + input);
+    console.log("*****************111*****************" + input);
 	// 判断是否包含模式和风速调整
 	for(var k1 in keywords) {
 		if(k1 === "温度") {
@@ -100,7 +99,6 @@ console.log("@@1111:" + input);
 			}
 		}
 	}
-    console.log("@@4444:" + input);
 	if(!isPatternFlag) {
 		callback(input);
 	} else {
