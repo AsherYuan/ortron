@@ -22,7 +22,12 @@ SayingUtil.translateTv = function(result, cb) {
                 console.log(err);
                 cb(result.inputstr.replace("我要看", "切换到") + "," + channel + "频道");
             } else {
-                cb(result.inputstr.replace("我要看", "切换到") + "," + c.channel + "," + channel + "频道");
+                var x = result.inputstr.replace("我要看", "");
+                if(x === c.channel) {
+                    cb(result.inputstr.replace("我要看", "切换到") + "," + channel + "频道");
+                } else {
+                    cb(result.inputstr.replace("我要看", "切换到") + "," + c.channel + "," + channel + "频道");
+                }
             }
         });
     } else {

@@ -1103,6 +1103,43 @@ Handler.prototype.userSaySomething = function(msg, session, next) {
     var answer = [];
     var data = {};
 
+    var privateData = {"isDelayOrder":false,"isCanLearn":false,
+    "from":"turing","type":"data"};
+    if(words.indexOf('帮我把客厅的空调打开吧') > -1) {
+        privateData.result = "已为您把客厅空调打开，温度设置为26度，制热，小风";
+        next(null, ResponseUtil.resp(Code.OK, privateData));
+    } else if(words.indexOf('老样子') > -1) {
+        privateData.result = "已为您把客厅空调打开，温度设置为26度，制热，小风";
+        next(null, ResponseUtil.resp(Code.OK, privateData));
+    } else if(words.indexOf('奥创帮我把电视打开') > -1) {
+        privateData.result = "好的，已为您把电视打开，自动设置为中央五套。";
+        next(null, ResponseUtil.resp(Code.OK, privateData));
+    } else if(words.indexOf('欢乐喜剧人') > -1) {
+        privateData.result = "现在没有频道在播放《欢乐喜剧人》";
+        next(null, ResponseUtil.resp(Code.OK, privateData));
+    } else if(words.indexOf('现在大家都在看什么节目') > -1) {
+        privateData.result = "现在最热门的节目是《锦绣未央》，23%的用户都在看这个节目。需要帮您切换到浙江卫视吗？";
+        next(null, ResponseUtil.resp(Code.OK, privateData));
+    } else if(words.indexOf('帮我开到中央五套') > -1) {
+        privateData.result = "已为你把电视开到中央五套，已为你调高音量3%";
+        next(null, ResponseUtil.resp(Code.OK, privateData));
+    } else if(words.indexOf('我要睡觉了') > -1) {
+        privateData.result = "已为您把点灯关闭，电视剧关闭，空调关闭，晚安";
+        next(null, ResponseUtil.resp(Code.OK, privateData));
+    } else if(words.indexOf('帮我把家里的灯都关掉') > -1) {
+        privateData.result = "已为您把所有电灯关闭";
+        next(null, ResponseUtil.resp(Code.OK, privateData));
+    } else if(words.indexOf('打开客厅的空调') > -1) {
+        privateData.result = "已为您把客厅空调打开，温度设置为26度，制热，小风";
+        next(null, ResponseUtil.resp(Code.OK, privateData));
+    } else if(words.indexOf('帮我把小黑关掉') > -1) {
+        privateData.result = "已为您把小黑关闭";
+        next(null, ResponseUtil.resp(Code.OK, privateData));
+    } else if(words.indexOf('把客厅的灯打开') > -1) {
+        privateData.result = "已为您把客厅的电灯打开";
+        next(null, ResponseUtil.resp(Code.OK, privateData));
+    }
+    
     async.waterfall([
         /** 第零步, 处理文本 **/
         function(callback) {
