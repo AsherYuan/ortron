@@ -35,7 +35,8 @@
     <script type="text/javascript">
         var pomelo = window.pomelo;
 //       var host = "127.0.0.1";
-          var host = "121.40.172.233";
+//          var host = "121.40.172.233";
+        var host = "121.40.53.201";
         var port = "3015";
         var uid = '';
 
@@ -509,14 +510,14 @@
         function testOn() {
             var ipAddressX = $("#ipAddressX").val();
             var portX = $("#portX").val();
-            pomelo.request('user.userHandler.testOn', {ipAddress:ipAddressX, port:portX}, function(data) {
+            pomelo.request('user.userHandler.testOn', {ipAddress:"122.225.88.66", port:"16577"}, function(data) {
                 layer.alert(JSON.stringify(data));
             });
         }
         function testOff() {
             var ipAddressX = $("#ipAddressX").val();
             var portX = $("#portX").val();
-            pomelo.request('user.userHandler.testOff', {ipAddress:ipAddressX, port:portX}, function(data) {
+            pomelo.request('user.userHandler.testOff', {ipAddress:"122.225.88.66", port:"16577"}, function(data) {
                 layer.alert(JSON.stringify(data));
             });
         }

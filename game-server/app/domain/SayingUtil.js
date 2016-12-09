@@ -36,7 +36,9 @@ SayingUtil.translateTv = function(result, cb) {
 };
 
 // 根据状态调整返回给用户的语句
-SayingUtil.translateStatus = function(equipment) {
+SayingUtil.translateStatus = function(orderAndInfrared) {
+    var equipment = orderAndInfrared.order.ueq;
+    var inst = orderAndInfrared.infrared.inst;
     var ret ="";
     if(!!equipment) {
         ret = "把";
@@ -70,7 +72,23 @@ SayingUtil.translateStatus = function(equipment) {
                 }
                 ret += equipment.ac_temperature + "度";
             } else if(equipment.e_type == "电视") {
-                ret += "打开";
+                if(inst === "T_V+") {
+                    ret += "调大音量";
+                } else if(inst === "T_V-") {
+                    ret += "减小音量";
+                } else if(inst === "T_P-") {
+                    ret += "切换到上一个频道";
+                } else if(inst === "T_P+") {
+                    ret += "切换到下一个频道";
+                } else if(inst === "T_ONOFF") {
+                    ret += "打开";
+                } else if(inst === "T_MUTE") {
+                    if(equipment.is_mute === "1") {
+                        ret += "设置为静音";
+                    } else {
+                        ret += "取消静音";
+                    }
+                }
             } else if(equipment.e_type == "电灯") {
                 ret += "打开";
             } else if(equipment.e_type == "窗帘") {

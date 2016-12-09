@@ -2,17 +2,16 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c17d5327-6a12-4d71-80ad-03045626e8b8" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/game-server/app/mongodb/RecentLocationModel.js" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/game-server/app/domain/to_check.txt" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/game-server/logs/con-log-${opts:serverId}.log" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/game-server/logs/forward-log-${opts:serverId}.log" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/game-server/logs/node-log-${opts:serverId}.log" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/game-server/logs/rpc-debug-${opts:serverId}.log" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/game-server/logs/rpc-log-${opts:serverId}.log" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/game-server/app/domain/WasterWordFilter.js" afterPath="$PROJECT_DIR$/game-server/app/domain/WasterWordFilter.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/game-server/app/servers/home/remote/homeRemote.js" afterPath="$PROJECT_DIR$/game-server/app/servers/home/remote/homeRemote.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/game-server/app/domain/SayingUtil.js" afterPath="$PROJECT_DIR$/game-server/app/domain/SayingUtil.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/game-server/app/servers/user/handler/userHandler.js" afterPath="$PROJECT_DIR$/game-server/app/servers/user/handler/userHandler.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web-server/public/test/login.html" afterPath="$PROJECT_DIR$/web-server/public/test/login.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web-server/public/test/main.html" afterPath="$PROJECT_DIR$/web-server/public/test/main.html" />
     </list>
     <ignored path="ortron.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -33,83 +32,48 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="userHandler.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="userHandler.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/game-server/app/servers/user/handler/userHandler.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="718">
-              <caret line="1121" column="29" selection-start-line="1121" selection-start-column="29" selection-end-line="1121" selection-end-column="29" />
+            <state relative-caret-position="-2557">
+              <caret line="2314" column="53" selection-start-line="2314" selection-start-column="53" selection-end-line="2314" selection-end-column="53" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="userRemote.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/game-server/app/servers/user/remote/userRemote.js">
+      <file leaf-file-name="main.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/web-server/public/test/main.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="740">
-              <caret line="225" column="2" selection-start-line="225" selection-start-column="2" selection-end-line="225" selection-end-column="2" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="homeRemote.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/game-server/app/servers/home/remote/homeRemote.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1377">
-              <caret line="1043" column="24" selection-start-line="1043" selection-start-column="24" selection-end-line="1043" selection-end-column="24" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="RecentLocationModel.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/game-server/app/mongodb/RecentLocationModel.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="189">
-              <caret line="9" column="37" selection-start-line="9" selection-start-column="37" selection-end-line="9" selection-end-column="37" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="SuggestionModel.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/game-server/app/mongodb/grabmodel/SuggestionModel.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="210">
-              <caret line="10" column="33" selection-start-line="0" selection-start-column="0" selection-end-line="10" selection-end-column="33" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="StructureFilter.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/game-server/app/domain/StructureFilter.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="605">
-              <caret line="50" column="25" selection-start-line="42" selection-start-column="24" selection-end-line="50" selection-end-column="25" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="WordsPreparer.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/game-server/app/domain/WordsPreparer.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="588">
-              <caret line="76" column="33" selection-start-line="0" selection-start-column="0" selection-end-line="187" selection-end-column="0" />
+            <state relative-caret-position="621">
+              <caret line="519" column="94" selection-start-line="519" selection-start-column="94" selection-end-line="519" selection-end-column="94" />
               <folding>
-                <marker date="1479719404011" expanded="true" signature="4489:4517" ph="{...}" />
+                <marker date="1481163387655" expanded="true" signature="7572:7582" ph="..." />
+                <marker date="1481163387655" expanded="true" signature="8642:8652" ph="..." />
+                <marker date="1481163387655" expanded="true" signature="13054:13065" ph="..." />
+                <marker date="1481163387655" expanded="true" signature="13473:13483" ph="..." />
+                <marker date="1481163387655" expanded="true" signature="26605:26655" ph="..." />
+                <marker date="1481163387655" expanded="true" signature="26892:26940" ph="..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="WasterWordFilter.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/game-server/app/domain/WasterWordFilter.js">
+      <file leaf-file-name="SayingUtil.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/game-server/app/domain/SayingUtil.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="357">
-              <caret line="17" column="2" selection-start-line="17" selection-start-column="2" selection-end-line="17" selection-end-column="2" />
+            <state relative-caret-position="189">
+              <caret line="9" column="0" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="login.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/web-server/public/test/login.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="546">
+              <caret line="26" column="26" selection-start-line="26" selection-start-column="26" selection-end-line="26" selection-end-column="26" />
               <folding />
             </state>
           </provider>
@@ -124,7 +88,6 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/game-server/config/master.json" />
-        <option value="$PROJECT_DIR$/web-server/public/test/main.html" />
         <option value="$PROJECT_DIR$/web-server/public/test/testRoute.html" />
         <option value="$PROJECT_DIR$/web-server/public/test.html" />
         <option value="$PROJECT_DIR$/game-server/app/mongodb/estateModels/accountModel.js" />
@@ -142,7 +105,6 @@
         <option value="$PROJECT_DIR$/game-server/app/mongodb/datas/CacContextGenerator.js" />
         <option value="$PROJECT_DIR$/game-server/config/servers.json" />
         <option value="$PROJECT_DIR$/web-server/public/test/voice.html" />
-        <option value="$PROJECT_DIR$/web-server/public/test/login.html" />
         <option value="$PROJECT_DIR$/game-server/app/servers/user/handler/entryHandler.js" />
         <option value="$PROJECT_DIR$/game-server/app/graber/tv/TvProgramTimePatch.js" />
         <option value="$PROJECT_DIR$/game-server/app/domain/WordsPreparer.js" />
@@ -154,6 +116,8 @@
         <option value="$PROJECT_DIR$/game-server/app/mongodb/RecentLocationModel.js" />
         <option value="$PROJECT_DIR$/game-server/app/servers/home/remote/homeRemote.js" />
         <option value="$PROJECT_DIR$/game-server/app/servers/user/handler/userHandler.js" />
+        <option value="$PROJECT_DIR$/web-server/public/test/login.html" />
+        <option value="$PROJECT_DIR$/web-server/public/test/main.html" />
       </list>
     </option>
   </component>
@@ -194,8 +158,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="Scratches" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -211,6 +175,60 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="ortron" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ortron" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ortron" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="web-server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ortron" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ortron" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="web-server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="public" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ortron" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ortron" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="web-server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="public" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -481,7 +499,7 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../autodata" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../ots" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="HbShouldOpenHtmlAsHb" value="" />
     <property name="js-jscs-nodeInterpreter" value="C:\Program Files (x86)\nodejs\node.exe" />
@@ -600,11 +618,13 @@
       <workItem from="1479533904828" duration="1550000" />
       <workItem from="1479691591201" duration="15719000" />
       <workItem from="1479776489404" duration="8998000" />
+      <workItem from="1481159315896" duration="4434000" />
+      <workItem from="1481245421094" duration="617000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="92665000" />
+    <option name="totallyTimeSpent" value="97716000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -616,25 +636,25 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="7" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1548999" sideWeight="0.5" order="1" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32900432" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32900432" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32936078" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32936078" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -653,13 +673,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/game-server/app/servers/estate/remote/estateRemote.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/game-server/app/mongodb/estateModels/AccountModel.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="63">
@@ -875,17 +888,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="147">
           <caret line="7" column="44" selection-start-line="7" selection-start-column="44" selection-end-line="7" selection-end-column="44" />
-          <folding>
-            <element signature="n#style#0;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/web-server/public/test/login.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1659">
-          <caret line="79" column="2" selection-start-line="79" selection-start-column="2" selection-end-line="79" selection-end-column="2" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -893,7 +895,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="4830">
           <caret line="230" column="87" selection-start-line="230" selection-start-column="87" selection-end-line="230" selection-end-column="87" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -922,14 +923,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1832">
           <caret line="350" column="4" selection-start-line="350" selection-start-column="4" selection-end-line="387" selection-end-column="5" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/game-server/app/domain/SayingUtil.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="13">
-          <caret line="9" column="0" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
         </state>
       </provider>
     </entry>
@@ -937,57 +930,29 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="693">
           <caret line="33" column="15" selection-start-line="33" selection-start-column="15" selection-end-line="33" selection-end-column="15" />
-          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/game-server/app/domain/WordsPreparer.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="588">
-          <caret line="76" column="33" selection-start-line="0" selection-start-column="0" selection-end-line="187" selection-end-column="0" />
-          <folding>
-            <marker date="1479719404011" expanded="true" signature="4489:4517" ph="{...}" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/game-server/app/domain/to_check.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/game-server/app/domain/test.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="147">
-          <caret line="7" column="3" selection-start-line="7" selection-start-column="3" selection-end-line="7" selection-end-column="3" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/game-server/app/domain/to_check.txt" />
+    <entry file="file://$PROJECT_DIR$/game-server/app/domain/test.js" />
     <entry file="file://$PROJECT_DIR$/game-server/app/mongodb/grabmodel/SuggestionModel.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="210">
           <caret line="10" column="33" selection-start-line="0" selection-start-column="0" selection-end-line="10" selection-end-column="33" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/game-server/app/domain/StructureFilter.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="605">
+        <state relative-caret-position="1050">
           <caret line="50" column="25" selection-start-line="42" selection-start-column="24" selection-end-line="50" selection-end-column="25" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/game-server/app/servers/user/remote/userRemote.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="740">
+        <state relative-caret-position="4725">
           <caret line="225" column="2" selection-start-line="225" selection-start-column="2" selection-end-line="225" selection-end-column="2" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -995,30 +960,65 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="189">
           <caret line="9" column="37" selection-start-line="9" selection-start-column="37" selection-end-line="9" selection-end-column="37" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/game-server/app/servers/home/remote/homeRemote.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1377">
+        <state relative-caret-position="21903">
           <caret line="1043" column="24" selection-start-line="1043" selection-start-column="24" selection-end-line="1043" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/game-server/app/domain/WasterWordFilter.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="252">
+          <caret line="12" column="6" selection-start-line="12" selection-start-column="6" selection-end-line="12" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/game-server/app/domain/WordsPreparer.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="525">
+          <caret line="154" column="28" selection-start-line="154" selection-start-column="28" selection-end-line="154" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web-server/public/test/login.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="546">
+          <caret line="26" column="26" selection-start-line="26" selection-start-column="26" selection-end-line="26" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web-server/public/test/main.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="621">
+          <caret line="519" column="94" selection-start-line="519" selection-start-column="94" selection-end-line="519" selection-end-column="94" />
+          <folding>
+            <marker date="1481163387655" expanded="true" signature="7572:7582" ph="..." />
+            <marker date="1481163387655" expanded="true" signature="8642:8652" ph="..." />
+            <marker date="1481163387655" expanded="true" signature="13054:13065" ph="..." />
+            <marker date="1481163387655" expanded="true" signature="13473:13483" ph="..." />
+            <marker date="1481163387655" expanded="true" signature="26605:26655" ph="..." />
+            <marker date="1481163387655" expanded="true" signature="26892:26940" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/game-server/app/domain/SayingUtil.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="189">
+          <caret line="9" column="0" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/game-server/app/servers/user/handler/userHandler.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="718">
-          <caret line="1121" column="29" selection-start-line="1121" selection-start-column="29" selection-end-line="1121" selection-end-column="29" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/game-server/app/domain/WasterWordFilter.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="357">
-          <caret line="17" column="2" selection-start-line="17" selection-start-column="2" selection-end-line="17" selection-end-column="2" />
+        <state relative-caret-position="-2557">
+          <caret line="2314" column="53" selection-start-line="2314" selection-start-column="53" selection-end-line="2314" selection-end-column="53" />
           <folding />
         </state>
       </provider>
