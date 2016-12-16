@@ -35,6 +35,32 @@ SayingUtil.translateTv = function(result, cb) {
     }
 };
 
+// 电灯专用
+SayingUtil.translateLights = function(orderAndInfrared) {
+    var equipments = orderAndInfrared.order.ueq;
+    var inst = orderAndInfrared.infrared.inst;
+    var ret = "";
+    if(!!equipments && equipments.length > 0) {
+        var name = "";
+        for(var index in equipments) {
+            if(name === "") {
+                name += equipments[index].e_name;
+            } else {
+                name += "和" + equipments[index].e_name;
+            }
+        }
+        ret = "把" + name;
+        if(equipments[0].status == "关") {
+            ret += "关闭电源";
+        } else {
+            ret += "打开";
+        }
+    } else {
+        ret = "没有任何操作";
+    }
+    return ret;
+};
+
 // 根据状态调整返回给用户的语句
 SayingUtil.translateStatus = function(orderAndInfrared) {
     var equipment = orderAndInfrared.order.ueq;

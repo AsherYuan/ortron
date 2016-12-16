@@ -1108,20 +1108,23 @@ Handler.prototype.userSaySomething = function(msg, session, next) {
 
     var privateData = {"isDelayOrder":false,"isCanLearn":false,
     "from":"turing","type":"data"};
+    if(words.indexOf("招呼") > -1) {
+        words = "跟大家打个招呼吧";
+    } else if(words.indexOf('自我介绍') > -1) {
+        words = "自我介绍一下";
+    } else if(words.indexOf('你从哪里来') > -1) {
+        words = "你从哪里来";
+    }
+
     if(words.indexOf('欢乐喜剧人') > -1) {
         privateData.result = "现在没有频道在播放《欢乐喜剧人》";
         next(null, ResponseUtil.resp(Code.OK, privateData));
     } else if(words.indexOf('节目') > -1) {
         privateData.result = "现在最热门的节目是《锦绣未央》，23%的用户都在看这个节目，需要为你切换到该节目吗？";
         next(null, ResponseUtil.resp(Code.OK, privateData));
-    } else if(words.indexOf('音量调高') > -1) {
-        privateData.result = "好的，已为您把电视切换到中央五套，已为您调高音量";
         next(null, ResponseUtil.resp(Code.OK, privateData));
     } else if(words.indexOf('睡觉') > -1) {
         privateData.result = "已为您把电灯关闭，电视关闭，空调关闭，晚安";
-        next(null, ResponseUtil.resp(Code.OK, privateData));
-    } else if(words.indexOf('帮我把家里的灯都关掉') > -1) {
-        privateData.result = "已为您把所有电灯关闭";
         next(null, ResponseUtil.resp(Code.OK, privateData));
     } else {
         async.waterfall([
@@ -1450,7 +1453,66 @@ Handler.prototype.userSaySomething = function(msg, session, next) {
                         };
                         var toRandering = [];
                         for (var i = 0; i < result.orderAndInfrared.length; i++) {
-                            toRandering.push(render_sendingIrCode(result.orderAndInfrared[i], targetArray, devices, sentence));
+                            if(result.orderAndInfrared[i].order.ueq.length > 0) {
+                                /************************************** 临时 ******************************************/
+                                var t = result.orderAndInfrared[i];
+                                targetArray.push(SayingUtil.translateLights(t));
+                                devices = devices.concat(t.order.ueq);
+                                if (result.delayOrder !== true) {
+                                    if (!!t.infrared && !!t.infrared.infraredcode) {
+                                        var ircode = t.infrared.infraredcode;
+                                        var inst = t.infrared.inst;
+                                        for(var xx=0;xx<t.order.ueq.length;xx++) {
+                                            self.app.rpc.home.homeRemote.getDeviceById(session, t.order.ueq[xx]._id, function(err, userEquipment) {
+                                                if (err) {
+                                                    console.log(err);
+                                                } else {
+                                                    self.app.rpc.home.homeRemote.getTerminalById(session, userEquipment.terminalId, function(err, terminal) {
+                                                        if (err) {
+                                                            console.log(err);
+                                                        } else {
+                                                            var serialno = terminal.centerBoxSerialno;
+                                                            var terminalCode = terminal.code;
+                                                            self.app.rpc.home.homeRemote.getCenterBoxBySerailno(session, serialno, function(err, centerBox) {
+                                                                if (err) {
+                                                                    console.log(err);
+                                                                } else {
+                                                                    var curPort = centerBox.curPort;
+                                                                    var curIpAddress = centerBox.curIpAddress;
+                                                                    console.log("---------------------寻找当前主控信信息---------------------");
+                                                                    console.log("curIpAddress : " + curIpAddress + "___curPort : " + curPort);
+                                                                    var address = userEquipment.address;
+                                                                    var sw;
+                                                                    if(inst === "D_TEST_ON" || inst === "C_TEST_ON") {
+                                                                        sw = '11';
+                                                                    } else {
+                                                                        sw = "18"
+                                                                    }
+                                                                    var param = {
+                                                                        command: '3008',
+                                                                        ipAddress: curIpAddress,
+                                                                        data: address + " " + sw,
+                                                                        port: curPort
+                                                                    };
+
+                                                                    console.log("向ots推送消息:" + JSON.stringify(param));
+                                                                    self.app.get('channelService').pushMessageByUids('onMsg', param, [{
+                                                                        uid: 'socketServer*otron',
+                                                                        sid: 'connector-server-1'
+                                                                    }]);
+                                                                }
+                                                            });
+                                                        }
+                                                    });
+                                                }
+                                            });
+                                        }
+                                    }
+                                }
+                                /************************************** 临时 ******************************************/
+                            } else {
+                                toRandering.push(render_sendingIrCode(result.orderAndInfrared[i], targetArray, devices, sentence));
+                            }
                         }
 
                         Promise.all(toRandering).then(function() {
@@ -2185,7 +2247,7 @@ Handler.prototype.cameraAlert = function(msg, session, next) {
                                 hasRead: 0,
                                 title: '您的摄像头监测到有动态物体移动，请注意查看',
                                 content: msg.addTime,
-                                noticeType: 1,
+                                noticeType: 9,
                                 summary: msg.addTime
                             });
                             NoticeEntity.save(function(err) {
@@ -3074,10 +3136,14 @@ Handler.prototype.tvChannelList = function(msg, session, next) {
 };
 
 /******************************  临时测试  结束  ************************************/
+var TempModel  = require("../../../mongodb/TempModel");
 Handler.prototype.testPush = function(msg, session, next) {
     var self = this;
     var type = msg.type;
-    if(type === 1) {
+    if(type === 9) {
+        TempModel.update({}, {$set:{flag:false}});
+    } else if(type === 1) {
+        TempModel.update({}, {$set:{flag:true}});
         self.app.rpc.home.homeRemote.getLastSensorData(session, '583299f1d0220c5ca9bbc3d2', function(err, datas) {
             if (err) {
                 next(null, ResponseUtil.resp(Code.DATABASE));
@@ -3086,7 +3152,7 @@ Handler.prototype.testPush = function(msg, session, next) {
                     var d = datas[0];
                     var result = {
                         command: '4000',
-                        temperature: d.temperature + 40,
+                        temperature: 40,
                         humidity: d.humidity,
                         pm25: d.pm25,
                         quality: d.quality,

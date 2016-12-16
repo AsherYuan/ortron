@@ -7,7 +7,7 @@ var NoticeScheme = new mongoose.Schema({
 	title:String,
 	summary:String,
 	content:String,
-	noticeType:Number /** 1 新闻资讯 2 特殊天气预警 **/
+	noticeType:Number /** 1 新闻资讯 2 特殊天气预警 9 摄像头图片消息 **/
 });
 var NoticeModel = mongoose.model("notice", NoticeScheme);
 module.exports = NoticeModel;

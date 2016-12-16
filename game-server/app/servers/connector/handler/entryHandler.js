@@ -7,6 +7,8 @@ var async = require("async");
 var logger = require('pomelo-logger').getLogger('pomelo', __filename);
 var ResponseUtil = require("../../../util/ResponseUtil");
 var Code = require('../../../domain/code');
+var TempModel  = require("../../../mongodb/TempModel");
+
 
 
 module.exports = function(app) {
@@ -235,30 +237,37 @@ Handler.prototype.socketMsg = function(msg, session, next) {
                 pm25 = parseInt(pm25, 16);
                 var quality = centerBoxSensorData.substring(18, 20) + centerBoxSensorData.substring(16, 18);
                 quality = parseInt(quality, 16);
-                result = {
-                    command: '4000',
-                    data: param.data,
-                    temperature: temp,
-                    humidity: wet,
-                    co: co,
-                    pm25: 0,
-                    quality: quality,
-                    centerBoxSerialno: param.serialno,
-                    addTime: new Date()
-                };
 
-                self.app.rpc.home.homeRemote.getCenterBoxBySerailno(session, param.serialno, function(err, centerBox) {
-                    if (err) {
-                        callback(err);
-                    } else {
-                        self.app.rpc.home.homeRemote.saveSensorData(session, centerBox._id + "", result.temperature, result.humidity, result.co, result.quality, result.pm25, function(err) {
-                            if (err) {
-                                callback(err);
-                            } else {
-                                callback(null, result, centerBox.userMobile);
-                            }
-                        });
+                TempModel.findOne({}, function(err, doc) {
+                    if(doc.flag === true) {
+                        temp = 40;
                     }
+
+                    result = {
+                        command: '4000',
+                        data: param.data,
+                        temperature: temp,
+                        humidity: wet,
+                        co: co,
+                        pm25: 0,
+                        quality: quality,
+                        centerBoxSerialno: param.serialno,
+                        addTime: new Date()
+                    };
+
+                    self.app.rpc.home.homeRemote.getCenterBoxBySerailno(session, param.serialno, function(err, centerBox) {
+                        if (err) {
+                            callback(err);
+                        } else {
+                            self.app.rpc.home.homeRemote.saveSensorData(session, centerBox._id + "", result.temperature, result.humidity, result.co, result.quality, result.pm25, function(err) {
+                                if (err) {
+                                    callback(err);
+                                } else {
+                                    callback(null, result, centerBox.userMobile);
+                                }
+                            });
+                        }
+                    });
                 });
             }
         },
