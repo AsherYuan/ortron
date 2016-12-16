@@ -42,7 +42,7 @@
 
         $(document).ready(function() {
             pomelo.on('onMsg', function (data) {
-                // layer.alert(JSON.stringify(data));
+                 layer.alert(JSON.stringify(data));
                 // 中控上线
                 if(data.command === '1000') {
                     $("#isOnlineSpan" + data.serialno).attr('style', 'color:green;');
@@ -510,14 +510,14 @@
         function testOn() {
             var ipAddressX = $("#ipAddressX").val();
             var portX = $("#portX").val();
-            pomelo.request('user.userHandler.testOn', {ipAddress:"122.225.88.66", port:"16577"}, function(data) {
+            pomelo.request('user.userHandler.testOn', {ipAddress:"122.225.88.66", port:"43265"}, function(data) {
                 layer.alert(JSON.stringify(data));
             });
         }
         function testOff() {
             var ipAddressX = $("#ipAddressX").val();
             var portX = $("#portX").val();
-            pomelo.request('user.userHandler.testOff', {ipAddress:"122.225.88.66", port:"16577"}, function(data) {
+            pomelo.request('user.userHandler.testOff', {ipAddress:"122.225.88.66", port:"43265"}, function(data) {
                 layer.alert(JSON.stringify(data));
             });
         }

@@ -13,7 +13,7 @@ var Cron = function(app) {
 /**
  * 定时任务，定时给所有用户去推送消息
  */
-Cron.prototype.currentData = function() {
+var currentData = function() {
     var self = this;
     var options = {
         host: 'apis.baidu.com',
@@ -57,20 +57,20 @@ Cron.prototype.currentData = function() {
                     UserModel.find({}, function(err, docs) {
                         if (err) console.log(err);
                         else {
-                            for (var i = 0; i < docs.length; i++) {
-                                var mobile = docs[i].mobile;
-                                var param = {
-                                    command: '5000',
-                                    temperature: tem,
-                                    humidity: hum,
-                                    pm25: pm,
-                                    addTime: new Date()
-                                };
-                                self.app.get('channelService').pushMessageByUids('onMsg', param, [{
-                                    uid: mobile,
-                                    sid: 'user-server-1'
-                                }]);
-                            }
+                            // for (var i = 0; i < docs.length; i++) {
+                            //     var mobile = docs[i].mobile;
+                            //     var param = {
+                            //         command: '5000',
+                            //         temperature: tem,
+                            //         humidity: hum,
+                            //         pm25: pm,
+                            //         addTime: new Date()
+                            //     };
+                            //     self.app.get('channelService').pushMessageByUids('onMsg', param, [{
+                            //         uid: mobile,
+                            //         sid: 'user-server-1'
+                            //     }]);
+                            // }
                         }
                     });
                 }
@@ -121,3 +121,6 @@ Cron.prototype.currentData = function() {
     });
     req.end();
 };
+
+
+currentData();

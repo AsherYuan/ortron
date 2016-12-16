@@ -171,6 +171,7 @@ Handler.prototype.socketMsg = function(msg, session, next) {
                 var tCode = param.data.substring(0, 2);
                 var humidity = parseInt(param.data.substring(6, 8), 16);
                 var temperature = parseInt(param.data.substring(8, 10), 16);
+                temperature = temperature - 8;
 
                 self.app.rpc.home.homeRemote.getTerminaListByCenterBoxAndCode(session, param.serialno, tCode, function(err, terminals) {
                     if (err) {

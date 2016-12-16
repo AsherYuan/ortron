@@ -36,5 +36,7 @@ module.exports.saveWeather = function () {
             }
         });
     });
-}
+};
+
+this.saveWeather();
 

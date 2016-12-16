@@ -22,23 +22,20 @@
     </script>
     <script type="text/javascript">
         var pomelo = window.pomelo;
-//        var host = "127.0.0.1";
-        // var host = "121.40.172.233";
-         var host = "121.40.53.201";
+        var host = "121.40.53.201";
         var port = "3015";
         var uid = '';
 
         $(document).ready(function() {
             pomelo.on('onMsg', function (data) {
-                // layer.alert('推送:' + JSON.stringify(data));
+                 layer.alert('推送:' + JSON.stringify(data));
             });
 
             var cookieToken = $.cookie('token');
             if(cookieToken == null || cookieToken == undefined || cookieToken === '') {
                 window.location.href = '/test/login.html';
             } else {
-                pomelo.init({host:host, port:port, log:true}, function() {
-                    var uid = 'web' + new Date().getTime();
+                pomelo.init({host:host, port:port}, function() {
                     pomelo.request('user.entryHandler.auth', {token:cookieToken}, function(data) {
                         if(data === 1001) {
                             layer.msg('验证失败');
@@ -50,32 +47,18 @@
             }
         });
 
-        function testRouteStr() {
-            var route = $("#routeStr").val();
-            var param = new Object();
-            for(var i=1;i<9;i++) {
-                var x = $("#param" + i).val();
-                if(x != "") {
-                    var xarray = x.split("=");
-                    param[xarray[0]] = xarray[1];
-                }
-            }
-            pomelo.request(route, param, function(data) {
+        function pushing(type) {
+            pomelo.request('user.userHandler.testPush', {type:type}, function(data) {
                 layer.msg(JSON.stringify(data));
             });
         }
     </script>
 </head>
 <body>
-<div><input type="text" value="" id="routeStr"><br/>
-    <input type="text" id="param1" value="" placeHolder="homeId=5754eb2a37c667e737df9ee3"><br/>
-    <input type="text" id="param2" value="" placeHolder="layerName=一楼"><br/>
-    <input type="text" id="param3" value=""><br/>
-    <input type="text" id="param4" value=""><br/>
-    <input type="text" id="param5" value=""><br/>
-    <input type="text" id="param6" value=""><br/>
-    <input type="text" id="param7" value=""><br/>
-    <input type="text" id="param8" value=""><input type="button" value="测试接口" onclick="testRouteStr();" /></div><hr>
+<div>
+    <input type="button" value="温度报警" onclick="pushing(1)"><br/>
+    <input type="button" value="天气特效演示A" onclick="pushing(2)"><br/>
+    <input type="button" value="天气特效演示B" onclick="pushing(3)"><br/>
 <div>
 </body>
 </html>

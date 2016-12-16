@@ -339,6 +339,8 @@ HomeRemote.prototype.getHomeInfoByMobile = function(userMobile, cb) {
                     for (var j = 0; j < homes[i].layers.length; j++) {
                         var box = {
                             homeId: homes[i]._id,
+                            floorId:homes[i].floorId,
+                            floorName:homes[i].floorName,
                             layerName: homes[i].layers[j].name,
                             serialno: homes[i].layers[j].centerBoxSerialno
                         };
@@ -885,9 +887,10 @@ HomeRemote.prototype.saveTSensorData = function(terminalId, temperature, humidit
  * @return {[type]}               [description]
  */
 HomeRemote.prototype.saveSensorData = function(centerBoxId, temperature, humidity, co, quality, pm25, callback) {
+    var real_temp = temperature - 8;
     var entity = new SensorDataModel({
         centerBoxId: centerBoxId,
-        temperature: temperature,
+        temperature: real_temp,
         humidity: humidity,
         co: co,
         quality: quality,

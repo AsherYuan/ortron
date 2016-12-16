@@ -11,6 +11,7 @@ var StringUtil = require('./mongodb/StringUtil.js');
 var SensorDataModel = require('./mongodb/models/SensorDataModel');
 var TSensorDataModel = require('./mongodb/models/TSensorDataModel');
 var TvChannelModel = require('./mongodb/models/TvChannelModel');
+var CameraPhotoModel = require("./mongodb/models/CameraPhotoModel");
 
 app.configure(function () {
 	app.use(express.methodOverride());
@@ -440,6 +441,7 @@ app.get('/getNoticeNotReadCount', function (req, res) {
 app.get('/getSensorDataHistory', function (req, res) {
 	res.set("Access-Control-Allow-Origin", "*");
 	var centerBoxId = req.query.centerBoxId;
+	console.log("centerBoxId: " + centerBoxId);
 	SensorDataModel.find({centerBoxId:centerBoxId}).limit(200).sort({addTime:-1}).exec().then(function(data) {
 		res.send("{\"code\":200, \"codetxt\":\"操作成功\", \"data\":" + JSON.stringify(data) + "}");
 	}).catch(function(err) {
@@ -459,9 +461,17 @@ app.get('/getTSensorDataHistory', function (req, res) {
 /****************************************** 传感器温度曲线 结束 ************************************************/
 
 
-
-
-
+/****************************************** 摄像头照片 开始 ************************************************/
+app.get('/getCameraPhotos', function (req, res) {
+	res.set("Access-Control-Allow-Origin", "*");
+	var nd = req.query.nd;
+	CameraPhotoModel.find({genTime:{$gt:nd}}).sort({genTime:1}).limit(100).exec().then(function(photos) {
+		res.send("{\"code\":200, \"codetxt\":\"操作成功\", \"data\":" + JSON.stringify(photos) + "}");
+	}).catch(function(err) {
+		res.send("{\"code\":200, \"codetxt\":\"操作成功\"}");
+	});
+});
+/****************************************** 摄像头照片 结束 ************************************************/
 
 app.configure('development', function () {
 	app.use(express.static(__dirname + '/public'));

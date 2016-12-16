@@ -12,7 +12,7 @@ app.set('name', 'ortron');
 app.configure('production|development', 'connector|user|home|estate', function() {
     app.set('connectorConfig', {
         connector: pomelo.connectors.hybridconnector,
-        heartbeat: 30,
+        heartbeat: 5,
         useDict: false,
         useProtobuf: false
     });

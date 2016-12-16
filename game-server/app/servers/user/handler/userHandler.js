@@ -30,6 +30,7 @@ var PayModel = require('../../../mongodb/estateModels/PayModel');
 var RepairModel = require('../../../mongodb/estateModels/RepairModel');
 var WordsPreparer = require('../../../domain/WordsPreparer');
 var WasterWordFilter = require('../../../domain/WasterWordFilter');
+var CameraPhotoModel = require("../../../mongodb/camera/CameraPhotoModel");
 
 var ResponseUtil = require('../../../util/ResponseUtil');
 var logger = require('pomelo-logger').getLogger('pomelo', __filename);
@@ -88,6 +89,8 @@ Handler.prototype.getUserInfo = function(msg, session, next) {
         /* 关联用户的家庭信息 */
         function(user, cb) {
             self.app.rpc.home.homeRemote.getHomeInfoByMobile(session, userMobile, function(err, homes) {
+                console.log("--------------------------------------------------------------------------");
+                console.log(JSON.stringify(homes));
                 if (err) {
                     next(null, ResponseUtil.resp(Code.DATABASE));
                 } else {
@@ -1105,38 +1108,20 @@ Handler.prototype.userSaySomething = function(msg, session, next) {
 
     var privateData = {"isDelayOrder":false,"isCanLearn":false,
     "from":"turing","type":"data"};
-    if(words.indexOf('帮我把客厅的空调打开吧') > -1) {
-        privateData.result = "已为您把客厅空调打开，温度设置为26度，制热，小风";
-        next(null, ResponseUtil.resp(Code.OK, privateData));
-    } else if(words.indexOf('老样子') > -1) {
-        privateData.result = "已为您把客厅空调打开，温度设置为26度，制热，小风";
-        next(null, ResponseUtil.resp(Code.OK, privateData));
-    } else if(words.indexOf('帮我把电视打开') > -1) {
-        privateData.result = "好的，已为您把电视打开，自动设置为中央五套。";
-        next(null, ResponseUtil.resp(Code.OK, privateData));
-    } else if(words.indexOf('欢乐喜剧人') > -1) {
+    if(words.indexOf('欢乐喜剧人') > -1) {
         privateData.result = "现在没有频道在播放《欢乐喜剧人》";
         next(null, ResponseUtil.resp(Code.OK, privateData));
-    } else if(words.indexOf('现在大家都在看什么节目') > -1) {
-        privateData.result = "现在最热门的节目是《锦绣未央》，23%的用户都在看这个节目。需要帮您切换到浙江卫视吗？";
+    } else if(words.indexOf('节目') > -1) {
+        privateData.result = "现在最热门的节目是《锦绣未央》，23%的用户都在看这个节目，需要为你切换到该节目吗？";
         next(null, ResponseUtil.resp(Code.OK, privateData));
-    } else if(words.indexOf('帮我开到中央五套') > -1) {
-        privateData.result = "已为你把电视开到中央五套，已为你调高音量3%";
+    } else if(words.indexOf('音量调高') > -1) {
+        privateData.result = "好的，已为您把电视切换到中央五套，已为您调高音量";
         next(null, ResponseUtil.resp(Code.OK, privateData));
-    } else if(words.indexOf('我要睡觉了') > -1) {
-        privateData.result = "已为您把电灯关闭，电视剧关闭，空调关闭，晚安";
+    } else if(words.indexOf('睡觉') > -1) {
+        privateData.result = "已为您把电灯关闭，电视关闭，空调关闭，晚安";
         next(null, ResponseUtil.resp(Code.OK, privateData));
     } else if(words.indexOf('帮我把家里的灯都关掉') > -1) {
         privateData.result = "已为您把所有电灯关闭";
-        next(null, ResponseUtil.resp(Code.OK, privateData));
-    } else if(words.indexOf('打开客厅的空调') > -1) {
-        privateData.result = "已为您把客厅空调打开，温度设置为26度，制热，小风";
-        next(null, ResponseUtil.resp(Code.OK, privateData));
-    } else if(words.indexOf('帮我把小黑关掉') > -1) {
-        privateData.result = "已为您把小黑关闭";
-        next(null, ResponseUtil.resp(Code.OK, privateData));
-    } else if(words.indexOf('把客厅的灯打开') > -1) {
-        privateData.result = "已为您把客厅的电灯打开";
         next(null, ResponseUtil.resp(Code.OK, privateData));
     } else {
         async.waterfall([
@@ -1216,8 +1201,9 @@ Handler.prototype.userSaySomething = function(msg, session, next) {
 
             /* 第六步，查看是否是图灵机器人的返回 */
             function(user, result, callback) {
+                console.log("图灵图灵图灵" + result.status);
                 if(result.status === "turing") {
-                    data.voiceId = result.inpuststr_id;
+                    data.voiceId = result.inputstr_id;
                     data.isDelayOrder = result.delayOrder;
                     data.isCanLearn = result.iscanlearn;
                     data.from = "turing";
@@ -1228,6 +1214,8 @@ Handler.prototype.userSaySomething = function(msg, session, next) {
                         data.result = msgObj.text + "<a href='" + msgObj.url + "'>点此查看</a>";
                     }
                     data.type = "data";
+                    console.log("==============================图灵=========================================");
+                    console.log(ResponseUtil.resp(Code.OK, data));
                     next(null, ResponseUtil.resp(Code.OK, data));
                 } else {
                     callback(null, user, result);
@@ -1236,7 +1224,7 @@ Handler.prototype.userSaySomething = function(msg, session, next) {
 
             /* 第七步，查看是否是上下文问题 */
             function(user, result, callback) {
-                if(!!result && !!result.contextId) {
+                if(!!result && !!result.optionList && result.optionList.length > 1) {
                     data.voiceId = result.inputstr_id;
                     data.isDelayOrder = result.delayOrder;
                     data.isCanLearn = result.iscanlearn;
@@ -1264,7 +1252,6 @@ Handler.prototype.userSaySomething = function(msg, session, next) {
 
                     if (result.inputstr.indexOf('我要看') === 0) {
                         SayingUtil.translateTv(result, function(tvRet) {
-                            console.log("----------------------------------tvRet----" + tvRet);
                             targetArray.push(tvRet);
                             if (!!result.orderAndInfrared) {
                                 var render_tv = function(orderAndInfrared) {
@@ -1272,7 +1259,7 @@ Handler.prototype.userSaySomething = function(msg, session, next) {
                                         var t = orderAndInfrared;
                                         if (!!t.infrared && !!t.infrared.infraredcode) {
                                             var ircode = t.infrared.infraredcode;
-                                            self.app.rpc.home.homeRemote.getDeviceById(session, t.order.ueq.id, function(err, userEquipment) {
+                                            self.app.rpc.home.homeRemote.getDeviceById(session, t.order.ueq._id, function(err, userEquipment) {
                                                 if (err) {
                                                     reject(err);
                                                 } else {
@@ -1297,11 +1284,7 @@ Handler.prototype.userSaySomething = function(msg, session, next) {
                                                                         data: terminalCode + " " + ircode,
                                                                         port: curPort
                                                                     };
-                                                                    console.log("向ots推送消息:" + JSON.stringify(param));
-                                                                    self.app.get('channelService').pushMessageByUids('onMsg', param, [{
-                                                                        uid: 'socketServer*otron',
-                                                                        sid: 'connector-server-1'
-                                                                    }]);
+                                                                    resolve(param);
                                                                 }
                                                             });
                                                         }
@@ -1317,8 +1300,65 @@ Handler.prototype.userSaySomething = function(msg, session, next) {
                                 for (var j = 0; j < result.orderAndInfrared.length; j++) {
                                     tvRandering.push(render_tv(result.orderAndInfrared[j]));
                                 }
-                                Promise.all(tvRandering).then(function() {
-                                    console.log("全部执行完成");
+                                Promise.all(tvRandering).then(function(results) {
+                                    console.log("全部分析完成，开始执行");
+                                    if(results.length === 4) {
+                                        self.app.get('channelService').pushMessageByUids('onMsg', results[0], [{
+                                            uid: 'socketServer*otron',
+                                            sid: 'connector-server-1'
+                                        }]);
+                                        setTimeout(function () {
+                                            self.app.get('channelService').pushMessageByUids('onMsg', results[1], [{
+                                                uid: 'socketServer*otron',
+                                                sid: 'connector-server-1'
+                                            }]);
+                                        }, 500);
+                                        setTimeout(function () {
+                                            self.app.get('channelService').pushMessageByUids('onMsg', results[2], [{
+                                                uid: 'socketServer*otron',
+                                                sid: 'connector-server-1'
+                                            }]);
+                                        }, 1000);
+                                        setTimeout(function () {
+                                            self.app.get('channelService').pushMessageByUids('onMsg', results[3], [{
+                                                uid: 'socketServer*otron',
+                                                sid: 'connector-server-1'
+                                            }]);
+                                        }, 1500);
+                                    } else if(results.length === 3) {
+                                        self.app.get('channelService').pushMessageByUids('onMsg', results[0], [{
+                                            uid: 'socketServer*otron',
+                                            sid: 'connector-server-1'
+                                        }]);
+                                        setTimeout(function () {
+                                            self.app.get('channelService').pushMessageByUids('onMsg', results[1], [{
+                                                uid: 'socketServer*otron',
+                                                sid: 'connector-server-1'
+                                            }]);
+                                        }, 500);
+                                        setTimeout(function () {
+                                            self.app.get('channelService').pushMessageByUids('onMsg', results[2], [{
+                                                uid: 'socketServer*otron',
+                                                sid: 'connector-server-1'
+                                            }]);
+                                        }, 1000);
+                                    } else if(results.length === 2) {
+                                        self.app.get('channelService').pushMessageByUids('onMsg', results[0], [{
+                                            uid: 'socketServer*otron',
+                                            sid: 'connector-server-1'
+                                        }]);
+                                        setTimeout(function () {
+                                            self.app.get('channelService').pushMessageByUids('onMsg', results[1], [{
+                                                uid: 'socketServer*otron',
+                                                sid: 'connector-server-1'
+                                            }]);
+                                        }, 500);
+                                    } else {
+                                        self.app.get('channelService').pushMessageByUids('onMsg', results[0], [{
+                                            uid: 'socketServer*otron',
+                                            sid: 'connector-server-1'
+                                        }]);
+                                    }
                                 });
 
                                 // 判断是否延时
@@ -1342,7 +1382,9 @@ Handler.prototype.userSaySomething = function(msg, session, next) {
                                 if (result.delayOrder !== true) {
                                     if (!!t.infrared && !!t.infrared.infraredcode) {
                                         var ircode = t.infrared.infraredcode;
+                                        var inst = t.infrared.inst;
                                         self.app.rpc.home.homeRemote.getDeviceById(session, t.order.ueq._id, function(err, userEquipment) {
+                                            logger.error("userEquipment:" + JSON.stringify(userEquipment));
                                             if (err) {
                                                 reject(err);
                                             } else {
@@ -1360,18 +1402,42 @@ Handler.prototype.userSaySomething = function(msg, session, next) {
                                                                 var curIpAddress = centerBox.curIpAddress;
                                                                 console.log("---------------------寻找当前主控信信息---------------------");
                                                                 console.log("curIpAddress : " + curIpAddress + "___curPort : " + curPort);
-                                                                var param = {
-                                                                    command: '3000',
-                                                                    ipAddress: curIpAddress,
-                                                                    serialNo: serialno,
-                                                                    data: terminalCode + " " + ircode,
-                                                                    port: curPort
-                                                                };
-                                                                console.log("向ots推送消息:" + JSON.stringify(param));
-                                                                self.app.get('channelService').pushMessageByUids('onMsg', param, [{
-                                                                    uid: 'socketServer*otron',
-                                                                    sid: 'connector-server-1'
-                                                                }]);
+                                                                var param = {};
+                                                                if(userEquipment.e_type === "电灯" || userEquipment.e_type === "窗帘") {
+                                                                    var address = userEquipment.address;
+                                                                    var sw;
+                                                                    if(inst === "D_TEST_ON" || inst === "C_TEST_ON") {
+                                                                        sw = '11';
+                                                                    } else {
+                                                                        sw = "18"
+                                                                    }
+                                                                    param = {
+                                                                        command: '3008',
+                                                                        ipAddress: curIpAddress,
+                                                                        data: address + " " + sw,
+                                                                        port: curPort
+                                                                    };
+
+                                                                    console.log("向ots推送消息:" + JSON.stringify(param));
+                                                                    self.app.get('channelService').pushMessageByUids('onMsg', param, [{
+                                                                        uid: 'socketServer*otron',
+                                                                        sid: 'connector-server-1'
+                                                                    }]);
+                                                                } else {
+                                                                    param = {
+                                                                        command: '3000',
+                                                                        ipAddress: curIpAddress,
+                                                                        serialNo: serialno,
+                                                                        data: terminalCode + " " + ircode,
+                                                                        port: curPort
+                                                                    };
+
+                                                                    console.log("向ots推送消息:" + JSON.stringify(param));
+                                                                    self.app.get('channelService').pushMessageByUids('onMsg', param, [{
+                                                                        uid: 'socketServer*otron',
+                                                                        sid: 'connector-server-1'
+                                                                    }]);
+                                                                }
                                                             }
                                                         });
                                                     }
@@ -1556,6 +1622,7 @@ Handler.prototype.study = function(msg, session, next) {
                 d.model = devices[i].ac_model;
                 d.status = devices[i].status;
                 d.user_id = userDocs[0]._id;
+                d.inputstr_id = inputstr_id;
                 orderparamlist.push(d);
             }
             postString.orderparamlist = orderparamlist;
@@ -2088,6 +2155,92 @@ Handler.prototype.sendNotice = function(msg, session, next) {
     }]);
 };
 
+/** 照片通知 **/
+Handler.prototype.cameraAlert = function(msg, session, next) {
+    var self = this;
+    var url = msg.url;
+    var userMobile = '18657312311';
+    CameraPhotoModel.findOne({userMobile:userMobile}).sort({genTime:-1}).exec().then(function(last) {
+        if(!!url) {
+            if(!!last) {
+                if(parseInt(last.genTime) < parseInt(msg.addTime)) {
+                    var camera = new CameraPhotoModel({
+                        url:url,
+                        userMobile:userMobile,
+                        genTime:msg.addTime
+                    });
+                    camera.save(function(err, c) {
+                        if((parseInt(msg.addTime) - parseInt(last.genTime)) > 1000 * 60 * 1) {
+                            var param = {
+                                command : '9997',
+                                url : url,
+                                nd :msg.addTime
+                            };
+                            self.app.get('channelService').pushMessageByUids('onMsg', param, [{
+                                uid: '18657312311',
+                                sid: 'user-server-1'
+                            }]);
+                            var NoticeEntity = new NoticeModel({
+                                userMobile: '18657312311',
+                                hasRead: 0,
+                                title: '您的摄像头监测到有动态物体移动，请注意查看',
+                                content: msg.addTime,
+                                noticeType: 1,
+                                summary: msg.addTime
+                            });
+                            NoticeEntity.save(function(err) {
+                                if (err) {
+                                    logger.error(err);
+                                } else {
+                                    NoticeModel.count({
+                                        hasRead: 0,
+                                        userMobile: userMobile
+                                    }, function(err, count) {
+                                        // 保存成功，开始向用户发送消息
+                                        var param = {
+                                            command: '9002',
+                                            title: '您的摄像头监测到有动态物体移动，请注意查看',
+                                            content: msg.addTime,
+                                            addTime: new Date(),
+                                            addTimeLabel: Moment(new Date()).format('HH:mm'),
+                                            summary: msg.addTime,
+                                            notReadCount: count
+                                        };
+                                        self.app.get('channelService').pushMessageByUids('onMsg', param, [{
+                                            uid: userMobile,
+                                            sid: 'user-server-1'
+                                        }]);
+                                    });
+                                }
+                            });
+                            next(null);
+                        }
+                    });
+                }
+            } else {
+                var camera = new CameraPhotoModel({
+                    url:url,
+                    userMobile:userMobile,
+                    genTime:msg.addTime
+                });
+                camera.save(function(err, c) {
+                    var param = {
+                        command : '9997',
+                        url : url,
+                        nd : new Date().getTime()
+                    };
+                    self.app.get('channelService').pushMessageByUids('onMsg', param, [{
+                        uid: '18657312311',
+                        sid: 'user-server-1'
+                    }]);
+                    next(null);
+                });
+
+            }
+        }
+    });
+};
+
 Handler.prototype.delayNotify = function(msg, session, next) {
     var self = this;
     var uid = msg.uid;
@@ -2223,8 +2376,8 @@ Handler.prototype.tempMsgList = function(msg, session, next) {
 
 Handler.prototype.testOn = function(msg, session, next) {
     var self = this;
-    var data = "00 10 11";
-    // var data = "00 01 11";
+    // var data = "00 10 11";
+    var data = "00 01 11";
     var curPort = msg.port;
     var curIpAddress = msg.ipAddress;
     var param = {
@@ -2243,8 +2396,8 @@ Handler.prototype.testOn = function(msg, session, next) {
 
 Handler.prototype.testOff = function(msg, session, next) {
     var self = this;
-    var data = "00 10 18";
-    // var data = "00 01 18";
+    // var data = "00 10 18";
+    var data = "00 01 18";
     var curPort = msg.port;
     var curIpAddress = msg.ipAddress;
     var param = {
@@ -2921,3 +3074,43 @@ Handler.prototype.tvChannelList = function(msg, session, next) {
 };
 
 /******************************  临时测试  结束  ************************************/
+Handler.prototype.testPush = function(msg, session, next) {
+    var self = this;
+    var type = msg.type;
+    if(type === 1) {
+        self.app.rpc.home.homeRemote.getLastSensorData(session, '583299f1d0220c5ca9bbc3d2', function(err, datas) {
+            if (err) {
+                next(null, ResponseUtil.resp(Code.DATABASE));
+            } else {
+                if(!!datas && datas.length > 0) {
+                    var d = datas[0];
+                    var result = {
+                        command: '4000',
+                        temperature: d.temperature + 40,
+                        humidity: d.humidity,
+                        pm25: d.pm25,
+                        quality: d.quality,
+                        centerBoxSerialno: '34ffdc054754353638812443',
+                        addTime: new Date()
+                    };
+                    console.log('-------------------------------推送成功了----------------------------');
+                    self.app.get('channelService').pushMessageByUids('onMsg', result, [{
+                        uid: '18657312311',
+                        sid: 'user-server-1'
+                    }]);
+                    next(null, ResponseUtil.resp(Code.OK));
+                }
+            }
+        });
+    } else {
+        var param = {
+            command: '9996',
+            type:type
+        };
+        self.app.get('channelService').pushMessageByUids('onMsg', param, [{
+            uid: '18657312311',
+            sid: 'user-server-1'
+        }]);
+        next(null, ResponseUtil.resp(Code.OK));
+    }
+};
