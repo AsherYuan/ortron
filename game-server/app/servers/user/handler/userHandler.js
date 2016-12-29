@@ -805,29 +805,33 @@ Handler.prototype.addTerminal = function(msg, session, next) {
         },
 
         function(cBox, callback) {
-            console.log("-------------------------------------------");
-            console.log("terminalSerialno:" + terminalSerialno);
             TerminalModel.findOne({terminalSerialno:terminalSerialno}, function(err, terminal) {
-                if(err || !!terminal) {
-                    console.log("err:" + JSON.stringify(err));
-                    console.log("terminal::" + JSON.stringify(terminal));
-                    next(null, ResponseUtil.resp(Code.STRUCTURE.TERMINAL_ALREADY_EXIST));
+                if(err) {
+                    next(null, ResponseUtil.resp(Code.DATABASE));
                 } else {
-                    // 终端是新的
-                    var terminalEntity = new TerminalModel({
-                        centerBoxSerialno: cBox.centerBoxSerialno,
-                        ssid: ssid,
-                        passwd: passwd,
-                        terminalSerialno : terminalSerialno
-                    });
-                    terminalEntity.save(function(err, terminal) {
-                        if (err) {
-                            logger.error(err);
-                            cb(err);
+                    if(!terminal) {
+                        // 终端不存在数据
+                        var terminalEntity = new TerminalModel({
+                            centerBoxSerialno: cBox.centerBoxSerialno,
+                            ssid: ssid,
+                            passwd: passwd,
+                            terminalSerialno : terminalSerialno
+                        });
+                        terminalEntity.save(function(err, terminal) {
+                            if (err) {
+                                logger.error(err);
+                                cb(err);
+                            } else {
+                                callback(null, terminal._id, homeGridId, cBox);
+                            }
+                        });
+                    } else {
+                        if(!terminal.homeGridId) {
+                            next(null, ResponseUtil.resp(Code.STRUCTURE.TERMINAL_ALREADY_EXIST));
                         } else {
                             callback(null, terminal._id, homeGridId, cBox);
                         }
-                    });
+                    }
                 }
             });
         },
