@@ -1107,7 +1107,7 @@ Handler.prototype.userSaySomething = function(msg, session, next) {
     var data = {};
 
     var privateData = {"isDelayOrder":false,"isCanLearn":false,
-    "from":"turing","type":"data"};
+        "from":"turing","type":"data"};
     if(words.indexOf("招呼") > -1) {
         words = "跟大家打个招呼吧";
     } else if(words.indexOf('自我介绍') > -1) {
@@ -1129,7 +1129,7 @@ Handler.prototype.userSaySomething = function(msg, session, next) {
     } else {
         async.waterfall([
             /** 第一步, 预置操作 图片和链接 **/
-            function(callback) {
+                function(callback) {
                 if (words === '图片') {
                     answer.push("http://tupian.enterdesk.com/2015/gha/12/0803/08.jpg");
                     data.answer = answer;
@@ -1146,7 +1146,7 @@ Handler.prototype.userSaySomething = function(msg, session, next) {
             },
 
             /** 第二步，查找用户具体信息  **/
-            function(userMobile, callback) {
+                function(userMobile, callback) {
                 self.app.rpc.user.userRemote.getUserInfoByMobile(session, userMobile, function(err, user) {
                     if (err) {
                         callback(err);
@@ -1157,7 +1157,7 @@ Handler.prototype.userSaySomething = function(msg, session, next) {
             },
 
             /** 第四步，访问brain服务器，获取智能解析结果 **/
-            function(user, callback) {
+                function(user, callback) {
                 var userId = user._id;
                 var params = {
                     str: words,
@@ -1412,7 +1412,7 @@ Handler.prototype.userSaySomething = function(msg, session, next) {
                                                                     if(inst === "D_TEST_ON" || inst === "C_TEST_ON") {
                                                                         sw = '11';
                                                                     } else {
-                                                                        sw = "18"
+                                                                        sw = "18";
                                                                     }
                                                                     param = {
                                                                         command: '3008',
@@ -1794,7 +1794,7 @@ Handler.prototype.remoteControll = function(msg, session, next) {
 
     async.waterfall([
         /** 第一步, 获得设备详情 **/
-        function(callback) {
+            function(callback) {
             self.app.rpc.home.homeRemote.getDeviceById(session, deviceId, function(err, device) {
                 if (err) {
                     callback(err);
@@ -1809,7 +1809,7 @@ Handler.prototype.remoteControll = function(msg, session, next) {
         },
 
         /** 第二步, 发送给smart center服务器，获取红外数据 **/
-        function(device, callback) {
+            function(device, callback) {
             var deviceType = msg.deviceType === undefined ? '' : msg.deviceType;
             var status = msg.status === undefined ? '' : msg.status;
             var model = msg.model === undefined ? '' : msg.model;
@@ -1819,9 +1819,6 @@ Handler.prototype.remoteControll = function(msg, session, next) {
             var chg_voice = msg.chg_voice === undefined ? '' : msg.chg_voice;
             var chg_chn = msg.chg_chn === undefined ? '' : msg.chg_chn;
             var inst = msg.inst === undefined ? '' : msg.inst;
-            model = escape(escape(model));
-            deviceType = escape(escape(deviceType));
-            status = escape(escape(status));
             var data = {
                 user_id: user_id,
                 deviceId: deviceId,
@@ -1834,14 +1831,11 @@ Handler.prototype.remoteControll = function(msg, session, next) {
                 chg_voice: chg_voice,
                 inst: inst
             };
-            data = require('querystring').stringify(data);
-            // var host = "http://abc.buiud.bid:8080/main/getorder?" + data;
-            var host = "http://122.225.88.66:8084/main/getorder?" + data;
-            // var host = "http://122.225.88.66:8180/SpringMongod/main/getorder?" + data;
-            console.log("直接遥控发送，参数为:" + data);
-            request(host, function(error, response, body) {
+            var host = "http://127.0.0.1:3000/remoteControl";
+            console.log("直接遥控发送，参数为:" + JSON.stringify(data));
+            request.post(host, {form:data}, function(err, response, body) {
                 console.log("直接遥控返回:" + body);
-                if (!error && response.statusCode == 200) {
+                if (!err && response.statusCode == 200) {
                     var javaResult = JSON.parse(body);
                     var ret = Code.OK;
                     if (!!javaResult && javaResult.code == 200) {
@@ -1850,14 +1844,14 @@ Handler.prototype.remoteControll = function(msg, session, next) {
                         callback(javaResult);
                     }
                 } else {
-                    callback(error);
+                    callback(err);
                 }
             });
         },
 
         /** 第三步, 解析smart home的返回 **/
-        function(javaResult) {
-            var result = JSON.parse(javaResult.data);
+            function(javaResult) {
+            var result = javaResult.data;
             var data = {};
             if (!!result.orderAndInfrared && result.orderAndInfrared.length > 0) {
                 var render_sendingIrCode = function(ircode) {
@@ -1923,7 +1917,8 @@ Handler.prototype.remoteControll = function(msg, session, next) {
                 var toRandering = [];
                 for (var i = 0; i < result.orderAndInfrared.length; i++) {
                     var t = result.orderAndInfrared[i];
-                    // targetArray.push(SayingUtil.translateStatus(t.order.ueq));
+                    targetArray.push(SayingUtil.translateStatus(t));
+
                     devices.push(t.order.ueq);
                     if (!!t.infrared && !!t.infrared.infraredcode) {
                         var ircode = t.infrared.infraredcode;
@@ -2221,7 +2216,7 @@ Handler.prototype.sendNotice = function(msg, session, next) {
 Handler.prototype.cameraAlert = function(msg, session, next) {
     var self = this;
     var url = msg.url;
-    var userMobile = '18657312311';
+    var userMobile = '13300000001';
     CameraPhotoModel.findOne({userMobile:userMobile}).sort({genTime:-1}).exec().then(function(last) {
         if(!!url) {
             if(!!last) {
@@ -2239,11 +2234,11 @@ Handler.prototype.cameraAlert = function(msg, session, next) {
                                 nd :msg.addTime
                             };
                             self.app.get('channelService').pushMessageByUids('onMsg', param, [{
-                                uid: '18657312311',
+                                uid: '13300000001',
                                 sid: 'user-server-1'
                             }]);
                             var NoticeEntity = new NoticeModel({
-                                userMobile: '18657312311',
+                                userMobile: '13300000001',
                                 hasRead: 0,
                                 title: '您的摄像头监测到有动态物体移动，请注意查看',
                                 content: msg.addTime,
@@ -2292,7 +2287,7 @@ Handler.prototype.cameraAlert = function(msg, session, next) {
                         nd : new Date().getTime()
                     };
                     self.app.get('channelService').pushMessageByUids('onMsg', param, [{
-                        uid: '18657312311',
+                        uid: '13300000001',
                         sid: 'user-server-1'
                     }]);
                     next(null);
@@ -2494,44 +2489,44 @@ Handler.prototype.getNoticeList = function(msg, session, next) {
 
     var skip = pageSize * (page - 1);
     NoticeModel.find({
-            userMobile: userMobile
-        }).select('userMobile addTime hasRead title content noticeType summary')
+        userMobile: userMobile
+    }).select('userMobile addTime hasRead title content noticeType summary')
         .sort({
             addTime: -1
         }).skip(skip).limit(pageSize).exec(function(err, notices) {
-            if (err) {
-                console.log(err);
-                next(null, ResponseUtil.resp(Code.DATABASE));
-            } else {
-                var news = [];
-                var today = new Date();
-                var yesterday = new Date();
-                yesterday.setDate(today.getDate() - 1);
-                for (var i = 0; i < notices.length; i++) {
-                    var n = {};
-                    var addTime = notices[i].addTime;
-                    if (addTime.getFullYear() == today.getFullYear() && addTime.getMonth() == today.getMonth() && addTime.getDate() == today.getDate()) {
-                        n.addTime = Moment(notices[i].addTime).format('HH:mm');
+        if (err) {
+            console.log(err);
+            next(null, ResponseUtil.resp(Code.DATABASE));
+        } else {
+            var news = [];
+            var today = new Date();
+            var yesterday = new Date();
+            yesterday.setDate(today.getDate() - 1);
+            for (var i = 0; i < notices.length; i++) {
+                var n = {};
+                var addTime = notices[i].addTime;
+                if (addTime.getFullYear() == today.getFullYear() && addTime.getMonth() == today.getMonth() && addTime.getDate() == today.getDate()) {
+                    n.addTime = Moment(notices[i].addTime).format('HH:mm');
+                } else {
+                    if (addTime.getFullYear() == yesterday.getFullYear() && addTime.getMonth() == yesterday.getMonth() && addTime.getDate() == yesterday.getDate()) {
+                        n.addTime = "昨天";
                     } else {
-                        if (addTime.getFullYear() == yesterday.getFullYear() && addTime.getMonth() == yesterday.getMonth() && addTime.getDate() == yesterday.getDate()) {
-                            n.addTime = "昨天";
-                        } else {
-                            n.addTime = Moment(notices[i].addTime).format('MM-DD HH:mm');
-                        }
+                        n.addTime = Moment(notices[i].addTime).format('MM-DD HH:mm');
                     }
-                    n._id = notices[i]._id;
-                    n.title = notices[i].title;
-                    n.content = notices[i].content;
-                    n.contentTrim = StringUtil.filterHtml(notices[i].content);
-                    n.summary = notices[i].summary;
-                    n.userMobile = notices[i].userMobile;
-                    n.noticeType = notices[i].noticeType;
-                    n.hasRead = notices[i].hasRead;
-                    news.push(n);
                 }
-                next(null, ResponseUtil.resp(Code.OK, news));
+                n._id = notices[i]._id;
+                n.title = notices[i].title;
+                n.content = notices[i].content;
+                n.contentTrim = StringUtil.filterHtml(notices[i].content);
+                n.summary = notices[i].summary;
+                n.userMobile = notices[i].userMobile;
+                n.noticeType = notices[i].noticeType;
+                n.hasRead = notices[i].hasRead;
+                news.push(n);
             }
-        });
+            next(null, ResponseUtil.resp(Code.OK, news));
+        }
+    });
 };
 
 /**
