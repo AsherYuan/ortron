@@ -728,7 +728,7 @@ Handler.prototype.getAllTerminals = function(msg, session, next) {
  * @param  {Function} next    [description]
  * @return {[type]}           [description]
  */
-// Handler.prototype.addTerminal = function(msg, session, next) {
+// Handler.prototype. = function(msg, session, next) {
 //     var self = this;
 //     var userMobile = session.uid;
 //     var ssid = msg.ssid;
@@ -785,61 +785,65 @@ Handler.prototype.addTerminal = function(msg, session, next) {
     var ssid = msg.ssid;
     var passwd = msg.passwd;
     var terminalSerialno = msg.terminalSerialno;
-    var centerBoxSerialno = msg.centerBoxSerialno;
+    var homeId = msg.homeId;
+    var layerName = msg.layerName;
     var homeGridId = msg.homeGridId;
 
     async.waterfall([
         function(callback) {
-            self.app.rpc.home.homeRemote.centerBoxSerailnoExist(session, centerBoxSerialno, function(err, flag) {
-                if (err) {
+            CenterBoxModel.findOne({homeId:homeId, layerName:layerName}, function(err, cBox) {
+                if(err) {
                     callback(err);
                 } else {
-                    callback(null, flag);
+                    if(!!cBox) {
+                        callback(null, cBox);
+                    } else {
+                        next(null, ResponseUtil.resp(Code.STRUCTURE.CENTERBOX_NOT_EXIST));
+                    }
                 }
             });
         },
-        function(flag, callback) {
-            // 主控存在
-            if (flag) {
-                TerminalModel.find({terminalSerialno:terminalSerialno}, function(err, terminal) {
-                    if(err || !!terminal) {
-                        next(null, ResponseUtil.resp(Code.STRUCTURE.TERMINAL_ALREADY_EXIST));
-                    } else {
-                        // 终端是新的
-                        var terminalEntity = new TerminalModel({
-                            centerBoxSerialno: centerBoxSerialno,
-                            ssid: ssid,
-                            passwd: passwd,
-                            terminalSerialno : terminalSerialno
-                        });
-                        terminalEntity.save(function(err, terminal) {
-                            if (err) {
-                                logger.error(err);
-                                cb(err);
-                            } else {
-                                callback(null, terminal._id, homeGridId);
-                            }
-                        });
-                    }
-                });
-                // 不存在主控
-            } else {
-                next(null, ResponseUtil.resp(Code.STRUCTURE.CENTERBOX_NOT_EXIST));
-            }
+
+        function(cBox, callback) {
+            console.log("-------------------------------------------");
+            console.log("terminalSerialno:" + terminalSerialno);
+            TerminalModel.findOne({terminalSerialno:terminalSerialno}, function(err, terminal) {
+                if(err || !!terminal) {
+                    console.log("err:" + JSON.stringify(err));
+                    console.log("terminal::" + JSON.stringify(terminal));
+                    next(null, ResponseUtil.resp(Code.STRUCTURE.TERMINAL_ALREADY_EXIST));
+                } else {
+                    // 终端是新的
+                    var terminalEntity = new TerminalModel({
+                        centerBoxSerialno: cBox.centerBoxSerialno,
+                        ssid: ssid,
+                        passwd: passwd,
+                        terminalSerialno : terminalSerialno
+                    });
+                    terminalEntity.save(function(err, terminal) {
+                        if (err) {
+                            logger.error(err);
+                            cb(err);
+                        } else {
+                            callback(null, terminal._id, homeGridId, cBox);
+                        }
+                    });
+                }
+            });
         },
-        function(terminalId, homeGridId, callback) {
+        function(terminalId, homeGridId, cBox, callback) {
             var param = {
                 command: '5000',
-                ipAddress: curIpAddress,
-                serialNo: centerBoxSerialno,
+                ipAddress: cBox.curIpAddress,
+                serialNo: cBox.centerBoxSerialno,
                 data: terminalSerialno,
-                port: curPort
+                port: cBox.curPort
             };
             if (!!homeGridId && !!terminalId) {
                 self.app.rpc.home.homeRemote.bindTerminalToHomeGrid(session, homeGridId, terminalId, function(err) {
                     if (err) {
                         callback(err);
-                    } else {  
+                    } else {
                         console.log("向ots推送消息:" + JSON.stringify(param));
                         self.app.get('channelService').pushMessageByUids('onMsg', param, [{
                             uid: 'socketServer*otron',
