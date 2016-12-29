@@ -22,7 +22,8 @@ var Error_cn = {
         CENTERBOX_NOT_EXIST : '该主控不存在',
         LAYER_EXIST : '楼层已存在',
         LAYER_NOT_EXIST : '楼层不存在',
-        LAYER_NOT_BINDED : '楼层未绑定'
+        LAYER_NOT_BINDED : '楼层未绑定',
+        TERMINAL_ALREADY_EXIST: '终端已经存在'
     },
     REMOTECONTROLL : {
         USEREQUIPMENT_NOT_EXIST : '用户设备不存在'

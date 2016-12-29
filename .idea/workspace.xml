@@ -7,8 +7,6 @@
       <change type="DELETED" beforePath="$PROJECT_DIR$/game-server/logs/node-log-${opts:serverId}.log" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/game-server/logs/rpc-debug-${opts:serverId}.log" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/game-server/logs/rpc-log-${opts:serverId}.log" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/game-server/app/servers/user/handler/userHandler.js" afterPath="$PROJECT_DIR$/game-server/app/servers/user/handler/userHandler.js" />
     </list>
     <ignored path="ortron.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -655,12 +653,12 @@
       <workItem from="1482033124753" duration="157000" />
       <workItem from="1482714325213" duration="4475000" />
       <workItem from="1482804924388" duration="300000" />
-      <workItem from="1482973410873" duration="394000" />
+      <workItem from="1482973410873" duration="799000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="171313000" />
+    <option name="totallyTimeSpent" value="171718000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">

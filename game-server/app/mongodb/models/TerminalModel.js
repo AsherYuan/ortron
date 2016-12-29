@@ -8,7 +8,8 @@ var TerminalSchema = new mongoose.Schema({
     passwd:String,
     regTime : { type:Date, default:Date.now },
     isOnline : {type:Boolean, default:false},
-    lastSensorDataTime : { type:Date, default:Date.now }
+    lastSensorDataTime : { type:Date, default:Date.now },
+    terminalSerialno:String
 });
 var TerminalModel = mongoose.model("terminal", TerminalSchema);
 module.exports = TerminalModel;
