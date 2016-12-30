@@ -811,6 +811,9 @@ Handler.prototype.addTerminal = function(msg, session, next) {
                     next(null, ResponseUtil.resp(Code.DATABASE));
                 } else {
                     if(!terminal) {
+                        console.log("===========================================================================================================================================================");
+                        console.log("cBox.centerBoxSerialno:" + JSON.stringify(cBox.centerBoxSerialno));
+                        console.log("cBox:" + JSON.stringify(cBox));
                         // 终端不存在数据
                         var terminalEntity = new TerminalModel({
                             centerBoxSerialno: cBox.centerBoxSerialno,
