@@ -791,6 +791,7 @@ Handler.prototype.addTerminal = function(msg, session, next) {
 
     async.waterfall([
         function(callback) {
+            console.log("cBox::query::param::homeId__" + homeId + "<>layerName__" + layerName);
             CenterBoxModel.findOne({homeId:homeId, layerName:layerName}, function(err, cBox) {
                 if(err) {
                     callback(err);
@@ -817,6 +818,7 @@ Handler.prototype.addTerminal = function(msg, session, next) {
                             passwd: passwd,
                             terminalSerialno : terminalSerialno
                         });
+                        console.log("保存终端的数据__" + JSON.stringify(terminalEntity));
                         terminalEntity.save(function(err, terminal) {
                             if (err) {
                                 logger.error(err);
@@ -826,7 +828,7 @@ Handler.prototype.addTerminal = function(msg, session, next) {
                             }
                         });
                     } else {
-                        if(!terminal.homeGridId) {
+                        if(!terminal.homeGridId && terminal.homeGridId) {
                             next(null, ResponseUtil.resp(Code.STRUCTURE.TERMINAL_ALREADY_EXIST));
                         } else {
                             callback(null, terminal._id, homeGridId, cBox);
