@@ -816,7 +816,7 @@ Handler.prototype.addTerminal = function(msg, session, next) {
                         console.log("cBox:" + JSON.stringify(cBox));
                         // 终端不存在数据
                         var terminalEntity = new TerminalModel({
-                            centerBoxSerialno: cBox.centerBoxSerialno,
+                            centerBoxSerialno: cBox.serialno,
                             ssid: ssid,
                             passwd: passwd,
                             terminalSerialno : terminalSerialno
