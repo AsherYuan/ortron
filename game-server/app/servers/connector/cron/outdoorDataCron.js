@@ -13,7 +13,7 @@ var Cron = function(app) {
 /**
  * 定时任务，定时给所有用户去推送消息
  */
-var currentData = function() {
+Cron.prototype.currentData = function() {
     var self = this;
     var options = {
         host: 'apis.baidu.com',
@@ -121,6 +121,3 @@ var currentData = function() {
     });
     req.end();
 };
-
-
-currentData();

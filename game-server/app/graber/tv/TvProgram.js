@@ -19,7 +19,7 @@ var saveProgram = function(date, beginTime, channelId, program, description) {
 
 	entity.save(function(err, p) {
 		if(err) {
-			console.log(err);
+			console.log("--------" + err);
 		} else {
 			console.log(channelId + "_" + Moment(beginTime).format('YYYY-MM-DD HH:mm:ss') + "_" + program + "_____" + description);
 		}
@@ -29,7 +29,7 @@ var saveProgram = function(date, beginTime, channelId, program, description) {
 var analysisPrograms = function(url, channelId, channel) {
 	TvProgramModel.update({_id:new Object(channelId)}, {$set:{lastGrabTime:new Date()}}, function(err, update) {
 	});
-
+console.log("url::" + url);
 	graber.grab(url, function(html) {
 		parseString(html, function (err, result) {
 			if(!!result && result.rss) {
